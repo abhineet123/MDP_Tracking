@@ -1,0 +1,7 @@
+*.mex*
+*.pyc
+results/
+results_gram/
+results_kitti/
+gitu.bat
+
