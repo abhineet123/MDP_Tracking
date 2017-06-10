@@ -12,12 +12,12 @@ function GRAM_test
 is_train = 1;
 db_type = 2;
 opt = globals();
-% 
-% seq_idx_train = {[1:9;16:24], [31:50]};
-% seq_idx_test = {[10:15; 25:30], [51:60]};
 
-seq_idx_train = {[1:9]};
-seq_idx_test = {[10:15]};
+seq_idx_train = {[1:9;16:24], [31:50]};
+seq_idx_test = {[10:15; 25:30], [51:60]};
+
+% seq_idx_train = {[1:9]};
+% seq_idx_test = {[10:15]};
 
 seq_set_test = 'testing';
 N = numel(seq_idx_train);
@@ -41,7 +41,7 @@ for i = 1:N
         
     else
         % load tracker from file
-        filename = sprintf('%s/gram_training_%s_tracker.mat',...
+        filename = sprintf('%s/gram_%s_tracker.mat',...
             opt.results_gram, opt.gram_seqs{idx_train(end)});
         object = load(filename);
         tracker = object.tracker;

@@ -96,8 +96,6 @@ elseif db_type == 1
 else
     seq_name = opt.gram_seqs{seq_idx};
     seq_num = opt.gram_nums(seq_idx);
-    start_id = seq_num * opt.gram_train_ratio + 1;
-    end_id = seq_num;
     % build the dres structure for images
     filename = sprintf('%s/gram_%s_%s_dres_image.mat',...
         opt.results_gram, seq_set, seq_name);
@@ -106,19 +104,19 @@ else
         dres_image = object.dres_image;
         fprintf('load images from file %s done\n', filename);
     else
-        dres_image = read_dres_image_gram(opt, seq_set, seq_name, start_id, end_id);
+        dres_image = read_dres_image_gram(opt, seq_name, seq_num);
         fprintf('read images done\n');
         save(filename, 'dres_image', '-v7.3');
     end
 
     % read detections
     filename = fullfile(opt.gram, 'Detections', [seq_name '.txt']);
-    dres_det = read_gram2dres(filename, start_id, end_id);    
+    dres_det = read_gram2dres(filename);    
 
     if strcmp(seq_set, 'training') == 1
         % read ground truth
         filename = fullfile(opt.gram, 'Annotations', [seq_name '.txt']);
-        dres_gt = read_gram2dres(filename, start_id, end_id);
+        dres_gt = read_gram2dres(filename);
     end
 end
 
@@ -150,7 +148,7 @@ for fr = 1:seq_num
     dres = sub(dres_det, index);
     
     % nms
-    if is_kitti
+    if db_type==1
         boxes = [dres.x dres.y dres.x+dres.w dres.y+dres.h dres.r];
         index = nms_new(boxes, 0.6);
         dres = sub(dres, index);
@@ -178,10 +176,10 @@ for fr = 1:seq_num
     end
     
     % sort trackers
-    if is_kitti == 0
-        index_track = sort_trackers(trackers);
+    if db_type == 1
+        index_track = sort_trackers_kitti(fr, trackers, dres, opt);        
     else
-        index_track = sort_trackers_kitti(fr, trackers, dres, opt);
+        index_track = sort_trackers(trackers);
     end
     
     % process trackers
@@ -250,7 +248,7 @@ for fr = 1:seq_num
 end
 
 % write tracking results
-if is_kitti == 0
+if db_type == 0
     filename = sprintf('%s/%s.txt', opt.results, seq_name);
     fprintf('write results: %s\n', filename);
     write_tracking_results(filename, dres_track, opt.tracked);
@@ -268,7 +266,7 @@ if is_kitti == 0
         filename = sprintf('%s/%s_results.mat', opt.results, seq_name);
         save(filename, 'dres_track', 'metrics');
     end
-else
+elseif db_type == 1
     filename = sprintf('%s/%s.txt', opt.results_kitti, seq_name);
     fprintf('write results: %s\n', filename);
     write_tracking_results_kitti(filename, dres_track, opt.tracked);
@@ -287,7 +285,17 @@ else
     if is_save
         filename = sprintf('%s/kitti_%s_%s_results.mat', opt.results_kitti, seq_set, seq_name);
         save(filename, 'dres_track');
-    end    
+    end   
+else
+    filename = sprintf('%s/%s.txt', opt.results_gram, seq_name);
+    fprintf('write results: %s\n', filename);
+    write_tracking_results(filename, dres_track, opt.tracked);
+
+    % save results
+    if is_save
+        filename = sprintf('%s/%s_results.mat', opt.results, seq_name);
+        save(filename, 'dres_track');
+    end 
 end
 
 % sort trackers according to number of tracked frames

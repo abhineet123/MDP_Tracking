@@ -72,7 +72,7 @@ else
     seq_num = opt.gram_nums(seq_idx);
 
     % build the dres structure for images
-    filename = sprintf('%s/%s_dres_image.mat', opt.results, seq_name);
+    filename = sprintf('%s/%s_dres_image.mat', opt.results_gram, seq_name);
     if exist(filename, 'file') ~= 0
         fprintf('loading images from file %s...', filename);
         object = load(filename);

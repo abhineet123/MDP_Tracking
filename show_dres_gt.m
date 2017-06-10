@@ -30,5 +30,11 @@ for i = 1:numel(index)
     if ~isempty(str)
         text(x, y-size(I,1)*0.01, str, 'BackgroundColor', [.7 .9 .7], 'FontSize', 14); 
     end
+    if isfield(dres, 'id') && dres.id(ind) > 0
+        % show the previous path
+        ind = find(dres.id == id & dres.fr <= frame_id);
+        centers = [dres.x(ind)+dres.w(ind)/2, dres.y(ind)+dres.h(ind)];
+        patchline(centers(:,1), centers(:,2), 'LineWidth', 4, 'edgecolor', c, 'edgealpha', 0.3);
+    end
 end
 hold off;
