@@ -11,10 +11,11 @@ addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
 
 is_save = 1;
 show_detections = 0;
-db_type = 2;
+db_type = 0;
+seq_type = 0;
 save_input_images = 0;
-start_idx = 20;
-end_idx = 60;
+start_idx = 1;
+end_idx = 11;
 
 colRGBDefs;
 colors={
@@ -46,14 +47,26 @@ for seq_idx = seq_idx_list
     hf = figure(1);
 
     if db_type == 0
-        seq_name = opt.mot2d_test_seqs{seq_idx};
-        seq_num = opt.mot2d_test_nums(seq_idx);    
-        seq_set = 'train';
+        if seq_type==0
+            seq_name = opt.mot2d_train_seqs{seq_idx};
+            seq_num = opt.mot2d_train_nums(seq_idx);    
+            seq_set = 'train';
+        else
+            seq_name = opt.mot2d_test_seqs{seq_idx};
+            seq_num = opt.mot2d_test_nums(seq_idx);    
+            seq_set = 'test';
+        end        
         filename = sprintf('%s/%s_dres_image.mat', results_dir, seq_name);
     elseif db_type == 1
-        seq_name = opt.kitti_train_seqs{seq_idx};
-        seq_num = opt.kitti_train_nums(seq_idx);
-        seq_set = 'training';
+        if seq_type==0
+            seq_name = opt.kitti_train_seqs{seq_idx};
+            seq_num = opt.kitti_train_nums(seq_idx);
+            seq_set = 'training';
+        else
+            seq_name = opt.kitti_test_seqs{seq_idx};
+            seq_num = opt.kitti_test_nums(seq_idx);
+            seq_set = 'testing';
+        end 
         filename = sprintf('%s/kitti_%s_%s_dres_image.mat', opt.results_kitti, seq_set, seq_name);
     else
         seq_name = opt.gram_seqs{seq_idx};

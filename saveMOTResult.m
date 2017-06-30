@@ -6,10 +6,12 @@ opt = globals();
 
 is_save = 1;
 db_type = 2;
-seq_idx = 27;
 results_dir = 'results';
 save_input_images = 0;
-
+start_idx = 1;
+end_idx = 11;
+seq_idx_list = [10:15, 25:30, 51:60];
+% seq_idx_list = start_idx:end_idx;
 
 colRGBDefs;
 colors={
@@ -34,16 +36,14 @@ for i = 1:n_cols
     colors_rgb{i} = col_rgb{strcmp(col_names,colors{i})};
 end
 
-start_idx = 14;
-end_idx = 15;
-seq_idx_list = start_idx:end_idx;
+
 
 for seq_idx = seq_idx_list
     hf = figure(1);
     if db_type == 0
         seq_name = opt.mot2d_test_seqs{seq_idx};
         seq_num = opt.mot2d_test_nums(seq_idx);    
-        seq_set = 'train';
+        seq_set = 'test';
         filename = sprintf('%s/%s_dres_image.mat', results_dir, seq_name);
     elseif db_type == 1
         seq_name = opt.kitti_train_seqs{seq_idx};
@@ -82,11 +82,11 @@ for seq_idx = seq_idx_list
     fprintf('reading tracking results from %s\n', filename);
     if db_type == 0
         filename = sprintf('%s/%s.txt', opt.results, seq_name);
-        file_video = sprintf('%s/%s.avi', opt.results_gram, seq_name);
+        file_video = sprintf('%s/%s.avi', opt.results, seq_name);
         dres_track = read_mot2dres(filename);
     elseif db_type == 1
         filename = sprintf('%s/%s.txt', opt.results_kitti, seq_name);
-        file_video = sprintf('%s/%s.avi', opt.results_gram, seq_name);
+        file_video = sprintf('%s/%s.avi', opt.results_kitti, seq_name);
         dres_track = read_kitti2dres(filename);    
     else
         filename = sprintf('%s/%s.txt', opt.results_gram, seq_name);
