@@ -16,6 +16,7 @@ is_show = 0;   % set is_show to 1 to show tracking results in testing
 is_save = 1;   % set is_save to 1 to save tracking result
 is_text = 0;   % set is_text to 1 to display detailed info
 is_pause = 0;  % set is_pause to 1 to debug
+save_images = 0;
 
 opt = globals();
 opt.is_text = is_text;
@@ -50,7 +51,9 @@ if db_type == 0
     else
         dres_image = read_dres_image(opt, seq_set, seq_name, seq_num);
         fprintf('read images done\n');
-        save(filename, 'dres_image', '-v7.3');
+		if save_images
+			save(filename, 'dres_image', '-v7.3');
+		end
     end
 
     % read detections
@@ -81,7 +84,9 @@ elseif db_type == 1
     else
         dres_image = read_dres_image_kitti(opt, seq_set, seq_name, seq_num);
         fprintf('read images done\n');
-        save(filename, 'dres_image', '-v7.3');
+		if save_images
+			save(filename, 'dres_image', '-v7.3');
+		end
     end
 
     % read detections
@@ -106,7 +111,9 @@ else
     else
         dres_image = read_dres_image_gram(opt, seq_name, seq_num);
         fprintf('read images done\n');
-        save(filename, 'dres_image', '-v7.3');
+		if save_images
+			save(filename, 'dres_image', '-v7.3');
+		end
     end
 
     % read detections
