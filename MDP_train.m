@@ -14,7 +14,7 @@ end
 
 is_show = 0;   % set is_show to 1 to show tracking results in training
 is_save = 1;   % set is_save to 1 to save trained tracker
-is_text = 1;   % set is_text to 1 to display detailed info in training
+is_text = 0;   % set is_text to 1 to display detailed info in training
 is_pause = 0;  % set is_pause to 1 to debug
 save_images = 0;
 

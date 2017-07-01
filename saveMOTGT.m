@@ -9,9 +9,9 @@ clear all;
 
 addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
 
-is_save = 1;
-show_detections = 0;
-db_type = 0;
+is_save = 0;
+show_detections = 1;
+db_type = 2;
 seq_type = 0;
 save_input_images = 0;
 start_idx = 1;
