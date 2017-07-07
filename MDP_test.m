@@ -110,6 +110,8 @@ else
         test_start_idx = uint32(seq_n_frames * seq_train_ratio) + 1;
         test_end_idx = seq_n_frames;
     end
+    fprintf('Testing sequence %s from frame %d to %d\n',...
+        seq_name, test_start_idx, test_end_idx);
     % build the dres structure for images
     filename = sprintf('%s/gram_%s_%d_%d_dres_image.mat',...
         opt.results_gram, seq_name, test_start_idx, test_end_idx);

@@ -94,6 +94,8 @@ elseif db_type == 2
         train_start_idx = 1;
         train_end_idx = uint32(seq_n_frames * seq_train_ratio);
     end
+    fprintf('Training on sequence %s from frame %d to %d\n',...
+    seq_name, train_start_idx, train_end_idx);
     % build the dres structure for images
     filename = sprintf('%s/%s_dres_image_%d_%d.mat', opt.results_gram,...
         seq_name, train_start_idx, train_end_idx);
