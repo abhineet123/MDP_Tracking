@@ -34,6 +34,24 @@ colors={
     'gold'...%13
     };
 
+if db_type == 0
+    db_name = 'MOT2015';
+    db_path = opt.mot;
+    res_path = opt.results;
+elseif db_type == 1
+    db_name = 'KITTI';
+    db_path = opt.kitti;
+    res_path = opt.results_kitti;
+elseif db_type == 2
+    db_name = 'GRAM';
+    db_path = opt.gram;
+    res_path = opt.results_gram;
+else
+    db_name = 'IDOT';
+    db_path = opt.idot;
+    res_path = opt.results_idot;
+end
+
 n_cols = length(colors);
 colors_rgb = cell(n_cols, 1);
 for i = 1:n_cols
@@ -55,7 +73,16 @@ for seq_idx = seq_idx_list
     else
         seq_name = opt.gram_seqs{seq_idx};
         seq_num = opt.gram_nums(seq_idx);
-        filename = sprintf('%s/%s_dres_image.mat', opt.results, seq_name);
+        seq_train_ratio = opt.gram_train_ratio(seq_idx);
+        if seq_train_ratio<0
+            start_idx = 1;
+            end_idx = uint32(seq_n_frames*(1 + seq_train_ratio)) - 1;      
+        else
+            start_idx = uint32(seq_n_frames * seq_train_ratio) + 1;
+            end_idx = seq_n_frames;
+        end
+        filename = sprintf('%s/%s_%d_%d_dres_image.mat',...
+            opt.results, seq_name, start_idx, end_idx);
     end
 
     % build the dres structure for images
@@ -71,7 +98,8 @@ for seq_idx = seq_idx_list
         elseif db_type == 1
             dres_image = read_dres_image_kitti(opt, seq_set, seq_name, seq_num);
         else
-            dres_image = read_dres_image_gram(opt, seq_name, seq_num);
+            dres_image = read_dres_image_gram(db_path, seq_name,...
+                start_idx, end_idx);
         end
         fprintf('done\n');
         if save_input_images
@@ -81,24 +109,26 @@ for seq_idx = seq_idx_list
         end
     end
 
-    fprintf('reading tracking results from %s\n', filename);
     if db_type == 0
         filename = sprintf('%s/%s.txt', opt.results, seq_name);
-        file_video = sprintf('%s/%s.avi', opt.results, seq_name);
+        file_video = sprintf('%s/%s.mp4', opt.results, seq_name);
         dres_track = read_mot2dres(filename);
     elseif db_type == 1
         filename = sprintf('%s/%s.txt', opt.results_kitti, seq_name);
-        file_video = sprintf('%s/%s.avi', opt.results_kitti, seq_name);
+        file_video = sprintf('%s/%s.mp4', opt.results_kitti, seq_name);
         dres_track = read_kitti2dres(filename);    
     else
-        filename = sprintf('%s/%s.txt', opt.results_gram, seq_name);
-        file_video = sprintf('%s/%s.avi', opt.results_gram, seq_name);
-        dres_track = read_gram2dres(filename);
+        filename = sprintf('%s/%s_%d_%d.txt', res_path, seq_name,...
+            start_idx, end_idx);
+        file_video = sprintf('%s/%s_%d_%d.mp4', res_path, seq_name,...
+           start_idx, end_idx);
+        dres_track = read_gram2dres(filename, start_idx, end_idx);
     end
+    fprintf('reading tracking results from %s\n', filename);
 
     if is_save    
         aviobj = VideoWriter(file_video);
-        aviobj.FrameRate = 9;
+        aviobj.FrameRate = 30;
         open(aviobj);
         fprintf('saving video to %s\n', file_video);
     end

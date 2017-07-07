@@ -12,7 +12,6 @@ if nargin < 3
     db_type = 0;
 end
 
-
 is_show = 0;   % set is_show to 1 to show tracking results in training
 is_save = 1;   % set is_save to 1 to save trained tracker
 is_text = 0;   % set is_text to 1 to display detailed info in training
@@ -21,16 +20,6 @@ save_images = 0;
 
 opt = globals();
 opt.is_show = is_show;
-
-if db_type == 0
-    db_path = opt.mot;
-elseif db_type == 1
-    db_path = opt.kitti;
-elseif db_type == 2
-    db_path = opt.gram;
-else
-    db_path = opt.idot;
-end
 
 if is_show
     close all;
@@ -95,8 +84,7 @@ elseif db_type == 2
         train_end_idx = uint32(seq_n_frames * seq_train_ratio);
     end
     % build the dres structure for images
-    filename = sprintf('%s/%s_dres_image_%d_%d.mat', opt.results_gram,...
-        seq_name, train_start_idx, train_end_idx);
+    filename = sprintf('%s/%s_dres_image.mat', opt.results_gram, seq_name);
     if exist(filename, 'file') ~= 0
         fprintf('loading images from file %s...', filename);
         object = load(filename);
@@ -104,8 +92,7 @@ elseif db_type == 2
         fprintf('done\n');
     else
         fprintf('reading images...');
-        dres_image = read_dres_image_gram(db_path, seq_name,...
-            train_start_idx, train_end_idx);
+        dres_image = read_dres_image_gram(opt, seq_name, train_start_idx, train_end_idx);
         fprintf('done\n');
 		if save_images
 			fprintf('saving images to file %s...', filename);
@@ -115,8 +102,7 @@ elseif db_type == 2
     end
     % generate training data
     I = dres_image.Igray{1};
-    [dres_train, dres_det, labels] = generate_training_data_gram(seq_idx,...
-        dres_image, opt, train_start_idx, train_end_idx);  
+    [dres_train, dres_det, labels] = generate_training_data_gram(seq_idx, dres_image, opt);  
 end
 
 % for debugging

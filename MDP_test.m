@@ -99,11 +99,20 @@ elseif db_type == 1
         dres_gt = read_kitti2dres(filename);
     end
 else
+    % GRAM
     seq_name = opt.gram_seqs{seq_idx};
     seq_num = opt.gram_nums(seq_idx);
+    seq_train_ratio = opt.gram_train_ratio(seq_idx);
+    if seq_train_ratio<0
+        test_start_idx = 1;
+        test_end_idx = uint32(seq_n_frames*(1 + seq_train_ratio)) - 1;      
+    else
+        test_start_idx = uint32(seq_n_frames * seq_train_ratio) + 1;
+        test_end_idx = seq_n_frames;
+    end
     % build the dres structure for images
-    filename = sprintf('%s/gram_%s_%s_dres_image.mat',...
-        opt.results_gram, seq_set, seq_name);
+    filename = sprintf('%s/gram_%s_%d_%d_dres_image.mat',...
+        opt.results_gram, seq_name, test_start_idx, test_end_idx);
     if exist(filename, 'file') ~= 0
         object = load(filename);
         dres_image = object.dres_image;
@@ -118,12 +127,12 @@ else
 
     % read detections
     filename = fullfile(opt.gram, 'Detections', [seq_name '.txt']);
-    dres_det = read_gram2dres(filename);    
+    dres_det = read_gram2dres(filename, test_start_idx, test_end_idx);    
 
     if strcmp(seq_set, 'training') == 1
         % read ground truth
         filename = fullfile(opt.gram, 'Annotations', [seq_name '.txt']);
-        dres_gt = read_gram2dres(filename);
+        dres_gt = read_gram2dres(filename, test_start_idx, test_end_idx);
     end
 end
 
@@ -294,13 +303,15 @@ elseif db_type == 1
         save(filename, 'dres_track');
     end   
 else
-    filename = sprintf('%s/%s.txt', opt.results_gram, seq_name);
-    fprintf('write results: %s\n', filename);
+    filename = sprintf('%s/%s_%d_%d.txt', opt.results_gram, seq_name,...
+        test_start_idx, test_end_idx);
+    fprintf('writing results to: %s\n', filename);
     write_tracking_results(filename, dres_track, opt.tracked);
 
     % save results
     if is_save
-        filename = sprintf('%s/%s_results.mat', opt.results, seq_name);
+        filename = sprintf('%s/%s_%d_%d_results.mat', opt.results,...
+            seq_name, test_start_idx, test_end_idx);
         save(filename, 'dres_track');
     end 
 end

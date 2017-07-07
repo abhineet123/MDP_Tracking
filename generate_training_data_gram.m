@@ -6,7 +6,8 @@
 % --------------------------------------------------------
 %
 % generate training data from GRAM
-function [dres_train, dres_det, labels] = generate_training_data_gram(seq_idx, dres_image, opt)
+function [dres_train, dres_det, labels] = generate_training_data_gram(seq_idx,...
+    dres_image, opt, train_start_idx, train_end_idx)
 
 is_show = 0;
 
@@ -14,11 +15,11 @@ seq_name = opt.gram_seqs{seq_idx};
 
 % read detections
 filename = fullfile(opt.gram, 'Detections', [seq_name '.txt']);
-dres_det = read_gram2dres(filename);
+dres_det = read_gram2dres(filename, train_start_idx, train_end_idx);
 
 % read ground truth
 filename = fullfile(opt.gram, 'Annotations', [seq_name '.txt']);
-dres_gt = read_gram2dres(filename);
+dres_gt = read_gram2dres(filename, train_start_idx, train_end_idx);
 y_gt = dres_gt.y + dres_gt.h;
 
 % collect true positives and false alarms from detections
