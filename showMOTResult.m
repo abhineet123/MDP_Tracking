@@ -9,9 +9,13 @@ db_type = 2;
 results_dir = 'results';
 save_input_images = 0;
 start_idx = 10;
-end_idx = 15;
+end_idx = 10;
 % seq_idx_list = [10:15, 25:30, 51:60];
 seq_idx_list = start_idx:end_idx;
+
+traj_line_width = 1;
+box_line_width = 1;
+obj_id_font_size = 6;
 
 colRGBDefs;
 colors={
@@ -35,8 +39,6 @@ colors_rgb = cell(n_cols, 1);
 for i = 1:n_cols
     colors_rgb{i} = col_rgb{strcmp(col_names,colors{i})};
 end
-
-
 
 for seq_idx = seq_idx_list
     hf = figure(1);
@@ -102,7 +104,8 @@ for seq_idx = seq_idx_list
     end
 
     for fr = 1:seq_num
-        show_dres_gt(fr, dres_image.I{fr}, dres_track, colors_rgb);
+        show_dres_gt(fr, dres_image.I{fr}, dres_track, colors_rgb,...
+            box_line_width, traj_line_width, obj_id_font_size);
         if is_save
             writeVideo(aviobj, getframe(hf));
         else

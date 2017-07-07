@@ -1,5 +1,15 @@
-function show_dres_gt(frame_id, I, dres, colors_rgb)
+function show_dres_gt(frame_id, I, dres, colors_rgb,...
+    box_line_width, traj_line_width, obj_id_font_size)
 
+if nargin<5
+    box_line_width = 1;
+end
+if nargin<6
+    traj_line_width = 1;
+end
+if nargin<7
+    obj_id_font_size = 6;
+end
 imshow(I);
 hold on;
 
@@ -12,7 +22,8 @@ else
 end
 s = '-';
 for i = 1:numel(index)
-    ind = index(i);    
+    set(gca,'position',[0 0 1 1],'units','normalized');
+    ind = index(i);
     x = dres.x(ind);
     y = dres.y(ind);
     w = dres.w(ind);
@@ -23,18 +34,18 @@ for i = 1:numel(index)
         c = colors_rgb{col_id};
         str = sprintf('%d', id);
     else
-         c = [0, 0, 0];
-         str = '';
+        c = [0, 0, 0];
+        str = '';
     end
-    rectangle('Position', [x y w h], 'EdgeColor', c, 'LineWidth', 4, 'LineStyle', s);
+    rectangle('Position', [x y w h], 'EdgeColor', c, 'LineWidth', box_line_width, 'LineStyle', s);
     if ~isempty(str)
-        text(x, y-size(I,1)*0.01, str, 'BackgroundColor', [.7 .9 .7], 'FontSize', 14); 
+        text(x, y-size(I,1)*0.01, str, 'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);
     end
     if isfield(dres, 'id') && dres.id(ind) > 0
         % show the previous path
         ind = find(dres.id == id & dres.fr <= frame_id);
         centers = [dres.x(ind)+dres.w(ind)/2, dres.y(ind)+dres.h(ind)];
-        patchline(centers(:,1), centers(:,2), 'LineWidth', 4, 'edgecolor', c, 'edgealpha', 0.3);
+        patchline(centers(:,1), centers(:,2), 'LineWidth', traj_line_width, 'edgecolor', c, 'edgealpha', 0.3);
     end
 end
 hold off;

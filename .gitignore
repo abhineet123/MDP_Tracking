@@ -5,3 +5,6 @@ results_gram/
 results_kitti/
 gitu.bat
 GT/
+Detections/
+*.mp4
+*.avi

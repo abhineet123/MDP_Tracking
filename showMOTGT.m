@@ -13,10 +13,16 @@ is_save = 1;
 show_detections = 0;
 db_type = 3;
 seq_type = 0;
+idot_split = 1;
 save_input_images = 0;
-start_idx = 1;
-end_idx = 1;
+
+start_idx = 2
+end_idx = 2;
 video_fps = 30;
+
+box_line_width = 1;
+traj_line_width = 1;
+obj_id_font_size = 6;
 
 colRGBDefs;
 colors={
@@ -44,9 +50,18 @@ end
 seq_idx_list = start_idx:end_idx;
 opt = globals();
 
-for seq_idx = seq_idx_list
-    hf = figure(1);
+if db_type == 0
+    db_name = 'MOT2015';
+elseif db_type == 1
+    db_name = 'KITTI';
+elseif db_type == 2
+    db_name = 'GRAM';
+else
+    db_name = 'IDOT';
+end
 
+for seq_idx = seq_idx_list
+    hf = figure(1);    
     if db_type == 0
         if seq_type==0
             seq_name = opt.mot2d_train_seqs{seq_idx};
@@ -74,8 +89,13 @@ for seq_idx = seq_idx_list
         seq_num = opt.gram_nums(seq_idx);
         filename = sprintf('%s/%s_dres_image.mat', opt.results, seq_name);
     else
-        seq_name = opt.idot_seqs{seq_idx};
-        seq_num = opt.idot_nums(seq_idx);
+        if idot_split
+            seq_name = opt.idot_split_seqs{seq_idx};
+            seq_num = opt.idot_split_nums(seq_idx);
+        else
+            seq_name = opt.idot_seqs{seq_idx};
+            seq_num = opt.idot_nums(seq_idx);
+        end
         filename = sprintf('%s/%s_dres_image.mat', opt.results, seq_name);
     end
 
@@ -124,7 +144,7 @@ for seq_idx = seq_idx_list
     elseif db_type == 1
         filename = fullfile(opt.kitti, seq_set, 'label_02', [seq_name '.txt']);
         dres_gt = read_kitti2dres(filename);
-    elseif db_type == 1
+    elseif db_type == 2
         filename = fullfile(opt.gram, 'Annotations', [seq_name '.txt']);
         dres_gt = read_gram2dres(filename);
     else
@@ -134,10 +154,14 @@ for seq_idx = seq_idx_list
 
     if is_save
         if show_detections
-            file_video = sprintf('GT/%s_det.mp4', seq_name);
+            video_dir = sprintf('Detections/%s', db_name);
         else
-            file_video = sprintf('GT/%s_gt.mp4', seq_name);
+            video_dir = sprintf('GT/%s', db_name);            
+        end        
+        if ~exist(video_dir, 'dir')
+            mkdir(video_dir);
         end
+        file_video = sprintf('%s/%s.mp4', video_dir, seq_name);
         aviobj = VideoWriter(file_video, 'MPEG-4');
         aviobj.FrameRate = video_fps;
         open(aviobj);
@@ -146,9 +170,11 @@ for seq_idx = seq_idx_list
 
     for fr = 1:seq_num
         if show_detections
-            show_dres_gt(fr, dres_image.I{fr}, dres_det, colors_rgb);
+            show_dres_gt(fr, dres_image.I{fr}, dres_det, colors_rgb,...
+                box_line_width, traj_line_width, obj_id_font_size);
         else
-            show_dres_gt(fr, dres_image.I{fr}, dres_gt, colors_rgb);
+            show_dres_gt(fr, dres_image.I{fr}, dres_gt, colors_rgb,...
+                box_line_width, traj_line_width, obj_id_font_size);
         end
         % imshow(dres_image.I{fr});
         if is_save
