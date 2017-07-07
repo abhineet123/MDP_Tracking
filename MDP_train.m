@@ -55,7 +55,10 @@ if db_type == 0
 			save(filename, 'dres_image', '-v7.3');
 		end
     end
-
+    
+    train_start_idx = 1;
+    train_end_idx = seq_num;
+    
     % generate training data
     I = dres_image.Igray{1};
     [dres_train, dres_det, labels] = generate_training_data(seq_idx, dres_image, opt);
@@ -78,7 +81,8 @@ elseif db_type == 1
 			save(filename, 'dres_image', '-v7.3');
 		end
     end
-    
+    train_start_idx = 1;
+    train_end_idx = seq_num;
     % generate training data
     I = dres_image.Igray{1};
     [dres_train, dres_det, labels] = generate_training_data_kitti(seq_idx, dres_image, opt);   
@@ -94,6 +98,8 @@ elseif db_type == 2
         train_start_idx = 1;
         train_end_idx = uint32(seq_n_frames * seq_train_ratio);
     end
+    seq_num = train_end_idx;
+    
     fprintf('Training on sequence %s from frame %d to %d\n',...
     seq_name, train_start_idx, train_end_idx);
     % build the dres structure for images
@@ -114,7 +120,8 @@ elseif db_type == 2
 			save(filename, 'dres_image', '-v7.3');
 			fprintf('done\n');
 		end
-    end
+    end   
+    
     % generate training data
     I = dres_image.Igray{1};
     [dres_train, dres_det, labels] = generate_training_data_gram(seq_idx,...
@@ -208,6 +215,7 @@ while 1
     tracker.state = 1;
     tracker.target_id = id;
     
+   
     % start tracking
     while fr <= seq_num
         if is_text
