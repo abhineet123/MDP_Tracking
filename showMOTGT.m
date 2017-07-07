@@ -9,9 +9,9 @@ clear all;
 
 addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
 
-is_save = 1;
+is_save = 0;
 show_detections = 0;
-db_type = 3;
+db_type = 2;
 seq_type = 0;
 idot_split = 1;
 save_input_images = 0;
@@ -20,7 +20,7 @@ video_fps = 30;
 start_idx = 1;
 end_idx = 1;
 seq_start_offset_ratio = 0;
-seq_ratio = 0.1;
+seq_ratio = -0.05;
 
 box_line_width = 1;
 traj_line_width = 1;
@@ -105,16 +105,18 @@ for seq_idx = seq_idx_list
         start_idx = 1;
         end_idx = seq_num;
     else
-        seq_start_offset = seq_start_offset_ratio * seq_num;
+        seq_n_frames = seq_num;
+        seq_start_offset = seq_start_offset_ratio * seq_n_frames;
         if seq_ratio<0
             start_idx = uint32(seq_n_frames*(1 + seq_ratio) - seq_start_offset) ;
             end_idx = seq_n_frames - seq_start_offset;
         else
             start_idx = seq_start_offset + 1;
             end_idx = uint32(seq_n_frames * seq_ratio) + seq_start_offset;
-        end
+        end        
     end
-
+    n_frames = end_idx - start_idx + 1;
+    
     % build the dres structure for images
     if exist(filename, 'file') ~= 0
         fprintf('loading images from file %s...', filename);
@@ -193,7 +195,7 @@ for seq_idx = seq_idx_list
         fprintf('saving video to %s\n', file_video);
     end
 
-    for fr = 1:seq_num
+    for fr = 1:n_frames
         if show_detections
             show_dres_gt(fr, dres_image.I{fr}, dres_det, colors_rgb,...
                 box_line_width, traj_line_width, obj_id_font_size);
