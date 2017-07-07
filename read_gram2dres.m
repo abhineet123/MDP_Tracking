@@ -22,7 +22,7 @@ dres_all.w = C{5};
 dres_all.h = C{6};
 dres_all.r = C{7};
 
-index = find(dres_all.fr >= start_idx && dres_all.fr <= end_idx);
+index = find((dres_all.fr >= start_idx) & (dres_all.fr <= end_idx));
 dres = sub(dres_all, index);
 
 % dres.fr=[];
