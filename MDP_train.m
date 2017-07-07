@@ -56,9 +56,6 @@ if db_type == 0
 		end
     end
     
-    train_start_idx = 1;
-    train_end_idx = seq_num;
-    
     % generate training data
     I = dres_image.Igray{1};
     [dres_train, dres_det, labels] = generate_training_data(seq_idx, dres_image, opt);
@@ -81,15 +78,13 @@ elseif db_type == 1
 			save(filename, 'dres_image', '-v7.3');
 		end
     end
-    train_start_idx = 1;
-    train_end_idx = seq_num;
     % generate training data
     I = dres_image.Igray{1};
     [dres_train, dres_det, labels] = generate_training_data_kitti(seq_idx, dres_image, opt);   
 elseif db_type == 2
     % GRAM
     seq_name = opt.gram_seqs{seq_idx};
-    seq_num = opt.gram_nums(seq_idx);
+    seq_n_frames = opt.gram_nums(seq_idx);
     seq_train_ratio = opt.gram_train_ratio(seq_idx);
     if seq_train_ratio<0
         train_start_idx = uint32(seq_n_frames*(1 + seq_train_ratio));
