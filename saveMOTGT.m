@@ -9,13 +9,14 @@ clear all;
 
 addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
 
-is_save = 0;
-show_detections = 1;
-db_type = 2;
+is_save = 1;
+show_detections = 0;
+db_type = 3;
 seq_type = 0;
 save_input_images = 0;
 start_idx = 1;
-end_idx = 11;
+end_idx = 1;
+video_fps = 30;
 
 colRGBDefs;
 colors={
@@ -68,9 +69,13 @@ for seq_idx = seq_idx_list
             seq_set = 'testing';
         end 
         filename = sprintf('%s/kitti_%s_%s_dres_image.mat', opt.results_kitti, seq_set, seq_name);
-    else
+    elseif db_type == 2
         seq_name = opt.gram_seqs{seq_idx};
         seq_num = opt.gram_nums(seq_idx);
+        filename = sprintf('%s/%s_dres_image.mat', opt.results, seq_name);
+    else
+        seq_name = opt.idot_seqs{seq_idx};
+        seq_num = opt.idot_nums(seq_idx);
         filename = sprintf('%s/%s_dres_image.mat', opt.results, seq_name);
     end
 
@@ -86,8 +91,10 @@ for seq_idx = seq_idx_list
             dres_image = read_dres_image(opt, seq_set, seq_name, seq_num);
         elseif db_type == 1
             dres_image = read_dres_image_kitti(opt, seq_set, seq_name, seq_num);
-        else
+        elseif db_type == 2
             dres_image = read_dres_image_gram(opt, seq_name, seq_num);
+        else
+            dres_image = read_dres_image_idot(opt, seq_name, seq_num);
         end 
         fprintf('done\n');
         if save_input_images
@@ -109,30 +116,30 @@ for seq_idx = seq_idx_list
             dres_det = read_gram2dres(filename);
         end
     end
-
+    % read ground truth
     if db_type == 0
-        % read ground truth
         filename = fullfile(opt.mot, opt.mot2d, seq_set, seq_name, 'gt', 'gt.txt');
         dres_gt = read_mot2dres(filename);
         dres_gt = fix_groundtruth(seq_name, dres_gt);
     elseif db_type == 1
-        % read ground truth
         filename = fullfile(opt.kitti, seq_set, 'label_02', [seq_name '.txt']);
         dres_gt = read_kitti2dres(filename);
-    else
-        % read ground truth
+    elseif db_type == 1
         filename = fullfile(opt.gram, 'Annotations', [seq_name '.txt']);
+        dres_gt = read_gram2dres(filename);
+    else
+        filename = fullfile(opt.idot, 'Annotations', [seq_name '.txt']);
         dres_gt = read_gram2dres(filename);
     end
 
     if is_save
         if show_detections
-            file_video = sprintf('GT/%s_det.avi', seq_name);
+            file_video = sprintf('GT/%s_det.mp4', seq_name);
         else
-            file_video = sprintf('GT/%s_gt.avi', seq_name);
+            file_video = sprintf('GT/%s_gt.mp4', seq_name);
         end
-        aviobj = VideoWriter(file_video);
-        aviobj.FrameRate = 9;
+        aviobj = VideoWriter(file_video, 'MPEG-4');
+        aviobj.FrameRate = video_fps;
         open(aviobj);
         fprintf('saving video to %s\n', file_video);
     end

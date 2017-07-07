@@ -4,7 +4,7 @@
 % Licensed under The MIT License [see LICENSE for details]
 % Written by Yu Xiang
 % --------------------------------------------------------
-function dres_image = read_dres_image_gram(opt, seq_name, seq_num)
+function dres_image = read_dres_image_idot(opt, seq_name, seq_num)
 disp(seq_num)
 dres_image.x = zeros(seq_num, 1);
 dres_image.y = zeros(seq_num, 1);
@@ -14,7 +14,7 @@ dres_image.I = cell(seq_num, 1);
 dres_image.Igray = cell(seq_num, 1);
 
 for id = 1:seq_num
-    filename = fullfile(opt.gram, 'Images', seq_name, sprintf('image%06d.jpg', id));
+    filename = fullfile(opt.idot, 'Images', seq_name, sprintf('image%06d.jpg', id));
     disp(filename);
     I = imread(filename);
 

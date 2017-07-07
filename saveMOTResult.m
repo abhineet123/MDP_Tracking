@@ -4,14 +4,14 @@ close all;
 addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
 opt = globals();
 
-is_save = 1;
+is_save = 0;
 db_type = 2;
 results_dir = 'results';
 save_input_images = 0;
-start_idx = 1;
-end_idx = 11;
-seq_idx_list = [10:15, 25:30, 51:60];
-% seq_idx_list = start_idx:end_idx;
+start_idx = 10;
+end_idx = 15;
+% seq_idx_list = [10:15, 25:30, 51:60];
+seq_idx_list = start_idx:end_idx;
 
 colRGBDefs;
 colors={
