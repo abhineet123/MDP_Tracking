@@ -80,8 +80,6 @@ if db_type == 0
         dres_gt = read_mot2dres(filename);
         dres_gt = fix_groundtruth(seq_name, dres_gt);
     end
-    test_start_idx = 1;
-    test_end_idx = seq_num;
 elseif db_type == 1
     if strcmp(seq_set, 'training') == 1
         seq_name = opt.kitti_train_seqs{seq_idx};
@@ -114,8 +112,6 @@ elseif db_type == 1
         filename = fullfile(opt.kitti, seq_set, 'label_02', [seq_name '.txt']);
         dres_gt = read_kitti2dres(filename);
     end
-    test_start_idx = 1;
-    test_end_idx = seq_num;
 else
     % GRAM
     seq_name = opt.gram_seqs{seq_idx};
@@ -129,7 +125,7 @@ else
         [ test_start_idx, test_end_idx ] = getSubSeqIdx(seq_test_ratio,...
             seq_n_frames);
 	end
-    seq_num = seq_n_frames;
+    seq_num = test_end_idx - test_start_idx + 1;
 
     fprintf('Testing sequence %s from frame %d to %d\n',...
         seq_name, test_start_idx, test_end_idx);
@@ -168,13 +164,13 @@ if nargin < 3
 end
 
 % intialize tracker
-I = dres_image.I{test_start_idx};
+I = dres_image.I{1};
 tracker = MDP_initialize_test(tracker, size(I,2), size(I,1), dres_det, is_show);
 
 % for each frame
 trackers = [];
 id = 0;
-for fr = test_start_idx:test_end_idx
+for fr = 1:seq_num
     if is_text
         fprintf('frame %d\n', fr);
     else
