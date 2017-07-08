@@ -87,11 +87,11 @@ elseif db_type == 2
     seq_n_frames = opt.gram_nums(seq_idx);
     seq_train_ratio = opt.gram_train_ratio(seq_idx);
     if seq_train_ratio<0
-        train_start_idx = uint32(seq_n_frames*(1 + seq_train_ratio));
+        train_start_idx = int32(seq_n_frames*(1 + seq_train_ratio));
         train_end_idx = seq_n_frames;
     else
         train_start_idx = 1;
-        train_end_idx = uint32(seq_n_frames * seq_train_ratio);
+        train_end_idx = int32(seq_n_frames * seq_train_ratio);
     end
     seq_num = train_end_idx;
     

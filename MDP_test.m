@@ -124,9 +124,9 @@ else
     seq_n_frames = seq_num;
     if seq_train_ratio<0
         test_start_idx = 1;
-        test_end_idx = uint32(seq_n_frames*(1 + seq_train_ratio)) - 1;      
+        test_end_idx = int32(seq_n_frames*(1 + seq_train_ratio)) - 1;      
     else
-        test_start_idx = uint32(seq_n_frames * seq_train_ratio) + 1;
+        test_start_idx = int32(seq_n_frames * seq_train_ratio) + 1;
         test_end_idx = seq_n_frames;
     end
     fprintf('Testing sequence %s from frame %d to %d\n',...

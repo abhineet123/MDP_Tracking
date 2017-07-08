@@ -108,11 +108,11 @@ for seq_idx = seq_idx_list
         seq_n_frames = seq_num;
         seq_start_offset = seq_start_offset_ratio * seq_n_frames;
         if seq_ratio<0
-            start_idx = uint32(seq_n_frames*(1 + seq_ratio) - seq_start_offset) ;
+            start_idx = int32(seq_n_frames*(1 + seq_ratio) - seq_start_offset) ;
             end_idx = seq_n_frames - seq_start_offset;
         else
             start_idx = seq_start_offset + 1;
-            end_idx = uint32(seq_n_frames * seq_ratio) + seq_start_offset;
+            end_idx = int32(seq_n_frames * seq_ratio) + seq_start_offset;
         end        
     end
     n_frames = end_idx - start_idx + 1;

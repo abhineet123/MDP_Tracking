@@ -18,7 +18,7 @@ dres_image.Igray = cell(n_frames, 1);
 
 for id = start_idx:end_idx
     filename = fullfile(db_path, 'Images', seq_name, sprintf('image%06d.jpg', id));
-    disp(filename);
+    % disp(filename);
     I = imread(filename);
 
     dres_image.x(id) = 1;

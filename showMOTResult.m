@@ -76,9 +76,9 @@ for seq_idx = seq_idx_list
         seq_train_ratio = opt.gram_train_ratio(seq_idx);
         if seq_train_ratio<0
             start_idx = 1;
-            end_idx = uint32(seq_n_frames*(1 + seq_train_ratio)) - 1;      
+            end_idx = int32(seq_n_frames*(1 + seq_train_ratio)) - 1;      
         else
-            start_idx = uint32(seq_n_frames * seq_train_ratio) + 1;
+            start_idx = int32(seq_n_frames * seq_train_ratio) + 1;
             end_idx = seq_n_frames;
         end
         filename = sprintf('%s/%s_%d_%d_dres_image.mat',...
