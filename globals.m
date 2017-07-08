@@ -10,10 +10,10 @@ opt.root = pwd;
 
 % path for MOT benchmark
 if isunix
-    mot_paths = {'/home/abhineet/C/Datasets/MOT2015/'};   
-    kitti_paths = {'/home/abhineet/C/Datasets/KITTI'};
-    gram_paths = {'/home/abhineet/C/Datasets/GRAM'};
-    idot_paths = {'/home/abhineet/C/Datasets/IDOT'};
+    mot_paths = {'/data/MOT2015/'};   
+    kitti_paths = {'/data/KITTI'};
+    gram_paths = {'/data/GRAM'};
+    idot_paths = {'/data/IDOT'};
 else
     mot_paths = {'C:\Datasets\MOT2015'};
     kitti_paths = {'C:\Datasets\KITTI'};
