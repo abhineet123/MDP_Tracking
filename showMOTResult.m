@@ -62,7 +62,7 @@ for seq_idx = seq_idx_list
     hf = figure(1);
     if db_type == 0
         seq_name = opt.mot2d_test_seqs{seq_idx};
-        seq_num = opt.mot2d_test_nums(seq_idx);    
+        seq_num = opt.mot2d_test_nums(seq_idx);
         seq_set = 'test';
         filename = sprintf('%s/%s_dres_image.mat', results_dir, seq_name);
     elseif db_type == 1
@@ -72,19 +72,14 @@ for seq_idx = seq_idx_list
         filename = sprintf('%s/kitti_%s_%s_dres_image.mat', opt.results_kitti, seq_set, seq_name);
     else
         seq_name = opt.gram_seqs{seq_idx};
-        seq_num = opt.gram_nums(seq_idx);
+        seq_n_frames = opt.gram_nums(seq_idx);
         seq_train_ratio = opt.gram_train_ratio(seq_idx);
-        if seq_train_ratio<0
-            start_idx = 1;
-            end_idx = int32(seq_n_frames*(1 + seq_train_ratio)) - 1;      
-        else
-            start_idx = int32(seq_n_frames * seq_train_ratio) + 1;
-            end_idx = seq_n_frames;
-        end
+        [start_idx, end_idx] = getSubSeqIdx(seq_train_ratio, seq_n_frames);
         filename = sprintf('%s/%s_%d_%d_dres_image.mat',...
             opt.results, seq_name, start_idx, end_idx);
+        seq_num = start_idx - end_idx + 1;
     end
-
+    
     % build the dres structure for images
     if exist(filename, 'file') ~= 0
         fprintf('loading images from file %s...', filename);
@@ -108,7 +103,7 @@ for seq_idx = seq_idx_list
             fprintf('done\n');
         end
     end
-
+    
     if db_type == 0
         filename = sprintf('%s/%s.txt', opt.results, seq_name);
         file_video = sprintf('%s/%s.mp4', opt.results, seq_name);
@@ -116,23 +111,23 @@ for seq_idx = seq_idx_list
     elseif db_type == 1
         filename = sprintf('%s/%s.txt', opt.results_kitti, seq_name);
         file_video = sprintf('%s/%s.mp4', opt.results_kitti, seq_name);
-        dres_track = read_kitti2dres(filename);    
+        dres_track = read_kitti2dres(filename);
     else
         filename = sprintf('%s/%s_%d_%d.txt', res_path, seq_name,...
             start_idx, end_idx);
         file_video = sprintf('%s/%s_%d_%d.mp4', res_path, seq_name,...
-           start_idx, end_idx);
+            start_idx, end_idx);
         dres_track = read_gram2dres(filename, start_idx, end_idx);
     end
     fprintf('reading tracking results from %s\n', filename);
-
-    if is_save    
+    
+    if is_save
         aviobj = VideoWriter(file_video);
         aviobj.FrameRate = 30;
         open(aviobj);
         fprintf('saving video to %s\n', file_video);
     end
-
+    
     for fr = 1:seq_num
         show_dres_gt(fr, dres_image.I{fr}, dres_track, colors_rgb,...
             box_line_width, traj_line_width, obj_id_font_size);
@@ -142,7 +137,7 @@ for seq_idx = seq_idx_list
             pause(0.001);
         end
     end
-
+    
     if is_save
         close(aviobj);
     end

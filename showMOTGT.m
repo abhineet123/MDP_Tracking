@@ -90,32 +90,21 @@ for seq_idx = seq_idx_list
             seq_set = 'testing';
         end 
         filename = sprintf('%s/kitti_%s_%s_dres_image.mat', opt.results_kitti, seq_set, seq_name);
-    elseif db_type == 2        
-        seq_name = opt.gram_seqs{seq_idx};
-        seq_num = opt.gram_nums(seq_idx);
-        filename = sprintf('%s/%s_dres_image_%d_%d.mat', opt.results,...
-            seq_name, start_idx, end_idx);
     else
-        seq_name = opt.idot_seqs{seq_idx};
-        seq_num = opt.idot_nums(seq_idx);
-        filename = sprintf('%s/%s_dres_image_%d_%d.mat', opt.results,...
-            seq_name, start_idx, end_idx);
-    end    
-    if db_type == 0 || db_type == 1
-        start_idx = 1;
-        end_idx = seq_num;
-    else
-        seq_n_frames = seq_num;
-        seq_start_offset = seq_start_offset_ratio * seq_n_frames;
-        if seq_ratio<0
-            start_idx = int32(seq_n_frames*(1 + seq_ratio) - seq_start_offset) ;
-            end_idx = seq_n_frames - seq_start_offset;
+        if db_type == 2
+            seq_name = opt.gram_seqs{seq_idx};
+            seq_n_frames = opt.gram_nums(seq_idx);
         else
-            start_idx = seq_start_offset + 1;
-            end_idx = int32(seq_n_frames * seq_ratio) + seq_start_offset;
-        end        
-    end
-    n_frames = end_idx - start_idx + 1;
+            seq_name = opt.idot_seqs{seq_idx};
+            seq_n_frames = opt.idot_nums(seq_idx);
+        end
+        seq_start_offset = seq_start_offset_ratio * seq_n_frames;
+        [start_idx, end_idx] = getSubSeqIdx(seq_ratio, seq_n_frames,...
+            seq_start_offset);
+        filename = sprintf('%s/%s_dres_image_%d_%d.mat', opt.results,...
+            seq_name, start_idx, end_idx);
+        seq_num = start_idx - end_idx + 1;
+    end  
     
     % build the dres structure for images
     if exist(filename, 'file') ~= 0
@@ -124,7 +113,7 @@ for seq_idx = seq_idx_list
         dres_image = object.dres_image;
         fprintf('done\n');
     else
-        fprintf('reading images...');
+        fprintf('reading images...\n');
         if db_type == 0
             dres_image = read_dres_image(opt, seq_set, seq_name, seq_num);
         elseif db_type == 1
@@ -149,13 +138,7 @@ for seq_idx = seq_idx_list
             filename = fullfile(opt.kitti, seq_set, 'det_02', [seq_name '.txt']);
             dres_det = read_kitti2dres(filename);
         else
-            if db_type == 2
-                filename = fullfile(opt.gram, 'Detections',...
-                    [seq_name '.txt']);
-            elseif db_type == 3
-                filename = fullfile(opt.idot, 'Detections',...
-                    [seq_name '.txt']);
-            end            
+            filename = fullfile(db_path, 'Detections', [seq_name '.txt']);
             dres_det = read_gram2dres(filename, start_idx, end_idx);
         end
     else

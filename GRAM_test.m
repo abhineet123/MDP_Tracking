@@ -23,7 +23,7 @@ seq_idx_train = {[1]};
 seq_idx_test = {[1]};
 
 seq_set_test = 'testing';
-N = numel(opt.gram_seqs);
+N = numel(seq_idx_train);
 
 % for each training-testing pair
 for i = 1:N
@@ -44,11 +44,17 @@ for i = 1:N
         
     else
         % load tracker from file
-        filename = sprintf('%s/gram_%s_tracker.mat',...
-            opt.results_gram, opt.gram_seqs{idx_train(end)});
+        seq_name = opt.gram_seqs{seq_idx};
+        seq_idx = idx_train(end);
+        seq_n_frames = opt.gram_nums(seq_idx);
+        seq_train_ratio = opt.gram_train_ratio(seq_idx);        
+        [train_start_idx, train_end_idx] = getSubSeqIdx(seq_train_ratio,...
+            seq_n_frames);
+        filename = sprintf('%s/gram_%s_%d_%d_tracker.mat',...
+            opt.results_gram, seq_name, train_start_idx, train_end_idx);
+        fprintf('loading tracker from file %s\n', filename);
         object = load(filename);
-        tracker = object.tracker;
-        fprintf('load tracker from file %s\n', filename);
+        tracker = object.tracker;        
     end
     
     % testing

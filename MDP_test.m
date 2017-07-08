@@ -119,16 +119,18 @@ elseif db_type == 1
 else
     % GRAM
     seq_name = opt.gram_seqs{seq_idx};
-    seq_num = opt.gram_nums(seq_idx);
-    seq_train_ratio = opt.gram_train_ratio(seq_idx);
-    seq_n_frames = seq_num;
-    if seq_train_ratio<0
-        test_start_idx = 1;
-        test_end_idx = int32(seq_n_frames*(1 + seq_train_ratio)) - 1;      
-    else
-        test_start_idx = int32(seq_n_frames * seq_train_ratio) + 1;
-        test_end_idx = seq_n_frames;
-    end
+    seq_n_frames = opt.gram_nums(seq_idx);
+	if isempty(opt.gram_test_ratio)
+		seq_train_ratio = opt.gram_train_ratio(seq_idx);
+        [ test_start_idx, test_end_idx ] = getInvSubSeqIdx(seq_train_ratio,...
+            seq_n_frames);	
+	else
+		seq_test_ratio = opt.gram_test_ratio(seq_idx);
+        [ test_start_idx, test_end_idx ] = getSubSeqIdx(seq_test_ratio,...
+            seq_n_frames);
+	end
+    seq_num = seq_n_frames;
+
     fprintf('Testing sequence %s from frame %d to %d\n',...
         seq_name, test_start_idx, test_end_idx);
     % build the dres structure for images
@@ -139,9 +141,10 @@ else
         dres_image = object.dres_image;
         fprintf('load images from file %s done\n', filename);
     else
+        fprintf('reading images....\n');
         dres_image = read_dres_image_gram(db_path, seq_name,...
             test_start_idx, test_end_idx);
-        fprintf('read images done\n');
+        fprintf('done\n');
 		if save_images
 			save(filename, 'dres_image', '-v7.3');
 		end

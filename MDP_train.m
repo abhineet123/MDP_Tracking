@@ -41,7 +41,7 @@ if db_type == 0
     seq_name = opt.mot2d_train_seqs{seq_idx};
     seq_num = opt.mot2d_train_nums(seq_idx);
     seq_set = 'train';
-
+    
     % build the dres structure for images
     filename = sprintf('%s/%s_dres_image.mat', opt.results, seq_name);
     if exist(filename, 'file') ~= 0
@@ -51,9 +51,9 @@ if db_type == 0
     else
         dres_image = read_dres_image(opt, seq_set, seq_name, seq_num);
         fprintf('read images done\n');
-		if save_images
-			save(filename, 'dres_image', '-v7.3');
-		end
+        if save_images
+            save(filename, 'dres_image', '-v7.3');
+        end
     end
     
     % generate training data
@@ -64,7 +64,7 @@ elseif db_type == 1
     seq_name = opt.kitti_train_seqs{seq_idx};
     seq_num = opt.kitti_train_nums(seq_idx);
     seq_set = 'training';
-
+    
     % build the dres structure for images
     filename = sprintf('%s/kitti_%s_%s_dres_image.mat', opt.results_kitti, seq_set, seq_name);
     if exist(filename, 'file') ~= 0
@@ -74,29 +74,24 @@ elseif db_type == 1
     else
         dres_image = read_dres_image_kitti(opt, seq_set, seq_name, seq_num);
         fprintf('read images done\n');
-		if save_images
-			save(filename, 'dres_image', '-v7.3');
-		end
+        if save_images
+            save(filename, 'dres_image', '-v7.3');
+        end
     end
     % generate training data
     I = dres_image.Igray{1};
-    [dres_train, dres_det, labels] = generate_training_data_kitti(seq_idx, dres_image, opt);   
+    [dres_train, dres_det, labels] = generate_training_data_kitti(seq_idx, dres_image, opt);
 elseif db_type == 2
     % GRAM
     seq_name = opt.gram_seqs{seq_idx};
     seq_n_frames = opt.gram_nums(seq_idx);
     seq_train_ratio = opt.gram_train_ratio(seq_idx);
-    if seq_train_ratio<0
-        train_start_idx = int32(seq_n_frames*(1 + seq_train_ratio));
-        train_end_idx = seq_n_frames;
-    else
-        train_start_idx = 1;
-        train_end_idx = int32(seq_n_frames * seq_train_ratio);
-    end
-    seq_num = train_end_idx;
+    [train_start_idx, train_end_idx] = getSubSeqIdx(seq_train_ratio,...
+        seq_n_frames);
+    seq_num = train_end_idx - train_start_idx + 1;
     
     fprintf('Training on sequence %s from frame %d to %d\n',...
-    seq_name, train_start_idx, train_end_idx);
+        seq_name, train_start_idx, train_end_idx);
     % build the dres structure for images
     filename = sprintf('%s/%s_dres_image_%d_%d.mat', opt.results_gram,...
         seq_name, train_start_idx, train_end_idx);
@@ -106,21 +101,20 @@ elseif db_type == 2
         dres_image = object.dres_image;
         fprintf('done\n');
     else
-        fprintf('reading images...');
+        fprintf('reading images....\n');
         dres_image = read_dres_image_gram(db_path, seq_name,...
             train_start_idx, train_end_idx);
         fprintf('done\n');
-		if save_images
-			fprintf('saving images to file %s...', filename);
-			save(filename, 'dres_image', '-v7.3');
-			fprintf('done\n');
-		end
-    end   
-    
+        if save_images
+            fprintf('saving images to file %s...', filename);
+            save(filename, 'dres_image', '-v7.3');
+            fprintf('done\n');
+        end
+    end    
     % generate training data
     I = dres_image.Igray{1};
     [dres_train, dres_det, labels] = generate_training_data_gram(seq_idx,...
-        dres_image, opt, train_start_idx, train_end_idx);  
+        dres_image, opt, train_start_idx, train_end_idx);
 end
 
 % for debugging
@@ -132,7 +126,7 @@ if nargin < 2 || isempty(tracker) == 1
     tracker = MDP_initialize(I, dres_det, labels, opt);
 else
     % continuous training
-    fprintf('continuous training\n');    
+    fprintf('continuous training\n');
     tracker.image_width = size(I,2);
     tracker.image_height = size(I,1);
     tracker.max_width = max(dres_det.w);
@@ -141,7 +135,7 @@ else
     
     % update weights of active state
     factive = MDP_feature_active(tracker, dres_det);
-    index = labels ~= 0;    
+    index = labels ~= 0;
     tracker.factive = [tracker.factive; factive(index,:)];
     tracker.lactive = [tracker.lactive; labels(index)];
     tracker.w_active = svmtrain(tracker.lactive, tracker.factive, '-c 1 -q');
@@ -210,7 +204,7 @@ while 1
     tracker.state = 1;
     tracker.target_id = id;
     
-   
+    
     % start tracking
     while fr <= seq_num
         if is_text
@@ -228,7 +222,7 @@ while 1
             % show ground truth
             subplot(2, 3, 1);
             show_dres(fr, dres_image.I{fr}, 'GT', dres_gt);
-
+            
             % show detections
             subplot(2, 3, 2);
             show_dres(fr, dres_image.I{fr}, 'Detections', dres_det);
@@ -242,7 +236,7 @@ while 1
             end
             break;
             
-        % active    
+            % active
         elseif tracker.state == 1
             
             % compute overlap
@@ -251,24 +245,24 @@ while 1
             if is_text
                 fprintf('Start: first frame overlap %.2f\n', ov);
             end
-
+            
             % initialize the LK tracker
             tracker = LK_initialize(tracker, fr, id, dres, ind, dres_image);
             tracker.state = 2;
             tracker.streak_occluded = 0;
-
+            
             % build the dres structure
             dres_one = sub(dres, ind);
             tracker.dres = dres_one;
             tracker.dres.id = tracker.target_id;
             tracker.dres.state = tracker.state;
             
-        % tracked    
+            % tracked
         elseif tracker.state == 2
             tracker.streak_occluded = 0;
             tracker = MDP_value(tracker, fr, dres_image, dres, []);
             
-        % occluded
+            % occluded
         elseif tracker.state == 3
             tracker.streak_occluded = tracker.streak_occluded + 1;
             
@@ -280,7 +274,7 @@ while 1
                 index_det = [];
             end
             [tracker, ~, f] = MDP_value(tracker, fr, dres_image, dres, index_det);
-
+            
             if is_show
                 figure(1);
                 subplot(2, 3, 3);
@@ -289,12 +283,12 @@ while 1
                 plot(ctrack(1), ctrack(2), 'ro', 'LineWidth', 2);
                 hold off;
             end
-
+            
             if isempty(index_det) == 0
                 % compute reward
                 [reward, label, f, is_end] = MDP_reward_occluded(fr, f, dres_image, ...
                     dres_gt, dres, index_det, tracker, opt, is_text);
-
+                
                 % update weights if negative reward
                 if reward == -1
                     tracker.f_occluded(end+1,:) = f;
@@ -304,7 +298,7 @@ while 1
                         fprintf('training examples in occluded state %d\n', size(tracker.f_occluded,1));
                     end
                 end
-
+                
                 if is_end
                     tracker.state = 0;
                 end
@@ -333,22 +327,22 @@ while 1
                 reward = 1;
             end
         end
-            
+        
         % show results
         if is_show
-            figure(1);     
-
+            figure(1);
+            
             % show tracking results
             subplot(2, 3, 4);
             show_dres(fr, dres_image.I{fr}, 'Tracking', tracker.dres, 2);
-
+            
             % show lost targets
             subplot(2, 3, 5);
             show_dres(fr, dres_image.I{fr}, 'Lost', tracker.dres, 3);
             
             subplot(2, 3, 6);
             show_templates(tracker, dres_image);
-
+            
             fprintf('frame %d, state %d\n', fr, tracker.state);
             if is_pause
                 pause();
@@ -356,8 +350,8 @@ while 1
                 pause(0.01);
             end
             
-%             filename = sprintf('results/%s_%06d.png', seq_name, fr);
-%             hgexport(h, filename, hgexport('factorystyle'), 'Format', 'png');
+            % filename = sprintf('results/%s_%06d.png', seq_name, fr);
+            % hgexport(h, filename, hgexport('factorystyle'), 'Format', 'png');
         end
         
         % try to connect recently lost target
@@ -386,7 +380,8 @@ if is_save
     elseif db_type == 1
         filename = sprintf('%s/kitti_%s_%s_tracker.mat', opt.results_kitti, seq_set, seq_name);
     else
-        filename = sprintf('%s/gram_%s_tracker.mat', opt.results_gram, seq_name);
+        filename = sprintf('%s/gram_%s_%d_%d_tracker.mat',...
+            opt.results_gram, seq_name, train_start_idx, train_end_idx);
     end
     save(filename, 'tracker');
 end
