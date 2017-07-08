@@ -16,8 +16,11 @@ opt = globals();
 % seq_idx_train = {[1:9, 16:24], [31:50]};
 % seq_idx_test = {[10:15, 25:30], [51:60]};
 
-seq_idx_train = {[1, 2], [3]};
-seq_idx_test = {[1, 2], [3]};
+% seq_idx_train = {[1, 2], [3]};
+% seq_idx_test = {[1, 2], [3]};
+
+seq_idx_train = {[1]};
+seq_idx_test = {[1]};
 
 seq_set_test = 'testing';
 N = numel(opt.gram_seqs);

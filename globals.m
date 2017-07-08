@@ -92,7 +92,7 @@ end
 
 opt.gram_seqs = {'M-30','M-30-HD','Urban1'};
 opt.gram_nums = [7520, 9390, 23435];
-opt.gram_train_ratio = [0.6, 0.6, 0.6];
+opt.gram_train_ratio = [0.1, 0.6, 0.6];
 
 
 % opt.gram_nums = [repmat(501, 14);506;repmat(626, 15);repmat(781, 29);786];

@@ -29,6 +29,20 @@ else
     opt.exit_threshold = 0.7;
 end
 
+if db_type == 0
+    db_name = 'MOT2015';
+    db_path = opt.mot;
+elseif db_type == 1
+    db_name = 'KITTI';
+    db_path = opt.kitti;
+elseif db_type == 2
+    db_name = 'GRAM';
+    db_path = opt.gram;
+else
+    db_name = 'IDOT';
+    db_path = opt.idot;
+end
+
 if is_show
     close all;
 end
@@ -134,12 +148,12 @@ else
     end
 
     % read detections
-    filename = fullfile(opt.gram, 'Detections', [seq_name '.txt']);
+    filename = fullfile(db_path, 'Detections', [seq_name '.txt']);
     dres_det = read_gram2dres(filename, test_start_idx, test_end_idx);    
 
     if strcmp(seq_set, 'training') == 1
         % read ground truth
-        filename = fullfile(opt.gram, 'Annotations', [seq_name '.txt']);
+        filename = fullfile(db_path, 'Annotations', [seq_name '.txt']);
         dres_gt = read_gram2dres(filename, test_start_idx, test_end_idx);
     end
 end
