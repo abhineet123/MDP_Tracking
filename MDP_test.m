@@ -66,6 +66,8 @@ if db_type == 0
         dres_gt = read_mot2dres(filename);
         dres_gt = fix_groundtruth(seq_name, dres_gt);
     end
+    test_start_idx = 1;
+    test_end_idx = seq_num;
 elseif db_type == 1
     if strcmp(seq_set, 'training') == 1
         seq_name = opt.kitti_train_seqs{seq_idx};
@@ -98,11 +100,14 @@ elseif db_type == 1
         filename = fullfile(opt.kitti, seq_set, 'label_02', [seq_name '.txt']);
         dres_gt = read_kitti2dres(filename);
     end
+    test_start_idx = 1;
+    test_end_idx = seq_num;
 else
     % GRAM
     seq_name = opt.gram_seqs{seq_idx};
     seq_num = opt.gram_nums(seq_idx);
     seq_train_ratio = opt.gram_train_ratio(seq_idx);
+    seq_n_frames = seq_num;
     if seq_train_ratio<0
         test_start_idx = 1;
         test_end_idx = uint32(seq_n_frames*(1 + seq_train_ratio)) - 1;      
@@ -120,7 +125,8 @@ else
         dres_image = object.dres_image;
         fprintf('load images from file %s done\n', filename);
     else
-        dres_image = read_dres_image_gram(opt, seq_name, seq_num);
+        dres_image = read_dres_image_gram(db_path, seq_name,...
+            test_start_idx, test_end_idx);
         fprintf('read images done\n');
 		if save_images
 			save(filename, 'dres_image', '-v7.3');
@@ -145,13 +151,13 @@ if nargin < 3
 end
 
 % intialize tracker
-I = dres_image.I{1};
+I = dres_image.I{test_start_idx};
 tracker = MDP_initialize_test(tracker, size(I,2), size(I,1), dres_det, is_show);
 
 % for each frame
 trackers = [];
 id = 0;
-for fr = 1:seq_num
+for fr = test_start_idx:test_end_idx
     if is_text
         fprintf('frame %d\n', fr);
     else
@@ -430,8 +436,7 @@ else  % active
     dres_one.state = tracker.state;
     if isfield(dres, 'type')
         dres_one.type = {dres.type{ind}};
-    end    
-    
+    end        
     tracker.dres = dres_one;
 end
 
