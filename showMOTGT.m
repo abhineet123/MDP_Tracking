@@ -20,7 +20,7 @@ video_fps = 30;
 start_idx = 1;
 end_idx = 1;
 seq_start_offset_ratio = 0;
-seq_ratio = -0.05;
+seq_ratio = -0.02;
 
 box_line_width = 1;
 traj_line_width = 1;
@@ -194,8 +194,9 @@ for seq_idx = seq_idx_list
         open(aviobj);
         fprintf('saving video to %s\n', file_video);
     end
-
-    for fr = 1:n_frames
+    
+    
+    for fr = start_idx:end_idx
         if show_detections
             show_dres_gt(fr, dres_image.I{fr}, dres_det, colors_rgb,...
                 box_line_width, traj_line_width, obj_id_font_size);
