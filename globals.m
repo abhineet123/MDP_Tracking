@@ -134,8 +134,9 @@ opt.stanford_seqs = {{'quad', [0:3]}, {'bookstore', [0:6]}, {'coupa', [0:3]},...
     {'deathCircle', [0:4]},...
     {'gates', [0:8]}, {'hyang', [0:14]}, {'little', [0:3]}, {'nexus', [0:11]}};
 
-addpath(fullfile(opt.mot, 'devkit', 'utils'));
-addpath(fullfile(opt.kitti, 'devkit', 'matlab'));
+% addpath(fullfile(opt.mot, 'devkit', 'utils'));
+% addpath(fullfile(opt.kitti, 'devkit', 'matlab'));
+addpath(fullfile('utils'));
 
 if isunix
     addpath([opt.root '/3rd_party/libsvm-3.20/matlab']);
