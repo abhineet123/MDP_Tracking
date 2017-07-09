@@ -1,4 +1,5 @@
-function allMets=evaluateTrackingGRAM(allSeq,resDir,dataDir)
+function allMets=evaluateTrackingGRAM(allSeq,resDir,dataDir,...
+    start_idx_list, end_idx_list)
 %% evaluate CLEAR MOT and other metrics
 % concatenate ALL sequences and evaluate as one!
 %
@@ -14,7 +15,6 @@ function allMets=evaluateTrackingGRAM(allSeq,resDir,dataDir)
 fprintf('Sequences: \n');
 disp(allSeq')
 
-
 % concat gtInfo
 gtInfo=[];
 gtInfo.X=[];
@@ -24,15 +24,18 @@ allFgt=zeros(1,length(allSeq));
 % and concatenate ground truth
 gtInfoSingle=[];
 seqCnt=0;
+id = 1;
 for s=allSeq
     seqCnt=seqCnt+1;
     seqName = char(s);
     seqFolder= [dataDir, 'Images', filesep, seqName, filesep];
     
     assert(isdir(seqFolder),'Sequence folder %s missing',seqFolder);
-    
+    start_idx = start_idx_list(id);
+    end_idx = end_idx_list(id);
     gtFile = fullfile(dataDir,'Annotations', sprintf('%s.txt', seqName));
-    gtI = convertTXTToStructGRAM(gtFile,seqFolder);
+    gtI = convertTXTToStructGRAM(gtFile, seqFolder, start_idx, end_idx);
+    id = id + 1;
     
     [Fgt,Ngt] = size(gtInfo.X);
     [FgtI,NgtI] = size(gtI.Xi);
@@ -100,16 +103,16 @@ for s=allSeq
     fprintf('\t... %s\n',seqName);
     
     % if a result is missing, we cannot evaluate this tracker
-    resFile = fullfile(resDir,[seqName '.txt']);
+    resFile = fullfile(resDir,...
+        sprintf('%s_%d_%d.txt', seqName, start_idx, end_idx));
     if ~exist(resFile,'file')
         fprintf('WARNING: result for %s not available!\n',seqName);
         eval2D=0;
         eval3D=0;
         continue;
-    end
+    end   
     
-    
-    stI = convertTXTToStruct(resFile);
+    stI = convertTXTToStructGRAM(resFile);
 %     stI.Xi(find(stI.Xi(:)))=-1;
     % check if bounding boxes available in solution
     imCoord=1;

@@ -1,10 +1,14 @@
-function stInfo=convertTXTToStructGRAM(txtFile,seqFolder,loadFull, loadDet)
+function stInfo=convertTXTToStructGRAM(txtFile,seqFolder,...
+    start_idx, end_idx, loadFull, loadDet)
 % read CSV file and convert to Matlab struct format
 
-% fprintf('Importing data from %s\n',txtFile);
+fprintf('Importing data from %s\n',txtFile);
 
-if nargin<3, loadFull=false; end
-if nargin<4, loadDet=false; end
+if nargin<3, start_idx=0; end
+if nargin<4, end_idx=0; end
+if nargin<5, loadFull=false; end
+if nargin<6, loadDet=false; end
+
 
 % if file empty, return empty (null) solution
 tf = dir(txtFile);
@@ -19,6 +23,12 @@ end
 
 % load text file
 allData = dlmread(txtFile);
+if start_idx>0 && end_idx>0
+    fr = allData(:, 1);
+    index = (fr>=start_idx) & (fr<=end_idx);
+    allData = allData(index, :);
+    allData(:, 1) = allData(:, 1) - start_idx + 1;
+end
 numCols=size(allData,2);
 numLines=size(allData,1);
 

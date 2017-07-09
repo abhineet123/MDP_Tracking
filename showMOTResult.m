@@ -10,6 +10,7 @@ results_dir = 'results';
 save_input_images = 0;
 start_idx = 1;
 end_idx = 1;
+n_frames = 100;
 % seq_idx_list = [10:15, 25:30, 51:60];
 seq_idx_list = start_idx:end_idx;
 
@@ -77,7 +78,11 @@ for seq_idx = seq_idx_list
         [start_idx, end_idx] = getInvSubSeqIdx(seq_train_ratio, seq_n_frames);
         filename = sprintf('%s/%s_%d_%d_dres_image.mat',...
             opt.results, seq_name, start_idx, end_idx);
-        seq_num = end_idx - start_idx + 1;
+        if n_frames>0
+            seq_num = n_frames;
+        else
+            seq_num = end_idx - start_idx + 1;
+        end
     end
     
     % build the dres structure for images
@@ -94,7 +99,7 @@ for seq_idx = seq_idx_list
             dres_image = read_dres_image_kitti(opt, seq_set, seq_name, seq_num);
         else
             dres_image = read_dres_image_gram(db_path, seq_name,...
-                start_idx, end_idx);
+                start_idx, start_idx + seq_num - 1);
         end
         fprintf('done\n');
         if save_input_images
