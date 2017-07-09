@@ -19,7 +19,6 @@ dres_image.Igray = cell(n_frames, 1);
 
 for frame_id = start_idx:end_idx
     filename = fullfile(db_path, 'Images', seq_name, sprintf('image%06d.jpg', frame_id));
-    % disp(filename);
     I = imread(filename);
     
     id = frame_id - start_idx + 1;
@@ -30,4 +29,8 @@ for frame_id = start_idx:end_idx
     dres_image.h(id) = size(I, 1);
     dres_image.I{id} = I;
     dres_image.Igray{id} = rgb2gray(I);
+    
+    if mod(id, 500) == 0
+        fprintf('Done %d frames\n', id);
+    end
 end

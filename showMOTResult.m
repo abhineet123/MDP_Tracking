@@ -8,8 +8,8 @@ is_save = 0;
 db_type = 2;
 results_dir = 'results';
 save_input_images = 0;
-start_idx = 10;
-end_idx = 10;
+start_idx = 1;
+end_idx = 1;
 % seq_idx_list = [10:15, 25:30, 51:60];
 seq_idx_list = start_idx:end_idx;
 
@@ -74,10 +74,10 @@ for seq_idx = seq_idx_list
         seq_name = opt.gram_seqs{seq_idx};
         seq_n_frames = opt.gram_nums(seq_idx);
         seq_train_ratio = opt.gram_train_ratio(seq_idx);
-        [start_idx, end_idx] = getSubSeqIdx(seq_train_ratio, seq_n_frames);
+        [start_idx, end_idx] = getInvSubSeqIdx(seq_train_ratio, seq_n_frames);
         filename = sprintf('%s/%s_%d_%d_dres_image.mat',...
             opt.results, seq_name, start_idx, end_idx);
-        seq_num = start_idx - end_idx + 1;
+        seq_num = end_idx - start_idx + 1;
     end
     
     % build the dres structure for images
@@ -117,7 +117,7 @@ for seq_idx = seq_idx_list
             start_idx, end_idx);
         file_video = sprintf('%s/%s_%d_%d.mp4', res_path, seq_name,...
             start_idx, end_idx);
-        dres_track = read_gram2dres(filename, start_idx, end_idx);
+        dres_track = read_gram2dres(filename);
     end
     fprintf('reading tracking results from %s\n', filename);
     

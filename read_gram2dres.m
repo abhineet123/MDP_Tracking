@@ -8,6 +8,13 @@
 % read GRAM file for frame IDs within the given limits
 function dres = read_gram2dres(filename, start_idx, end_idx)
 
+if nargin < 3
+    end_idx = 0;
+end
+if nargin < 2
+    start_idx = 0;
+end
+
 fid = fopen(filename, 'r');
 % <frame>, <id>, <bb_left>, <bb_top>, <bb_width>, <bb_height>, <conf>, <x>, <y>, <z>
 C = textscan(fid, '%d %d %f %f %f %f %f %f %f %f', 'Delimiter', ',');
@@ -22,9 +29,13 @@ dres_all.w = C{5};
 dres_all.h = C{6};
 dres_all.r = C{7};
 
-index = find((dres_all.fr >= start_idx) & (dres_all.fr <= end_idx));
-dres = sub(dres_all, index);
-dres.fr = dres.fr - start_idx + 1;
+if start_idx > 0 && end_idx > 0
+    index = find((dres_all.fr >= start_idx) & (dres_all.fr <= end_idx));
+    dres = sub(dres_all, index);
+    dres.fr = dres.fr - start_idx + 1;
+else
+    dres = dres_all;
+end
 
 
 % dres.fr=[];
