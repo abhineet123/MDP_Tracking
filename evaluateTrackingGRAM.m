@@ -94,6 +94,7 @@ eval3D=1;
 
 seqCnt=0;
 
+id = 1;
 % iterate over each sequence
 for s=allSeq
     
@@ -102,11 +103,15 @@ for s=allSeq
     
     fprintf('\t... %s\n',seqName);
     
+    start_idx = start_idx_list(id);
+    end_idx = end_idx_list(id);
+    id = id + 1;
+    
     % if a result is missing, we cannot evaluate this tracker
     resFile = fullfile(resDir,...
         sprintf('%s_%d_%d.txt', seqName, start_idx, end_idx));
     if ~exist(resFile,'file')
-        fprintf('WARNING: result for %s not available!\n',seqName);
+        fprintf('WARNING: result file for %s not available: %s\n',seqName, resFile);
         eval2D=0;
         eval3D=0;
         continue;

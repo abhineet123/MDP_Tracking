@@ -17,10 +17,10 @@ idot_split = 1;
 save_input_images = 0;
 video_fps = 30;
 
-start_idx = 1;
-end_idx = 1;
+start_idx = 4;
+end_idx = 4;
 seq_start_offset_ratio = 0;
-seq_ratio = -0.02;
+seq_ratio = 1;
 
 box_line_width = 1;
 traj_line_width = 1;
