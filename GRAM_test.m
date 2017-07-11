@@ -43,9 +43,9 @@ for i = 1:N
         fprintf('%d training examples after online training\n', size(tracker.f_occluded, 1));
         
     else
-        % load tracker from file
-        seq_name = opt.gram_seqs{seq_idx};
+        % load tracker from file        
         seq_idx = idx_train(end);
+		seq_name = opt.gram_seqs{seq_idx};
         seq_n_frames = opt.gram_nums(seq_idx);
         seq_train_ratio = opt.gram_train_ratio(seq_idx);        
         [train_start_idx, train_end_idx] = getSubSeqIdx(seq_train_ratio,...
