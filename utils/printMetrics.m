@@ -1,4 +1,4 @@
-function printMetrics(metrics, metricsInfo, dispHeader,dispMetrics,padChar)
+function printMetrics(metrics, MT_list, metricsInfo, dispHeader,dispMetrics,padChar)
 % print metrics
 % 
 % ...
@@ -16,7 +16,12 @@ if length(metrics)==9
 end
 
 % default names
+
 if nargin==1
+    MT_list=[];
+end
+
+if nargin<=2
     metricsInfo.names.long = {'Recall','Precision','False Alarm Rate', ...
         'GT Tracks','Mostly Tracked','Partially Tracked','Mostly Lost', ...
         'False Positives', 'False Negatives', 'ID Switches', 'Fragmentations', ...
@@ -46,11 +51,11 @@ namesToDisplay=metricsInfo.names.short;
 widthsToDisplay=metricsInfo.widths.short;
 formatToDisplay=metricsInfo.format.short;
 
-if nargin<3, dispHeader=1; end
-if nargin<4
+if nargin<4, dispHeader=1; end
+if nargin<5
     dispMetrics=1:length(metrics)-1;
 end
-if nargin<5
+if nargin<6
     padChar={' ',' ','|',' ',' ',' ','|',' ',' ',' ','| ',' ',' ',' '};
 end
 
@@ -68,7 +73,7 @@ for m=dispMetrics
 end
 
 % if standard, new line
-if nargin<4
+if nargin<5
     fprintf('\n');
 end
 
@@ -81,8 +86,14 @@ mt_percent = double(mt_count)/double(gt_count) * 100;
 pt_percent = double(pt_count)/double(gt_count) * 100;
 ml_percent = double(ml_count)/double(gt_count) * 100;
 
+
 fprintf('MT(%%)\t PT(%%)\t ML(%%)\n');
 fprintf('%.2f\t %.2f\t %.2f\n', mt_percent, pt_percent, ml_percent);
+if ~isempty(MT_list)
+    MT_percent_list = MT_list ./ double(gt_count) * 100
+end
+
+
 
 
 

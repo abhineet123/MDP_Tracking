@@ -1,4 +1,4 @@
-function [metrics, metricsInfo, additionalInfo]=CLEAR_MOT_HUN(gtInfo,stateInfo,options)
+function [metrics, MT_list, metricsInfo, additionalInfo]=CLEAR_MOT_HUN(gtInfo,stateInfo,options)
 % compute CLEAR MOT and other metrics
 %
 % metrics contains the following
@@ -333,11 +333,12 @@ FAR=sum(fp)/Fgt;
 
 %% MT PT ML
 MTstatsa=zeros(1,Ngt);
+tracked_frac=zeros(1,Ngt);
 for i=1:Ngt
     gtframes=find(gtInd(:,i));
     gtlength=length(gtframes);
     gttotallength=numel(find(gtInd(:,i)));
-    trlengtha=numel(find(alltracked(gtframes,i)>0));
+    trlengtha=numel(find(alltracked(gtframes,i)>0));    
     if gtlength/gttotallength >= 0.8 && trlengtha/gttotallength < 0.2
         MTstatsa(i)=3; % ML: Mostly Lost
     elseif t>=find(gtInd(:,i),1,'last') && trlengtha/gttotallength <= 0.8
@@ -345,11 +346,20 @@ for i=1:Ngt
     elseif trlengtha/gttotallength >= 0.8
         MTstatsa(i)=1; % MT: Mostly Tracked
     end
+    tracked_frac(i) = trlengtha/gttotallength;
 %     [i,t,trlengtha/gttotallength]
 end
+MT_list=zeros(1,10);
+MT_thresh = 0.1:0.1:1;
+for thresh_id = 1:numel(MT_thresh)
+    MT_list(thresh_id) = numel(find(tracked_frac >= MT_thresh(thresh_id)));
+end
+
 % MTstatsa
 % [(1:Ngt);  MTstatsa]
-MT=numel(find(MTstatsa==1));PT=numel(find(MTstatsa==2));ML=numel(find(MTstatsa==3));
+MT=numel(find(MTstatsa==1));
+PT=numel(find(MTstatsa==2));
+ML=numel(find(MTstatsa==3));
 
 %% fragments
 fr=zeros(1,Ngt);

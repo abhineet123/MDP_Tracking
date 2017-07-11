@@ -151,7 +151,7 @@ for s=allSeq
     end
     
     % get result for one sequence only
-    [mets, mInf]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI);
+    [mets, MT_list, mInf]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI);
     
     allMets(mcnt).mets2d(seqCnt).name=seqName;
     allMets(mcnt).mets2d(seqCnt).m=mets;
@@ -160,7 +160,7 @@ for s=allSeq
     allMets(mcnt).mets3d(seqCnt).m=zeros(1,length(mets));
     
     if imCoord        
-        fprintf('*** 2D (Bounding Box overlap) ***\n'); printMetrics(mets); fprintf('\n');
+        fprintf('*** 2D (Bounding Box overlap) ***\n'); printMetrics(mets, MT_list); fprintf('\n');
     else
         fprintf('*** Bounding boxes not available ***\n\n');
         eval2D=0;
@@ -169,10 +169,10 @@ for s=allSeq
     % if world coordinates available, evaluate in 3D
     if  gtInfoSingle(seqCnt).wc &&  worldCoordST
         evopt.eval3d=1;evopt.td=1;
-        [mets, mInf]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI,evopt);
+        [mets, MT_list, mInf]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI,evopt);
             allMets(mcnt).mets3d(seqCnt).m=mets;
                 
-        fprintf('*** 3D (in world coordinates) ***\n'); printMetrics(mets); fprintf('\n');            
+        fprintf('*** 3D (in world coordinates) ***\n'); printMetrics(mets, MT_list); fprintf('\n');            
     else
         eval3D=0;
     end
@@ -202,13 +202,13 @@ if eval2D
     fprintf('\n');
     fprintf(' ********************* Your Benchmark Results (2D) ***********************\n');
 
-    [m2d, mInf]=CLEAR_MOT_HUN(gtInfo,stInfo);
+    [m2d, MT_list, mInf]=CLEAR_MOT_HUN(gtInfo,stInfo);
     allMets.bmark2d=m2d;
     
     filename = sprintf('eval2D_%s.txt', strjoin(allSeq));
     evalFile = fullfile(resDir, filename);
     
-    printMetrics(m2d);
+    printMetrics(m2d, MT_list);
     dlmwrite(evalFile,m2d);
 end    
 
@@ -218,12 +218,12 @@ if eval3D
 
     evopt.eval3d=1;evopt.td=1;
        
-    [m3d, mInf]=CLEAR_MOT_HUN(gtInfo,stInfo,evopt);
+    [m3d, MT_list, mInf]=CLEAR_MOT_HUN(gtInfo,stInfo,evopt);
     allMets.bmark3d=m3d;
     
     evalFile = fullfile(resDir, 'eval3D.txt');
     
-    printMetrics(m3d);
+    printMetrics(m3d, MT_list);
     dlmwrite(evalFile,m3d);    
 end
 if ~eval2D && ~eval3D

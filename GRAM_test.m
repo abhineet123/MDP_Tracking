@@ -76,3 +76,4 @@ for i = 1:N
     end    
     GRAM_evaluation_only(idx_test);
 end
+ off;
