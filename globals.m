@@ -69,11 +69,16 @@ opt.kitti_types = {'Car', 'Pedestrian', 'Cyclist'};
 
 % path for GRAM tracking dataset
 
+path_found = 0;
 for i = 1:numel(gram_paths)
     if exist(gram_paths{i}, 'dir')
         opt.gram = gram_paths{i};
-        break;
+        path_found = 1;
+        break;        
     end
+end
+if ~path_found
+    error('None of the GRAM paths are valid');
 end
 
 % opt.gram_seqs = {'M-30_1','M-30_2','M-30_3','M-30_4','M-30_5','M-30_6','M-30_7','M-30_8',...
@@ -100,12 +105,16 @@ opt.gram_test_ratio = [];
 
 opt.gram_types = {'Car', 'Pedestrian', 'Cyclist'};
 
-
+path_found = 0;
 for i = 1:numel(idot_paths)
     if exist(idot_paths{i}, 'dir')
         opt.idot = idot_paths{i};
+        path_found = 1;
         break;
     end
+end
+if ~path_found
+    error('None of the IDOT paths are valid');
 end
 
 opt.idot_seqs = {'seq_1', 'seq_2', 'seq_3', 'seq_4', 'seq_5', 'seq_6',...

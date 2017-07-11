@@ -1,16 +1,20 @@
-clear all;
-opt = globals();
-% start_idx = 51;
-% end_idx = 60;
-seq_idx_list = [4, 5];
-% seq_idx_list = [10:15];
-% seq_idx_list = [25:30];
-% seq_idx_list = [51:60];
-% seq_idx_list = [10:15, 25:30];
-% seq_idx_list = [10:15, 25:30, 51:60];
+function GRAM_evaluation_only(seq_idx_list)
+if nargin < 1
+    % start_idx = 51;
+    % end_idx = 60;
+    seq_idx_list = [4, 5];
+    % seq_idx_list = [10:15];
+    % seq_idx_list = [25:30];
+    % seq_idx_list = [51:60];
+    % seq_idx_list = [10:15, 25:30];
+    % seq_idx_list = [10:15, 25:30, 51:60];
+end
 n_seq_idx = numel(seq_idx_list);
 start_idx_list = zeros(n_seq_idx, 1);
 end_idx_list = zeros(n_seq_idx, 1);
+
+opt = globals();
+
 id = 1;
 for seq_idx = seq_idx_list
     seq_n_frames = opt.gram_nums(seq_idx);

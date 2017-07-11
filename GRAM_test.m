@@ -9,7 +9,7 @@
 function GRAM_test
 
 % set is_train to 0 if testing trained trackers only
-is_train = 1;
+is_train = 0;
 db_type = 2;
 opt = globals();
 
@@ -20,10 +20,19 @@ opt = globals();
 % seq_idx_test = {[1, 2], [3]};
 
 seq_idx_train = {[4, 5]};
-seq_idx_test = {[4, 5]};
+seq_idx_test = {[1]};
 
 seq_set_test = 'testing';
 N = numel(seq_idx_train);
+
+if ~exist('datetime', 'builtin')
+    log_fname = sprintf('%s/log.txt', opt.results_gram);
+else
+    log_fname = sprintf('%s/log_%s.txt', opt.results_gram,...
+        datetime('now', 'Format','yyMMdd_HHmm'));
+end
+
+diary(log_fname);
 
 % for each training-testing pair
 for i = 1:N
@@ -64,5 +73,6 @@ for i = 1:N
     for j = 1:num
         fprintf('Testing on sequence: %s\n', opt.gram_seqs{idx_test(j)});
         MDP_test(idx_test(j), seq_set_test, tracker, db_type);
-    end
+    end    
+    GRAM_evaluation_only(idx_test);
 end
