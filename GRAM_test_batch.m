@@ -1,4 +1,3 @@
-GRAM_test;
 clear all;
 cd ../MDP_Tracking_2
 GRAM_test;

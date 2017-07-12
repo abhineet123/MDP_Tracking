@@ -6,26 +6,28 @@
 % --------------------------------------------------------
 %
 % cross_validation on the KITTI benchmark
-function GRAM_test
+function GRAM_test(seq_idx_train, seq_idx_test)
 
 % set is_train to 0 if testing trained trackers only
 is_train = 1;
 db_type = 2;
 opt = globals();
 
-% seq_idx_train = {[1:9, 16:24], [31:50]};
-% seq_idx_test = {[10:15, 25:30], [51:60]};
+if nargin<2
+    % seq_idx_train = {[1:9, 16:24], [31:50]};
+    % seq_idx_test = {[10:15, 25:30], [51:60]};
 
-% seq_idx_train = {[1, 2], [3]};
-% seq_idx_test = {[1, 2], [3]};
+    % seq_idx_train = {[1, 2], [3]};
+    % seq_idx_test = {[1, 2], [3]};
 
-seq_idx_train = {[4, 5]};
-seq_idx_test = {[4, 5]};
+    seq_idx_train = {[4, 5]};
+    seq_idx_test = {[4, 5]};
+end    
 
 seq_set_test = 'testing';
 N = numel(seq_idx_train);
 
-if ~exist('datetime', 'builtin')
+if ~exist('datetime')
     log_fname = sprintf('%s/log.txt', opt.results_gram);
 else
     log_fname = sprintf('%s/log_%s.txt', opt.results_gram,...
@@ -76,4 +78,3 @@ for i = 1:N
     end    
     GRAM_evaluation_only(idx_test);
 end
- off;
