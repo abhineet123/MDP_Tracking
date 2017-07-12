@@ -31,7 +31,7 @@ if ~exist('datetime')
     log_fname = sprintf('%s/log.txt', opt.results_gram);
 else
     log_fname = sprintf('%s/log_%s.txt', opt.results_gram,...
-        string(datetime('now', 'Format','yyMMdd_HHmm')));
+        char(datetime('now', 'Format','yyMMdd_HHmm')));
 end
 
 diary(log_fname);
