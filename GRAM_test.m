@@ -9,7 +9,7 @@
 function GRAM_test
 
 % set is_train to 0 if testing trained trackers only
-is_train = 0;
+is_train = 1;
 db_type = 2;
 opt = globals();
 
