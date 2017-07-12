@@ -20,7 +20,7 @@ opt = globals();
 % seq_idx_test = {[1, 2], [3]};
 
 seq_idx_train = {[4, 5]};
-seq_idx_test = {[1]};
+seq_idx_test = {[4, 5]};
 
 seq_set_test = 'testing';
 N = numel(seq_idx_train);
