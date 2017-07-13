@@ -349,8 +349,8 @@ for i=1:Ngt
     tracked_frac(i) = trlengtha/gttotallength;
 %     [i,t,trlengtha/gttotallength]
 end
-MT_list=zeros(1,10);
-MT_thresh = 0.1:0.1:1;
+MT_thresh = 0.1:0.01:1;
+MT_list=zeros(1,numel(MT_thresh));
 for thresh_id = 1:numel(MT_thresh)
     MT_list(thresh_id) = numel(find(tracked_frac >= MT_thresh(thresh_id)));
 end
@@ -360,6 +360,7 @@ end
 MT=numel(find(MTstatsa==1));
 PT=numel(find(MTstatsa==2));
 ML=numel(find(MTstatsa==3));
+
 
 %% fragments
 fr=zeros(1,Ngt);

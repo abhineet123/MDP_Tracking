@@ -96,6 +96,8 @@ seqCnt=0;
 
 id = 1;
 % iterate over each sequence
+figure, hold on;
+MT_thresh = 0.1:0.01:1;
 for s=allSeq
     
     seqCnt=seqCnt+1;
@@ -152,7 +154,8 @@ for s=allSeq
     
     % get result for one sequence only
     [mets, MT_list, mInf]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI);
-    
+    plot(MT_thresh, MT_list), grid on;
+
     allMets(mcnt).mets2d(seqCnt).name=seqName;
     allMets(mcnt).mets2d(seqCnt).m=mets;
     
@@ -197,6 +200,7 @@ for s=allSeq
     
 end
 stInfo.frameNums=1:size(stInfo.Xi,1);
+legend(allSeq);
 
 if eval2D
     fprintf('\n');

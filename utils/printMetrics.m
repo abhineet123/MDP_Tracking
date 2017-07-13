@@ -89,9 +89,9 @@ ml_percent = double(ml_count)/double(gt_count) * 100;
 
 fprintf('MT(%%)\t PT(%%)\t ML(%%)\n');
 fprintf('%.2f\t %.2f\t %.2f\n', mt_percent, pt_percent, ml_percent);
-if ~isempty(MT_list)
-    MT_percent_list = MT_list ./ double(gt_count) * 100
-end
+% if ~isempty(MT_list)
+%     MT_percent_list = MT_list ./ double(gt_count) * 100
+% end
 
 
 
