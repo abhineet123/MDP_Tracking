@@ -34,6 +34,6 @@ if isempty(inds) == 0
     inter = w(inds).*h(inds);         %% area of overlap
     u     = ca + ga(inds) - w(inds).*h(inds);     %% area of union
     ov(inds)    = inter ./ u;                       %% intersection / union
-    ov_n1(inds) = inter / ca;                       %% intersection / area in dres0
+    ov_n1(inds) = inter / ca;                       %% intersection / area in dres1
     ov_n2(inds) = inter ./ ga(inds);                  %% intersection / area in dres2
 end

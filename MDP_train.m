@@ -24,12 +24,24 @@ opt.is_show = is_show;
 
 if db_type == 0
     db_path = opt.mot;
-elseif db_type == 1
+    res_dir = opt.results_gram;
+    train_seqs = opt.mot2d_train_seqs;
+    train_nums = opt.mot2d_train_nums;
+elseif db_type == 1    
     db_path = opt.kitti;
+    res_dir = opt.results_gram;
+    train_seqs = opt.kitti_train_seqs;
+    train_nums = opt.kitti_train_nums;
 elseif db_type == 2
     db_path = opt.gram;
+    res_dir = opt.results_gram;
+    train_seqs = opt.gram_seqs;
+    train_nums = opt.gram_nums;
 else
     db_path = opt.idot;
+    res_dir = opt.results_idot;
+    train_seqs = opt.idot_seqs;
+    train_nums = opt.idot_nums;
 end
 
 if is_show
@@ -80,11 +92,12 @@ elseif db_type == 1
     end
     % generate training data
     I = dres_image.Igray{1};
-    [dres_train, dres_det, labels] = generate_training_data_kitti(seq_idx, dres_image, opt);
-elseif db_type == 2
+    [dres_train, dres_det, labels] = generate_training_data_kitti(seq_idx,...
+        dres_image, opt);
+else
     % GRAM
-    seq_name = opt.gram_seqs{seq_idx};
-    seq_n_frames = opt.gram_nums(seq_idx);
+    seq_name = train_seqs{seq_idx};
+    seq_n_frames = train_nums(seq_idx);
     seq_train_ratio = opt.gram_train_ratio(seq_idx);
     [train_start_idx, train_end_idx] = getSubSeqIdx(seq_train_ratio,...
         seq_n_frames);
@@ -93,7 +106,7 @@ elseif db_type == 2
     fprintf('Training on sequence %s from frame %d to %d\n',...
         seq_name, train_start_idx, train_end_idx);
     % build the dres structure for images
-    filename = sprintf('%s/%s_dres_image_%d_%d.mat', opt.results_gram,...
+    filename = sprintf('%s/%s_dres_image_%d_%d.mat', res_dir,...
         seq_name, train_start_idx, train_end_idx);
     if exist(filename, 'file') ~= 0
         fprintf('loading images from file %s...', filename);
@@ -113,7 +126,7 @@ elseif db_type == 2
     end    
     % generate training data
     I = dres_image.Igray{1};
-    [dres_train, dres_det, labels] = generate_training_data_gram(seq_idx,...
+    [dres_train, dres_det, labels] = generate_training_data_gram(db_path, seq_name,...
         dres_image, opt, train_start_idx, train_end_idx);
 end
 

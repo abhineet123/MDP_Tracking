@@ -20,7 +20,7 @@ video_fps = 30;
 start_idx = 5;
 end_idx = 5;
 seq_start_offset_ratio = 0;
-seq_ratio = 0.05;
+seq_ratio = 0.5;
 
 box_line_width = 1;
 traj_line_width = 1;

@@ -6,18 +6,18 @@
 % --------------------------------------------------------
 %
 % cross_validation on the KITTI benchmark
-function GRAM_test(seq_idx_train, seq_idx_test, is_train)
+function GRAM_test(is_train, seq_idx_train, seq_idx_test)
 
 
 db_type = 2;
 opt = globals();
 
 % set is_train to 0 if testing trained trackers only
-if nargin<3
-    is_train = 1;
+if nargin<1
+    is_train = 0;
 end
 
-if nargin<2
+if nargin<3
     % seq_idx_train = {[1:9, 16:24], [31:50]};
     % seq_idx_test = {[10:15, 25:30], [51:60]};
 
@@ -25,7 +25,7 @@ if nargin<2
     % seq_idx_test = {[1, 2], [3]};
 
     seq_idx_train = {[4, 5]};
-    seq_idx_test = {[4, 5]};
+    seq_idx_test = {6:20};
 end    
 
 seq_set_test = 'testing';
