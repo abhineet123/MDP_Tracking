@@ -14,7 +14,7 @@ opt = globals();
 
 % set is_train to 0 if testing trained trackers only
 if nargin<1
-    is_train = 0;
+    is_train = 1;
 end
 
 if nargin<3
@@ -24,7 +24,7 @@ if nargin<3
     % seq_idx_train = {[1, 2], [3]};
     % seq_idx_test = {[1, 2], [3]};
 
-    seq_idx_train = {[4, 5]};
+    seq_idx_train = {[4]};
     seq_idx_test = {6:20};
 end    
 

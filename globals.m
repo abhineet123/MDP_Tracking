@@ -83,7 +83,7 @@ end
 
 opt.gram_seqs = {'M-30','M-30-HD','Urban1','M-30-Large','M-30-HD-Small'};
 opt.gram_nums = [7520, 9390, 23435, 7520, 9390];
-opt.gram_train_ratio = [0.6, 0.6, 0.6, 0.6, 0.6];
+opt.gram_train_ratio = [0.006, 0.6, 0.6, 0.006, 0.6];
 opt.gram_test_ratio = [];
 
 opt.gram_split_seqs = {'M-30_1','M-30_2','M-30_3','M-30_4','M-30_5','M-30_6','M-30_7','M-30_8',...

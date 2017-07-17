@@ -110,6 +110,7 @@ else
     % build the dres structure for images
     filename = sprintf('%s/%s_dres_image_%d_%d.mat', res_path,...
         seq_name, train_start_idx, train_end_idx);
+    fprintf('db_path: %s\n', db_path);    
     if exist(filename, 'file') ~= 0
         fprintf('loading images from file %s...', filename);
         object = load(filename);

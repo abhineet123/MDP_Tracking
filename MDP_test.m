@@ -54,7 +54,8 @@ elseif db_type == 2
     res_path = opt.results_gram;
     test_seqs = opt.gram_seqs;
     test_nums = opt.gram_nums;
-    test_ratio = opt.gram_test_ratio;
+    train_ratio = opt.gram_train_ratio;
+    test_ratio = opt.gram_test_ratio;    
 else
     db_path = opt.idot;
     res_path = opt.results_idot;
