@@ -30,17 +30,38 @@ else
 end
 
 if db_type == 0
-    db_name = 'MOT2015';
     db_path = opt.mot;
-elseif db_type == 1
-    db_name = 'KITTI';
+    res_path = opt.results_gram;
+    if strcmp(seq_set, 'train') == 1
+        test_seqs = opt.mot2d_train_seqs{seq_idx};
+        test_nums = opt.mot2d_train_nums(seq_idx);
+    else
+        test_seqs = opt.mot2d_test_seqs{seq_idx};
+        test_nums = opt.mot2d_test_nums(seq_idx);
+    end
+elseif db_type == 1    
     db_path = opt.kitti;
+    res_path = opt.results_gram;
+    if strcmp(seq_set, 'training') == 1
+        test_seqs = opt.kitti_train_seqs{seq_idx};
+        test_nums = opt.kitti_train_nums(seq_idx);
+    else
+        test_seqs = opt.kitti_test_seqs{seq_idx};
+        test_nums = opt.kitti_test_nums(seq_idx);
+    end
 elseif db_type == 2
-    db_name = 'GRAM';
     db_path = opt.gram;
+    res_path = opt.results_gram;
+    test_seqs = opt.gram_seqs;
+    test_nums = opt.gram_nums;
+    test_ratio = opt.gram_test_ratio;
 else
-    db_name = 'IDOT';
     db_path = opt.idot;
+    res_path = opt.results_idot;
+    test_seqs = opt.idot_seqs;
+    test_nums = opt.idot_nums;
+    train_ratio = opt.idot_train_ratio;
+    test_ratio = opt.idot_test_ratio;
 end
 
 if is_show
@@ -113,15 +134,15 @@ elseif db_type == 1
         dres_gt = read_kitti2dres(filename);
     end
 else
-    % GRAM
-    seq_name = opt.gram_seqs{seq_idx};
-    seq_n_frames = opt.gram_nums(seq_idx);
-	if isempty(opt.gram_test_ratio)
-		seq_train_ratio = opt.gram_train_ratio(seq_idx);
+    % GRAM and IDOT
+    seq_name = test_seqs{seq_idx};
+    seq_n_frames = test_nums(seq_idx);
+	if isempty(test_ratio)
+		seq_train_ratio = train_ratio(seq_idx);
         [ test_start_idx, test_end_idx ] = getInvSubSeqIdx(seq_train_ratio,...
             seq_n_frames);	
 	else
-		seq_test_ratio = opt.gram_test_ratio(seq_idx);
+		seq_test_ratio = test_ratio(seq_idx);
         [ test_start_idx, test_end_idx ] = getSubSeqIdx(seq_test_ratio,...
             seq_n_frames);
 	end
@@ -131,7 +152,7 @@ else
         seq_name, test_start_idx, test_end_idx);
     % build the dres structure for images
     filename = sprintf('%s/gram_%s_%d_%d_dres_image.mat',...
-        opt.results_gram, seq_name, test_start_idx, test_end_idx);
+        res_path, seq_name, test_start_idx, test_end_idx);
     if exist(filename, 'file') ~= 0
         object = load(filename);
         dres_image = object.dres_image;

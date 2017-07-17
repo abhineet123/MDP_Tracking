@@ -118,17 +118,17 @@ opt.gram_train_ratio = cat(2, opt.gram_train_ratio, opt.gram_split_train_ratio);
 
 opt.gram_types = {'Car', 'Pedestrian', 'Cyclist'};
 
-path_found = 0;
-for i = 1:numel(idot_paths)
-    if exist(idot_paths{i}, 'dir')
-        opt.idot = idot_paths{i};
-        path_found = 1;
-        break;
-    end
-end
-if ~path_found
-    error('None of the IDOT paths are valid');
-end
+% path_found = 0;
+% for i = 1:numel(idot_paths)
+%     if exist(idot_paths{i}, 'dir')
+%         opt.idot = idot_paths{i};
+%         path_found = 1;
+%         break;
+%     end
+% end
+% if ~path_found
+%     error('None of the IDOT paths are valid');
+% end
 
 opt.idot_seqs = {'seq_1', 'seq_2', 'seq_3', 'seq_4', 'seq_5', 'seq_6',...
     'seq_7', 'seq_8', 'seq_9', 'seq_10', 'seq_11', 'seq_12', 'seq_13'};
@@ -136,20 +136,12 @@ opt.idot_seqs = {'seq_1', 'seq_2', 'seq_3', 'seq_4', 'seq_5', 'seq_6',...
 opt.idot_nums = [8991, 8990, 8981, 8866, 8851, 8791, 8964, 8962, 8966,...
     7500, 7500, 7500, 8851];
 
-opt.idot_split_seqs = {
-    'seq_1_1',...
-    'seq_1_2',...
-    'seq_1_3',...
-    'seq_1_4',...
-    'seq_1_5',...
-    'seq_1_6',...
-    'seq_1_7',...
-    'seq_1_8',...
-    'seq_1_9'... 
-    'seq_1_10'
-    };
+opt.idot_train_ratio = ones(1, numel(opt.idot_nums)) * 0.6  ;
+opt.idot_test_ratio = [];
 
-opt.idot_split_nums = [899, 899, 899, 899, 899, 899, 899, 899, 899, 899, 900];
+opt.gram_seqs = cat(2, opt.gram_seqs, opt.idot_seqs);
+opt.gram_nums = cat(2, opt.gram_nums, opt.idot_nums);
+opt.gram_train_ratio = cat(2, opt.gram_train_ratio, opt.idot_train_ratio);
 
 
 opt.stanford_seqs = {{'quad', [0:3]}, {'bookstore', [0:6]}, {'coupa', [0:3]},...
