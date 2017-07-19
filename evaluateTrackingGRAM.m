@@ -96,7 +96,7 @@ seqCnt=0;
 
 id = 1;
 % iterate over each sequence
-figure, hold on;
+figure('Visible','off'), hold on;
 MT_thresh = 0.1:0.01:1;
 for s=allSeq
     
@@ -153,7 +153,11 @@ for s=allSeq
     end
     
     % get result for one sequence only
-    [mets, MT_list, mInf]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI);
+    [mets, MT_list, tracked_frac]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI);
+    filename = sprintf('tracked_frac_%s.txt', seqName);
+    tracked_frac_file = fullfile(resDir, filename); 
+    dlmwrite(tracked_frac_file,tracked_frac, '\n');
+    
     plot(MT_thresh, MT_list), grid on;
 
     allMets(mcnt).mets2d(seqCnt).name=seqName;
@@ -172,7 +176,7 @@ for s=allSeq
     % if world coordinates available, evaluate in 3D
     if  gtInfoSingle(seqCnt).wc &&  worldCoordST
         evopt.eval3d=1;evopt.td=1;
-        [mets, MT_list, mInf]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI,evopt);
+        [mets, MT_list, tracked_frac]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI,evopt);
             allMets(mcnt).mets3d(seqCnt).m=mets;
                 
         fprintf('*** 3D (in world coordinates) ***\n'); printMetrics(mets, MT_list); fprintf('\n');            
@@ -199,21 +203,28 @@ for s=allSeq
     end
     
 end
-stInfo.frameNums=1:size(stInfo.Xi,1);
 legend(allSeq);
+plotFile = fullfile(resDir, sprintf('MT.png'));
+saveas(gcf, plotFile);
+
+
+stInfo.frameNums=1:size(stInfo.Xi,1);
+
 
 if eval2D
     fprintf('\n');
     fprintf(' ********************* Your Benchmark Results (2D) ***********************\n');
 
-    [m2d, MT_list, mInf]=CLEAR_MOT_HUN(gtInfo,stInfo);
+    [m2d, MT_list, tracked_frac]=CLEAR_MOT_HUN(gtInfo,stInfo);
     allMets.bmark2d=m2d;
     
     filename = sprintf('eval2D_%s.txt', strjoin(allSeq));
-    evalFile = fullfile(resDir, filename);
+    evalFile = fullfile(resDir, filename);  
     
     printMetrics(m2d, MT_list);
     dlmwrite(evalFile,m2d);
+    
+    
 end    
 
 if eval3D
@@ -222,7 +233,7 @@ if eval3D
 
     evopt.eval3d=1;evopt.td=1;
        
-    [m3d, MT_list, mInf]=CLEAR_MOT_HUN(gtInfo,stInfo,evopt);
+    [m3d, MT_list, tracked_frac]=CLEAR_MOT_HUN(gtInfo,stInfo,evopt);
     allMets.bmark3d=m3d;
     
     evalFile = fullfile(resDir, 'eval3D.txt');

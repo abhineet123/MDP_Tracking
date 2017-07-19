@@ -1,4 +1,5 @@
-function [metrics, MT_list, metricsInfo, additionalInfo]=CLEAR_MOT_HUN(gtInfo,stateInfo,options)
+function [metrics, MT_list, tracked_frac, metricsInfo,...
+    additionalInfo]=CLEAR_MOT_HUN(gtInfo,stateInfo,options)
 % compute CLEAR MOT and other metrics
 %
 % metrics contains the following
