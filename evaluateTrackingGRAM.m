@@ -93,7 +93,7 @@ eval2D=1;
 eval3D=1;
 
 seqCnt=0;
-
+tracked_frac_list = {};
 id = 1;
 % iterate over each sequence
 figure('Visible','off'), hold on;
@@ -154,6 +154,7 @@ for s=allSeq
     
     % get result for one sequence only
     [mets, MT_list, tracked_frac]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI);
+    tracked_frac_list{end+1} = tracked_frac;
     filename = sprintf('tracked_frac_%s.txt', seqName);
     tracked_frac_file = fullfile(resDir, filename); 
     dlmwrite(tracked_frac_file,tracked_frac, '\n');
@@ -206,7 +207,15 @@ end
 legend(allSeq);
 plotFile = fullfile(resDir, sprintf('MT.png'));
 saveas(gcf, plotFile);
-
+hold off;
+for plot_id=1:numel(tracked_frac_list)
+    tracked_frac = tracked_frac_list{plot_id};
+    seq_name = char(allSeq{plot_id});
+    plotFile = fullfile(resDir, sprintf('tracked_frac_hist_%s.png', seq_name));
+    % figure('Visible','off');
+    histogram(tracked_frac);
+    saveas(gcf, plotFile);    
+end
 
 stInfo.frameNums=1:size(stInfo.Xi,1);
 
