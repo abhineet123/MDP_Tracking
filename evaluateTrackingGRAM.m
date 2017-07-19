@@ -213,7 +213,7 @@ for plot_id=1:numel(tracked_frac_list)
     seq_name = char(allSeq{plot_id});
     plotFile = fullfile(resDir, sprintf('tracked_frac_hist_%s.png', seq_name));
     % figure('Visible','off');
-    histogram(tracked_frac);
+    histogram(tracked_frac, 10);
     saveas(gcf, plotFile);    
 end
 
