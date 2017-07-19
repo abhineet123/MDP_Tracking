@@ -10,16 +10,16 @@ clear all;
 addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
 
 is_save = 0;
-show_detections = 0;
+show_detections = 1;
 db_type = 2;
 seq_type = 0;
 idot_split = 1;
 save_input_images = 0;
 video_fps = 30;
 
-start_idx = 66;
-end_idx = 66;
-seq_start_offset_ratio = 0;
+start_idx = 73;
+end_idx = 73;
+seq_start_offset_ratio = 0.67;
 seq_ratio = 0.05;
 
 box_line_width = 1;
