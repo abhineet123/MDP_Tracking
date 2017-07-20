@@ -206,6 +206,7 @@ for s=allSeq
 end
 legend(allSeq);
 plotFile = fullfile(resDir, sprintf('MT.png'));
+hist_edges = 0:0.1:1;
 saveas(gcf, plotFile);
 hold off;
 for plot_id=1:numel(tracked_frac_list)
@@ -213,7 +214,7 @@ for plot_id=1:numel(tracked_frac_list)
     seq_name = char(allSeq{plot_id});
     plotFile = fullfile(resDir, sprintf('tracked_frac_hist_%s.png', seq_name));
     % figure('Visible','off');
-    histogram(tracked_frac, 10);
+    histogram(tracked_frac, hist_edges);
     saveas(gcf, plotFile);    
 end
 
