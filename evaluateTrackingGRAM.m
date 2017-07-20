@@ -228,7 +228,7 @@ if eval2D
     [m2d, MT_list, tracked_frac]=CLEAR_MOT_HUN(gtInfo,stInfo);
     allMets.bmark2d=m2d;
     
-    filename = sprintf('eval2D_%s.txt', strjoin(allSeq));
+    filename = sprintf('eval2D_all.txt');
     evalFile = fullfile(resDir, filename);  
     
     printMetrics(m2d, MT_list);

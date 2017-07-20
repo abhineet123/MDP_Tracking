@@ -2,8 +2,8 @@ function GRAM_evaluation_only(seq_idx_list)
 if nargin < 1
     % start_idx = 51;
     % end_idx = 60;
-    seq_idx_list = [1, 2];
-%     seq_idx_list = [6:20];
+%     seq_idx_list = [1, 2];
+    seq_idx_list = [6:35];
     % seq_idx_list = [25:30];
     % seq_idx_list = [51:60];
     % seq_idx_list = [10:15, 25:30];
