@@ -19,8 +19,8 @@ video_fps = 30;
 
 start_idx = 73;
 end_idx = 73;
-seq_start_offset_ratio = 0.67;
-seq_ratio = 0.05;
+seq_start_offset_ratio = 0;
+seq_ratio = 0.25;
 
 box_line_width = 1;
 traj_line_width = 1;
