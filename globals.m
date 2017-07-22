@@ -98,7 +98,7 @@ opt.gram_split_nums = [501, 501, 501, 501, 501, 501, 501, 501, 501, 501, 501, 50
     626, 626, 626, 626, 626, 626, 626, 626, 626, 626, 626, 626, 626, 626, 626,...
     781, 781, 781, 781, 781, 781, 781, 781, 781, 781, 781, 781, 781, 781, 781,...
     781, 781, 781, 781, 781, 781, 781, 781, 781, 781, 781, 781, 781, 781, 786];
-opt.gram_split_train_ratio = ones(1, numel(opt.gram_split_nums)) * 0.6;
+opt.gram_split_train_ratio = ones(1, numel(opt.gram_split_nums));
 
 % size(opt.gram_seqs)
 % size(opt.gram_split_seqs)
