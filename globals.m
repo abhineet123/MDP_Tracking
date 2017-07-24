@@ -9,12 +9,12 @@ function opt = globals()
 %% Important settings
 
 gram_train_ratio = 0.6;
-gram_split_train_ratio = 0;
+gram_split_train_ratio = 0.6;
 idot_train_ratio = 0.6;
 
-gram_test_ratio = 0;
-gram_split_test_ratio = 0;
-idot_test_ratio = 0;
+gram_test_ratio = 1;
+gram_split_test_ratio = 1;
+idot_test_ratio = 1;
 
 if isunix
     gram_paths = {'/data/GRAM'};
