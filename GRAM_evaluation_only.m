@@ -18,7 +18,7 @@ opt = globals();
 id = 1;
 for seq_idx = seq_idx_list
     seq_n_frames = opt.gram_nums(seq_idx);
-	if isempty(opt.gram_test_ratio)
+	if opt.gram_test_ratio(seq_idx) <= 0
 		seq_train_ratio = opt.gram_train_ratio(seq_idx)
         [start_idx, end_idx] = getInvSubSeqIdx(seq_train_ratio,...
             seq_n_frames);	

@@ -138,7 +138,7 @@ else
     % GRAM and IDOT
     seq_name = test_seqs{seq_idx};
     seq_n_frames = test_nums(seq_idx);
-	if isempty(test_ratio)
+	if test_ratio(seq_idx)<=0
 		seq_train_ratio = train_ratio(seq_idx);
         [ test_start_idx, test_end_idx ] = getInvSubSeqIdx(seq_train_ratio,...
             seq_n_frames);	
