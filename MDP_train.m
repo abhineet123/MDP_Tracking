@@ -8,8 +8,8 @@
 % training MDP
 function tracker = MDP_train(seq_idx, tracker, db_type)
 
-if nargin < 3
-    db_type = 0;
+if nargin < 3    
+    error('db_type must be provided\n');
 end
 
 
@@ -24,12 +24,12 @@ opt.is_show = is_show;
 
 if db_type == 0
     db_path = opt.mot;
-    res_path = opt.results_gram;
+    res_path = opt.results;
     train_seqs = opt.mot2d_train_seqs;
     train_nums = opt.mot2d_train_nums;
 elseif db_type == 1    
     db_path = opt.kitti;
-    res_path = opt.results_gram;
+    res_path = opt.results_kitti;
     train_seqs = opt.kitti_train_seqs;
     train_nums = opt.kitti_train_nums;
 elseif db_type == 2
@@ -160,6 +160,7 @@ end
 % for each training sequence
 t = 0;
 iter = 0;
+reward = 0;
 max_iter = opt.max_iter;
 max_count = opt.max_count;
 count = 0;
