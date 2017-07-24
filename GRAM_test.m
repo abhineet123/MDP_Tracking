@@ -24,8 +24,8 @@ if nargin<3
     % seq_idx_train = {[1, 2], [3]};
     % seq_idx_test = {[1, 2], [3]};
 
-    seq_idx_train = {[4]};
-    seq_idx_test = {6:20};
+    seq_idx_train = {66:71};
+    seq_idx_test = {[71]};
 end    
 
 seq_set_test = 'testing';
