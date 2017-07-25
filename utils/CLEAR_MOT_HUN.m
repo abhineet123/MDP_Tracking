@@ -1,5 +1,5 @@
-function [metrics, MT_list, tracked_frac, metricsInfo,...
-    additionalInfo]=CLEAR_MOT_HUN(gtInfo,stateInfo,options)
+function [metrics, MT_list, tracked_frac, tracked_total, gt_total,...
+    metricsInfo, additionalInfo]=CLEAR_MOT_HUN(gtInfo,stateInfo,options)
 % compute CLEAR MOT and other metrics
 %
 % metrics contains the following
@@ -18,7 +18,6 @@ function [metrics, MT_list, tracked_frac, metricsInfo,...
 %
 % 
 % (C) Anton Milan, 2012-2014
-
 
 % default options: 2D
 if nargin<3
@@ -335,6 +334,8 @@ FAR=sum(fp)/Fgt;
 %% MT PT ML
 MTstatsa=zeros(1,Ngt);
 tracked_frac=zeros(1,Ngt);
+tracked_total=zeros(1,Ngt);
+gt_total=zeros(1,Ngt);
 for i=1:Ngt
     gtframes=find(gtInd(:,i));
     gtlength=length(gtframes);
@@ -348,6 +349,9 @@ for i=1:Ngt
         MTstatsa(i)=1; % MT: Mostly Tracked
     end
     tracked_frac(i) = trlengtha/gttotallength;
+    tracked_total(i) = trlengtha;
+    gt_total(i) = gttotallength;
+
 %     [i,t,trlengtha/gttotallength]
 end
 MT_thresh = 0.1:0.01:1;

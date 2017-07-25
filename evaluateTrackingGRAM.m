@@ -94,6 +94,8 @@ eval3D=1;
 
 seqCnt=0;
 tracked_frac_list = {};
+tracked_total_list = {};
+gt_total_list = {};
 id = 1;
 % iterate over each sequence
 figure('Visible','off'), hold on;
@@ -153,8 +155,10 @@ for s=allSeq
     end
     
     % get result for one sequence only
-    [mets, MT_list, tracked_frac]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI);
+    [mets, MT_list, tracked_frac, tracked_total, gt_total]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI);
     tracked_frac_list{end+1} = tracked_frac;
+    tracked_total_list{end+1} = tracked_total;
+    gt_total_list{end+1} = gt_total;
     filename = sprintf('tracked_frac_%s.txt', seqName);
     tracked_frac_file = fullfile(resDir, filename); 
     dlmwrite(tracked_frac_file,tracked_frac, '\n');
@@ -177,7 +181,7 @@ for s=allSeq
     % if world coordinates available, evaluate in 3D
     if  gtInfoSingle(seqCnt).wc &&  worldCoordST
         evopt.eval3d=1;evopt.td=1;
-        [mets, MT_list, tracked_frac]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI,evopt);
+        [mets, MT_list, tracked_frac, tracked_total, gt_total]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI,evopt);
             allMets(mcnt).mets3d(seqCnt).m=mets;
                 
         fprintf('*** 3D (in world coordinates) ***\n'); printMetrics(mets, MT_list); fprintf('\n');            
@@ -209,13 +213,25 @@ plotFile = fullfile(resDir, sprintf('MT.png'));
 hist_edges = 0:0.1:1;
 saveas(gcf, plotFile);
 hold off;
-for plot_id=1:numel(tracked_frac_list)
-    tracked_frac = tracked_frac_list{plot_id};
+for plot_id=1:numel(tracked_frac_list)    
     seq_name = char(allSeq{plot_id});
-    plotFile = fullfile(resDir, sprintf('tracked_frac_hist_%s.png', seq_name));
+    
+    tracked_frac = tracked_frac_list{plot_id};
+    plotFile = fullfile(resDir, sprintf('tracked_frac_hist_%s.png', seq_name));    
     % figure('Visible','off');
     histogram(tracked_frac, hist_edges);
-    saveas(gcf, plotFile);    
+    saveas(gcf, plotFile);  
+    
+    tracked_total = tracked_total_list{plot_id};
+    plotFile = fullfile(resDir, sprintf('tracked_total_hist_%s.png', seq_name));    
+    % figure('Visible','off');
+    histogram(tracked_total);
+    saveas(gcf, plotFile);
+    
+    gt_total = gt_total_list{plot_id};
+    plotFile = fullfile(resDir, sprintf('gt_total_hist_%s.png', seq_name));    
+    histogram(gt_total);
+    saveas(gcf, plotFile);
 end
 
 stInfo.frameNums=1:size(stInfo.Xi,1);
@@ -225,7 +241,20 @@ if eval2D
     fprintf('\n');
     fprintf(' ********************* Your Benchmark Results (2D) ***********************\n');
 
-    [m2d, MT_list, tracked_frac]=CLEAR_MOT_HUN(gtInfo,stInfo);
+    [m2d, MT_list, tracked_frac, tracked_total, gt_total]=CLEAR_MOT_HUN(gtInfo,stInfo);
+    
+    plotFile = fullfile(resDir, sprintf('tracked_frac_hist_all.png'));    
+    histogram(tracked_frac, hist_edges);
+    saveas(gcf, plotFile);  
+    
+    plotFile = fullfile(resDir, sprintf('tracked_total_hist_all.png'));    
+    histogram(tracked_total);
+    saveas(gcf, plotFile);
+    
+    plotFile = fullfile(resDir, sprintf('gt_total_hist_all.png'));    
+    histogram(gt_total);
+    saveas(gcf, plotFile);
+    
     allMets.bmark2d=m2d;
     
     filename = sprintf('eval2D_all.txt');
@@ -243,7 +272,7 @@ if eval3D
 
     evopt.eval3d=1;evopt.td=1;
        
-    [m3d, MT_list, tracked_frac]=CLEAR_MOT_HUN(gtInfo,stInfo,evopt);
+    [m3d, MT_list, tracked_frac, tracked_total, gt_total]=CLEAR_MOT_HUN(gtInfo,stInfo,evopt);
     allMets.bmark3d=m3d;
     
     evalFile = fullfile(resDir, 'eval3D.txt');

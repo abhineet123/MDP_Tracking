@@ -6,6 +6,7 @@ results_kitti/
 gitu.bat
 GT/
 Detections/
+Tracked/
 *.mp4
 *.avi
 *.asv

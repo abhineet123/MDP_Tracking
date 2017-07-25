@@ -9,22 +9,23 @@ clear all;
 
 addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
 
-is_save = 0;
+save_video = 1;
 show_detections = 1;
 db_type = 2;
-seq_type = 0;
-idot_split = 1;
+start_idx = 66;
+end_idx = 78;
+seq_start_offset_ratio = 0;
+seq_ratio = 0.1;
+
 save_input_images = 0;
 video_fps = 30;
-
-start_idx = 73;
-end_idx = 73;
-seq_start_offset_ratio = 0;
-seq_ratio = 0.25;
 
 box_line_width = 1;
 traj_line_width = 1;
 obj_id_font_size = 6;
+
+seq_type = 0;
+idot_split = 1;
 
 colRGBDefs;
 colors={
@@ -47,6 +48,10 @@ n_cols = length(colors);
 colors_rgb = cell(n_cols, 1);
 for i = 1:n_cols
     colors_rgb{i} = col_rgb{strcmp(col_names,colors{i})};
+end
+
+if end_idx < start_idx
+    end_idx = start_idx;
 end
 
 seq_idx_list = start_idx:end_idx;
@@ -162,7 +167,7 @@ for seq_idx = seq_idx_list
         end
     end
 
-    if is_save
+    if save_video
         if show_detections
             video_dir = sprintf('Detections/%s', db_name);
         else
@@ -188,14 +193,14 @@ for seq_idx = seq_idx_list
                 box_line_width, traj_line_width, obj_id_font_size);
         end
         % imshow(dres_image.I{fr});
-        if is_save
+        if save_video
             writeVideo(aviobj, getframe(hf));
         else
             pause(0.001);
         end
     end
 
-    if is_save
+    if save_video
         close(aviobj);
     end
 end

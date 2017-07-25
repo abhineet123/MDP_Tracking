@@ -2,8 +2,8 @@ function GRAM_evaluation_only(seq_idx_list)
 if nargin < 1
     % start_idx = 51;
     % end_idx = 60;
-%     seq_idx_list = [1, 2];
-    seq_idx_list = [6:35];
+    seq_idx_list = [74, 78];
+%     seq_idx_list = [6:35];
     % seq_idx_list = [25:30];
     % seq_idx_list = [51:60];
     % seq_idx_list = [10:15, 25:30];
@@ -19,7 +19,7 @@ id = 1;
 for seq_idx = seq_idx_list
     seq_n_frames = opt.gram_nums(seq_idx);
 	if opt.gram_test_ratio(seq_idx) <= 0
-		seq_train_ratio = opt.gram_train_ratio(seq_idx)
+		seq_train_ratio = opt.gram_train_ratio(seq_idx);
         [start_idx, end_idx] = getInvSubSeqIdx(seq_train_ratio,...
             seq_n_frames);	
 	else
