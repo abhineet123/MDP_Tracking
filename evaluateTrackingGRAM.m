@@ -220,17 +220,23 @@ for plot_id=1:numel(tracked_frac_list)
     plotFile = fullfile(resDir, sprintf('tracked_frac_hist_%s.png', seq_name));    
     % figure('Visible','off');
     histogram(tracked_frac, hist_edges);
+    xlabel('Correctly Tracked Fraction (CTF)'), ylabel('No. of Trajectories');
+    title('Correctly Tracked Fraction Distribution');
     saveas(gcf, plotFile);  
     
     tracked_total = tracked_total_list{plot_id};
     plotFile = fullfile(resDir, sprintf('tracked_total_hist_%s.png', seq_name));    
     % figure('Visible','off');
     histogram(tracked_total);
+    xlabel('No. of Frames'), ylabel('No. of Trajectories');
+    title('Tracked Trajectory Size Distribution');
     saveas(gcf, plotFile);
     
     gt_total = gt_total_list{plot_id};
     plotFile = fullfile(resDir, sprintf('gt_total_hist_%s.png', seq_name));    
     histogram(gt_total);
+    xlabel('No. of Frames'), ylabel('No. of Trajectories');
+    title('Ground Truth Trajectory Size Distribution');
     saveas(gcf, plotFile);
 end
 
@@ -245,14 +251,20 @@ if eval2D
     
     plotFile = fullfile(resDir, sprintf('tracked_frac_hist_all.png'));    
     histogram(tracked_frac, hist_edges);
+    xlabel('Correctly Tracked Fraction (CTF)'), ylabel('No. of Trajectories');
+    title('Correctly Tracked Fraction Distribution');
     saveas(gcf, plotFile);  
     
     plotFile = fullfile(resDir, sprintf('tracked_total_hist_all.png'));    
     histogram(tracked_total);
+    xlabel('No. of Frames'), ylabel('No. of Trajectories');
+    title('Tracked Trajectory Size Distribution');
     saveas(gcf, plotFile);
     
     plotFile = fullfile(resDir, sprintf('gt_total_hist_all.png'));    
     histogram(gt_total);
+    xlabel('No. of Frames'), ylabel('No. of Trajectories');
+    title('Ground Truth Trajectory Size Distribution');
     saveas(gcf, plotFile);
     
     allMets.bmark2d=m2d;

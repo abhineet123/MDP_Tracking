@@ -8,9 +8,9 @@ save_video = 1;
 db_type = 2;
 results_dir = 'results';
 save_input_images = 0;
-start_idx = 2;
-end_idx = 2;
-n_frames = 0;
+start_idx = 1;
+end_idx = 1;
+n_frames = 1000;
 % seq_idx_list = [10:15, 25:30, 51:60];
 seq_idx_list = start_idx:end_idx;
 
@@ -47,10 +47,14 @@ elseif db_type == 2
     db_name = 'GRAM';
     db_path = opt.gram;
     res_path = opt.results_gram;
+    train_ratio = opt.gram_train_ratio;
+    test_ratio = opt.gram_test_ratio;
 else
     db_name = 'IDOT';
     db_path = opt.idot;
     res_path = opt.results_idot;
+    train_ratio = opt.idot_train_ratio;
+    test_ratio = opt.idot_test_ratio;
 end
 
 n_cols = length(colors);
@@ -74,8 +78,15 @@ for seq_idx = seq_idx_list
     else
         seq_name = opt.gram_seqs{seq_idx};
         seq_n_frames = opt.gram_nums(seq_idx);
-        seq_train_ratio = opt.gram_train_ratio(seq_idx);
-        [start_idx, end_idx] = getInvSubSeqIdx(seq_train_ratio, seq_n_frames);
+        if test_ratio(seq_idx)<=0
+            seq_train_ratio = train_ratio(seq_idx);
+            [ start_idx, end_idx ] = getInvSubSeqIdx(seq_train_ratio,...
+                seq_n_frames);
+        else
+            seq_test_ratio = test_ratio(seq_idx);
+            [ start_idx, end_idx ] = getSubSeqIdx(seq_test_ratio,...
+                seq_n_frames);
+        end
         filename = sprintf('%s/%s_%d_%d_dres_image.mat',...
             opt.results, seq_name, start_idx, end_idx);
         if n_frames>0
@@ -119,14 +130,20 @@ for seq_idx = seq_idx_list
         dres_track = read_kitti2dres(filename);
     else
         filename = sprintf('%s/%s_%d_%d.txt', res_path, seq_name,...
-            start_idx, end_idx);        
+            start_idx, end_idx);
         video_dir = sprintf('Tracked/%s', db_name);
         if ~exist(video_dir, 'dir')
             mkdir(video_dir);
         end
-        file_video = sprintf('%s/%s_%d_%d.mp4', video_dir, seq_name,...
-            start_idx, end_idx);
-        dres_track = read_gram2dres(filename);        
+        if n_frames>0
+            file_video = sprintf('%s/%s_%d_%d_%d.mp4', video_dir, seq_name,...
+                start_idx, end_idx, n_frames);
+        else
+            file_video = sprintf('%s/%s_%d_%d.mp4', video_dir, seq_name,...
+                start_idx, end_idx);
+        end
+        
+        dres_track = read_gram2dres(filename);
     end
     fprintf('reading tracking results from %s\n', filename);
     
