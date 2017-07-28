@@ -10,11 +10,13 @@ function opt = globals()
 
 gram_train_ratio = 0.6;
 gram_split_train_ratio = 0.6;
-idot_train_ratio = 0.6;
+idot_train_ratio = -0.4;
+lost_train_ratio = 0.6;
 
 gram_test_ratio = 1;
 gram_split_test_ratio = 1;
 idot_test_ratio = 1;
+lost_test_ratio = 1;
 
 if isunix
     gram_paths = {'/data/GRAM'};
@@ -63,10 +65,15 @@ opt.idot_nums = [8991, 8990, 8981, 8866, 8851, 8791, 8964, 8962, 8966,...
 opt.idot_train_ratio = ones(1, numel(opt.idot_nums)) * idot_train_ratio;
 opt.idot_test_ratio = ones(1, numel(opt.idot_nums)) * idot_test_ratio;
 
-opt.gram_seqs = cat(2, opt.gram_seqs, opt.gram_split_seqs, opt.idot_seqs);
-opt.gram_nums = cat(2, opt.gram_nums, opt.gram_split_nums, opt.idot_nums);
-opt.gram_train_ratio = cat(2, opt.gram_train_ratio, opt.gram_split_train_ratio, opt.idot_train_ratio);
-opt.gram_test_ratio = cat(2, opt.gram_test_ratio, opt.gram_split_test_ratio, opt.idot_test_ratio);
+opt.lost_seqs = {'009_2011-03-29_07-00-00', '009_2011-04-24_07-00-00'};
+opt.lost_nums = [3027, 5000];
+opt.lost_train_ratio = ones(1, numel(opt.lost_nums)) * lost_train_ratio;
+opt.lost_test_ratio = ones(1, numel(opt.lost_nums)) * lost_test_ratio;
+
+opt.gram_seqs = cat(2, opt.gram_seqs, opt.gram_split_seqs, opt.idot_seqs, opt.lost_seqs);
+opt.gram_nums = cat(2, opt.gram_nums, opt.gram_split_nums, opt.idot_nums, opt.lost_nums);
+opt.gram_train_ratio = cat(2, opt.gram_train_ratio, opt.gram_split_train_ratio, opt.idot_train_ratio, opt.lost_train_ratio);
+opt.gram_test_ratio = cat(2, opt.gram_test_ratio, opt.gram_split_test_ratio, opt.idot_test_ratio, opt.lost_test_ratio);
 
 % opt.stanford_seqs = {{'quad', [0:3]}, {'bookstore', [0:6]}, {'coupa', [0:3]},...
 %     {'deathCircle', [0:4]},...

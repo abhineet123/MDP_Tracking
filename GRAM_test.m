@@ -6,17 +6,13 @@
 % --------------------------------------------------------
 %
 % cross_validation on the KITTI benchmark
-function GRAM_test(is_train, seq_idx_train, seq_idx_test)
-
-
-db_type = 2;
-opt = globals();
+function GRAM_test(is_train, seq_idx_train, seq_idx_test,...
+    continue_from_seq)
 
 % set is_train to 0 if testing trained trackers only
 if nargin<1
     is_train = 1;
 end
-
 if nargin<3
     % seq_idx_train = {[1:9, 16:24], [31:50]};
     % seq_idx_test = {[10:15, 25:30], [51:60]};
@@ -27,7 +23,12 @@ if nargin<3
     seq_idx_train = {66:71};
     seq_idx_test = {[71]};
 end    
+if nargin<4
+    continue_from_seq = 11;
+end
 
+db_type = 2;
+opt = globals();
 seq_set_test = 'testing';
 N = numel(seq_idx_train);
 
@@ -43,23 +44,14 @@ diary(log_fname);
 % for each training-testing pair
 for i = 1:N
     % training
-    idx_train = seq_idx_train{i};
-    
-    if is_train
-        % number of training sequences
-        num = numel(idx_train);
-        tracker = [];
-        
-        % online training
-        for j = 1:num
-            fprintf('Online training on sequence: %s\n', opt.gram_seqs{idx_train(j)});
-            tracker = MDP_train(idx_train(j), tracker, db_type);
-        end
-        fprintf('%d training examples after online training\n', size(tracker.f_occluded, 1));
-        
-    else
+    idx_train = seq_idx_train{i};    
+    if ~is_train || continue_from_seq
         % load tracker from file        
-        seq_idx = idx_train(end);
+        if continue_from_seq
+            seq_idx = continue_from_seq;            
+        else
+            seq_idx = idx_train(end);
+        end
 		seq_name = opt.gram_seqs{seq_idx};
         seq_n_frames = opt.gram_nums(seq_idx);
         seq_train_ratio = opt.gram_train_ratio(seq_idx);        
@@ -69,7 +61,24 @@ for i = 1:N
             opt.results_gram, seq_name, train_start_idx, train_end_idx);
         fprintf('loading tracker from file %s\n', filename);
         object = load(filename);
-        tracker = object.tracker;        
+        tracker = object.tracker; 
+    end
+    
+    if is_train
+        if ~continue_from_seq
+            tracker = [];
+        end
+        % number of training sequences
+        num = numel(idx_train);      
+        % online training
+        for j = 1:num
+            fprintf('Online training on sequence: %s\n', opt.gram_seqs{idx_train(j)});
+            tracker = MDP_train(idx_train(j), tracker, db_type);
+        end
+        fprintf('%d training examples after online training\n', size(tracker.f_occluded, 1));
+        
+    else
+       
     end
     
     % testing

@@ -7,6 +7,8 @@
 function dres_image = read_dres_image_gram(db_path, seq_name,...
     start_idx, end_idx)
 n_frames = end_idx - start_idx + 1;
+seq_path = fullfile(db_path, 'Images', seq_name);
+fprintf('Reading images from %s\n', seq_path);
 fprintf('start_idx: %d end_idx: %d n_frames: %d\n',...
     start_idx, end_idx, n_frames);
 
@@ -18,7 +20,7 @@ dres_image.I = cell(n_frames, 1);
 dres_image.Igray = cell(n_frames, 1);
 
 for frame_id = start_idx:end_idx
-    filename = fullfile(db_path, 'Images', seq_name, sprintf('image%06d.jpg', frame_id));
+    filename = fullfile(seq_path, sprintf('image%06d.jpg', frame_id));
     I = imread(filename);
     
     id = frame_id - start_idx + 1;
