@@ -24,7 +24,7 @@ if nargin<3
     seq_idx_test = {[71]};
 end    
 if nargin<4
-    continue_from_seq = 11;
+    continue_from_seq = 0;
 end
 
 db_type = 2;

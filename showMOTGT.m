@@ -12,10 +12,10 @@ addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
 save_video = 1;
 show_detections = 1;
 db_type = 2;
-start_idx = 80;
+start_idx = 73;
 end_idx = 73;
-seq_start_offset_ratio = 0;
-seq_ratio = 0.1;
+seq_start_offset_ratio = 0.2;
+seq_ratio = -0.1;
 
 save_input_images = 0;
 video_fps = 30;
@@ -82,7 +82,9 @@ for seq_idx = seq_idx_list
             seq_name = opt.mot2d_test_seqs{seq_idx};
             seq_num = opt.mot2d_test_nums(seq_idx);    
             seq_set = 'test';
-        end        
+        end  
+        start_frame_idx = 1;
+        end_frame_idx = seq_num;
         filename = sprintf('%s/%s_dres_image.mat', results_dir, seq_name);
     elseif db_type == 1
         if seq_type==0
@@ -94,6 +96,8 @@ for seq_idx = seq_idx_list
             seq_num = opt.kitti_test_nums(seq_idx);
             seq_set = 'testing';
         end 
+        start_frame_idx = 1;
+        end_frame_idx = seq_num;
         filename = sprintf('%s/kitti_%s_%s_dres_image.mat', opt.results_kitti, seq_set, seq_name);
     else
         if db_type == 2
@@ -176,7 +180,8 @@ for seq_idx = seq_idx_list
         if ~exist(video_dir, 'dir')
             mkdir(video_dir);
         end
-        file_video = sprintf('%s/%s.mp4', video_dir, seq_name);
+        file_video = sprintf('%s/%s_%d_%d.mp4', video_dir, seq_name,...
+            start_frame_idx, end_frame_idx);
         aviobj = VideoWriter(file_video, 'MPEG-4');
         aviobj.FrameRate = video_fps;
         open(aviobj);
