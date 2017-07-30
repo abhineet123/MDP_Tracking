@@ -47,11 +47,11 @@ for i = 1:num
         % label this detection based on the maximum overlap between it and
         % all gt boxes in its frame
         if o < opt.overlap_neg % 0.2
-            labels(i) = -1;
+            labels(i) = -1; % false positive
         elseif o > opt.overlap_pos % 0.5
-            labels(i) = 1;
+            labels(i) = 1; % true positive
         else
-            labels(i) = 0;
+            labels(i) = 0; % unknown
         end
         overlaps(i) = o;
     else
@@ -64,7 +64,7 @@ end
 ids = unique(dres_gt.id);
 dres_train = [];
 count = 0;
-% one object ID in the GT at a time
+% one object/target in the GT at a time
 for i = 1:numel(ids)
     index = find(dres_gt.id == ids(i));
     dres = sub(dres_gt, index); % set of frames with this object
@@ -72,8 +72,8 @@ for i = 1:numel(ids)
     % check if the target is occluded or not
     num = numel(dres.fr);  % no. of frames with this object
     dres.occluded = zeros(num, 1);
-    dres.covered = zeros(num, 1);
-    dres.overlap = zeros(num, 1);
+    dres.covered = zeros(num, 1); % with GT boxes    
+    dres.overlap = zeros(num, 1); % with detections
     dres.r = zeros(num, 1);
     dres.area_inside = zeros(num, 1);
     y = dres.y + dres.h; % max y of the object box
@@ -104,18 +104,27 @@ for i = 1:numel(ids)
         if isempty(index) == 0
             overlap = calc_overlap(dres, j, dres_det, index);
             [o, ind] = max(overlap);
-            dres.overlap(j) = o;
+            % overlap is the IoU rather than the IoA that was
+            % used for GT coverage; the pruning of boxes whose maximum y exceeds
+            % this box's is not done either
+            dres.overlap(j) = o;        
+            % detection score of the detection with the maximum overlap
             dres.r(j) = dres_det.r(index(ind));
             
-            % area inside image
+            % area inside image of the max overlap detection
             [~, overlap] = calc_overlap(dres_det, index(ind), dres_image, fr);
             dres.area_inside(j) = overlap;
         end
     end
     
     % start with bounding overlap > opt.overlap_pos and non-occluded box
-    index = find(dres.overlap > opt.overlap_pos & dres.covered == 0 & dres.area_inside > opt.exit_threshold);
     
+    % start with the frame where the overlap with the detection that has the maximum overlap
+    % with this box is greater than a threshold - 0.5 - and it is not  
+    % covered by another GT box and the fraction of the maximum overlap 
+    % detection box that lies  inside the image also exceeds a threshold - 0.95
+    index = find(dres.overlap > opt.overlap_pos & dres.covered == 0 & dres.area_inside > opt.exit_threshold);
+
     if isempty(index) == 0
         index_start = index(1);
         count = count + 1;

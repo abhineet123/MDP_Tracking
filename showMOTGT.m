@@ -4,8 +4,7 @@
 % Licensed under The MIT License [see LICENSE for details]
 % Written by Yu Xiang
 % --------------------------------------------------------
-close all;
-clear all;
+function showMOTGT()
 
 addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
 
@@ -25,7 +24,6 @@ traj_line_width = 1;
 obj_id_font_size = 6;
 
 seq_type = 0;
-idot_split = 1;
 
 colRGBDefs;
 colors={
@@ -208,4 +206,5 @@ for seq_idx = seq_idx_list
     if save_video
         close(aviobj);
     end
+end
 end

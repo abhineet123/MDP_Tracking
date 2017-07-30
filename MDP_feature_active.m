@@ -6,6 +6,10 @@
 % --------------------------------------------------------
 %
 % extract features for active state
+
+% they seem to be simply normalized versions of the x, y, w, h and r
+% over the maximum values over all detections for the last three and the
+% image width/height for the other two
 function f = MDP_feature_active(tracker, dres)
 
 num = numel(dres.fr);

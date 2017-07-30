@@ -22,10 +22,15 @@ tracker.fb_factor = opt.fb_factor;
 % active
 tracker.fnum_active = 6;
 factive = MDP_feature_active(tracker, dres_det);
+% ignore detections whose FP/TP status is unknown
 index = labels ~= 0;
 tracker.factive = factive(index,:);
 tracker.lactive = labels(index);
 % disp(tracker.factive)
+
+% seem to be trying to learn something about the relationship between the
+% FP/TP nature of the detections from these basic features which seems very
+% far fetched indeed
 tracker.w_active = svmtrain(tracker.lactive, tracker.factive, '-c 1 -q');
 
 % initial state
