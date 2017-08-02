@@ -168,7 +168,7 @@ num_train = numel(dres_train);
 counter = zeros(num_train, 1);
 is_good = zeros(num_train, 1);
 is_difficult = zeros(num_train, 1);
-while 1
+while 1 % for multiple passes
     iter = iter + 1;
     if is_text
         fprintf('iter %d\n', iter);
@@ -182,7 +182,7 @@ while 1
         fprintf('max iteration exceeds\n');
         break;
     end
-    if isempty(find(is_good == 0, 1)) == 1
+    if isempty(find(is_good == 0, 1)) == 1 % all sequwences are good
         % two pass training
         if count == opt.max_pass
             break;
@@ -198,6 +198,8 @@ while 1
     
     % find a sequence to train
     while 1
+        % check the next sequence, circularly if needed, and use it if it
+        % has not been marked as good thus far
         t = t + 1;
         if t > num_train
             t = 1;
@@ -210,10 +212,12 @@ while 1
         fprintf('tracking sequence %d\n', t);
     end
     
+    % one dres_gt for each unique ID in the GT
     dres_gt = dres_train{t};
     
     % first frame
     fr = dres_gt.fr(1);
+    % target ID which is apparently set to be same as the GT ID
     id = dres_gt.id(1);
     
     % reset tracker
@@ -223,7 +227,7 @@ while 1
     
     
     % start tracking
-    while fr <= seq_num
+    while fr <= seq_num  % for the current sequence 
         if is_text
             fprintf('\nframe %d, state %d\n', fr, tracker.state);
         end
@@ -258,17 +262,21 @@ while 1
             
             % compute overlap
             overlap = calc_overlap(dres_gt, 1, dres, 1:num_det);
-            [ov, ind] = max(overlap);
+            [ov, ind] = max(overlap); % detection with the maximum overlap
             if is_text
                 fprintf('Start: first frame overlap %.2f\n', ov);
             end
             
             % initialize the LK tracker
+            % initialize with the detection that has the maximum overlap
+            % with the GT box
             tracker = LK_initialize(tracker, fr, id, dres, ind, dres_image);
+            % send it to the tracked state
             tracker.state = 2;
             tracker.streak_occluded = 0;
             
             % build the dres structure
+            % contains only the maximum overlap detection
             dres_one = sub(dres, ind);
             tracker.dres = dres_one;
             tracker.dres.id = tracker.target_id;
@@ -277,6 +285,7 @@ while 1
             % tracked
         elseif tracker.state == 2
             tracker.streak_occluded = 0;
+            % ignoring the features
             tracker = MDP_value(tracker, fr, dres_image, dres, []);
             
             % occluded
@@ -374,8 +383,8 @@ while 1
         % try to connect recently lost target
         if ~(tracker.state == 3 && tracker.prev_state == 2)
             fr = fr + 1;
-        end
-    end
+        end        
+    end % end tracking this sequence
     
     if fr > seq_num
         is_good(t) = 1;

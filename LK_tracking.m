@@ -21,10 +21,12 @@ function tracker = LK_tracking(frame_id, dres_image, dres_det, tracker)
 
 % current frame + motion
 J = dres_image.Igray{frame_id};
+% ignoring the w,h predictions
 ctrack = apply_motion_prediction(frame_id, tracker);
 w = tracker.dres.w(end);
 h = tracker.dres.h(end);
 BB3 = [ctrack(1)-w/2; ctrack(2)-h/2; ctrack(1)+w/2; ctrack(2)+h/2];
+% get a cropped image around the predicted location of the object
 [J_crop, BB3_crop, bb_crop, s] = LK_crop_image_box(J, BB3, tracker);
 
 num_det = numel(dres_det.x);
@@ -33,18 +35,22 @@ for i = 1:tracker.num
     I_crop = tracker.Is{i};
     BB1_crop = tracker.BBs{i};
     
-    % LK tracking
+    % LK tracking - wrapper over the mex LK tracker
+    % also returns a bunch of appearance and optical flow features
     [BB2, xFJ, flag, medFB, medNCC, medFB_left, medFB_right, medFB_up, medFB_down] = LK(I_crop, J_crop, ...
         BB1_crop, BB3_crop, tracker.margin_box, tracker.level_track);
     
+    % still not clear why this shift is performed
     BB2 = bb_shift_absolute(BB2, [bb_crop(1) bb_crop(2)]);
     BB2 = [BB2(1)/s(1); BB2(2)/s(2); BB2(3)/s(1); BB2(4)/s(2)];
+    
 
     ratio = (BB2(4)-BB2(2)) / (BB1(4)-BB1(2));
     ratio = min(ratio, 1/ratio);
     
     if isnan(medFB) || isnan(medFB_left) || isnan(medFB_right) || isnan(medFB_up) || isnan(medFB_down) ...
             || isnan(medNCC) || ~bb_isdef(BB2) || ratio < tracker.max_ratio
+        % tracking failed
         medFB = inf;
         medFB_left = inf;
         medFB_right = inf;

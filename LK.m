@@ -20,6 +20,7 @@ end
 
 % track all points by Lucas-Kanade tracker from frame I to frame J, 
 % estimate Forward-Backward error, and NCC for each point
+% this is finally where the mex code is being used
 xFJ = lk(2, I, J, xFI, xFII, level);
 
 medFB  = median2(xFJ(3,:)); % get median of Forward-Backward error

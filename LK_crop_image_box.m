@@ -9,6 +9,7 @@
 function [I_crop, BB_crop, bb_crop, s] = LK_crop_image_box(I, BB, tracker)
 
 s = [tracker.std_box(1)/bb_width(BB), tracker.std_box(2)/bb_height(BB)];
+% change the aspect ratio of BB to be same as std_box, i.e. 1:2
 bb_scale = round([BB(1)*s(1); BB(2)*s(2); BB(3)*s(1); BB(4)*s(2)]);
 bb_scale(3) = bb_scale(1) + tracker.std_box(1) - 1;
 bb_scale(4) = bb_scale(2) + tracker.std_box(2) - 1;    

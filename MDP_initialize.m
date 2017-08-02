@@ -30,7 +30,7 @@ tracker.lactive = labels(index);
 
 % seem to be trying to learn something about the relationship between the
 % FP/TP nature of the detections from these basic features which seems very
-% far fetched indeed
+% far fetched indeed - sec. 3.2.1
 tracker.w_active = svmtrain(tracker.lactive, tracker.factive, '-c 1 -q');
 
 % initial state

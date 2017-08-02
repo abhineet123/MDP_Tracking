@@ -10,6 +10,7 @@ function [prediction, prediction1] = apply_motion_prediction(fr_current, tracker
 
 % apply motion model and predict next location
 dres = tracker.dres;
+% consider only those frames where the object was actually tracked
 index = find(dres.state == 2);
 dres = sub(dres, index);
 cx = dres.x + dres.w/2;
@@ -37,6 +38,7 @@ vy = 0;
 vw = 0;
 vh = 0;
 num = numel(cx);
+% compute the mean velocity of x, y, w, h over the last few frames
 count = 0;
 for j = 2:num
     vx = vx + (cx(j)-cx(j-1)) / (fr(j) - fr(j-1));
@@ -51,14 +53,17 @@ if count
     vw = vw / count;
     vh = vh / count;
 end
-
 if isempty(cx) == 1
+    % If no previous frames were available to compute the mean velocities 
+    % for the different parameters, then we just take the last known location
+    % of the object as its predicted location
     dres = tracker.dres;
     cx_new = dres.x(end) + dres.w(end)/2;
     cy_new = dres.y(end) + dres.h(end)/2;
     w_new = dres.w(end);
     h_new = dres.h(end);
 else
+    % not quite clear why there is a 1 added to the frame difference
     cx_new = cx(end) + vx * (fr_current + 1 - fr(end));
     cy_new = cy(end) + vy * (fr_current + 1 - fr(end));
     w_new = w(end) + vw * (fr_current + 1 - fr(end));

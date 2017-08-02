@@ -17,7 +17,9 @@
 
 
 function BB = bb_rescale_relative(BB,s)
-% Change
+% enlarge the BB by adding a fixed height and width border around it;
+% height and width of this worder are respectively proportional to the
+% height and width of the BB
 BB = BB(1:4);
 if length(s) == 1
     s = s*[1 1];

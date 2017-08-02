@@ -21,7 +21,8 @@ function [BB1, shift] = bb_predict(BB0,pt0,pt1)
 of  = pt1 - pt0;
 dx  = median(of(1,:));
 dy  = median(of(2,:));
-
+% median of the ratio of the pairwise distances between the dource and 
+% dst points gives the rough scaling factor, apparently
 d1  = pdist(pt0','euclidean');
 d2  = pdist(pt1','euclidean');
 s   = median(d2./d1);
