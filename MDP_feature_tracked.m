@@ -15,8 +15,9 @@ tracker = LK_tracking(frame_id, dres_image, dres_det, tracker);
 f = zeros(1, tracker.fnum_tracked);
 
 anchor = tracker.anchor;
-f(1) = tracker.flags(anchor);
-f(2) = mean(tracker.bb_overlaps);
+f(1) = tracker.flags(anchor); % OF status
+f(2) = mean(tracker.bb_overlaps); % overlaps of all stored tracked BBs with
+% their ccorrespoding max overlap detections
 
 if tracker.is_show
     fprintf('ftracked: ');

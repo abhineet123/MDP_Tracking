@@ -6,12 +6,15 @@
 % --------------------------------------------------------
 %
 % update the LK tracker
+% mostly about adding the data from the latest tracked frame to the
+% history;
 function tracker = LK_update(frame_id, tracker, img, dres_det, is_change_anchor)
 
 medFBs = tracker.medFBs;
 if is_change_anchor == 0
 % find the template with max FB error but not the anchor
-    medFBs(tracker.anchor) = -inf;
+% this is the one that will presumably be replaced with the new one
+    medFBs(tracker.anchor) = -inf;    
     [~, index] = max(medFBs);
 else
     [~, index] = max(medFBs);
@@ -19,6 +22,9 @@ else
 end
 
 % update
+% evidently the det of stored frames are not in chronological order - even
+% very old frames might remain there as long as the template therein
+% continues to be tracked successfully in the latest frame
 tracker.frame_ids(index) = frame_id;
 tracker.x1(index) = tracker.bb(1);
 tracker.y1(index) = tracker.bb(2);

@@ -23,20 +23,28 @@ end
 % this is finally where the mex code is being used
 xFJ = lk(2, I, J, xFI, xFII, level);
 
+% xFJ: 4 x n matrix 
+% row 1: x coordinates, row 2: y coordinates, 
+% row 3: FB error, row 4: NCC
+
 medFB  = median2(xFJ(3,:)); % get median of Forward-Backward error
 medNCC = median2(xFJ(4,:)); % get median for NCC
 idxF = xFJ(3,:) <= medFB & xFJ(4,:)>= medNCC; % get indexes of reliable points
-BB3    = bb_predict(BB1, xFI(:,idxF), xFJ(1:2,idxF)); % estimate BB2 using the reliable points only
+BB3    = bb_predict(BB1, xFI(:,idxF), xFJ(1:2,idxF)); % estimate BB3 using the reliable points only
 
+% OF points that are to the left of the BB center
 index = xFI(1,:) < (BB1(1)+BB1(3)) / 2;
 medFB_left = median2(xFJ(3, index));
 
+% OF points that are to the right of the BB center
 index = xFI(1,:) >= (BB1(1)+BB1(3)) / 2;
 medFB_right = median2(xFJ(3, index));
 
+% OF points that are above of the BB center
 index = xFI(2,:) < (BB1(2)+BB1(4)) / 2;
 medFB_up = median2(xFJ(3, index));
 
+% OF points that are below of the BB center
 index = xFI(2,:) >= (BB1(2)+BB1(4)) / 2;
 medFB_down = median2(xFJ(3, index));
 

@@ -25,8 +25,10 @@ for i = 1:num
         ind = index(j);
         c = [(tracker.x1(ind)+tracker.x2(ind))/2 (tracker.y1(ind)+tracker.y2(ind))/2];
         centers(i,:) = centers(i,:) + c;
-    end
+    end    
     if numel(index)
+        % mean center for all  bounding boxes in this frame
+        % not quite clear why there would be multiple BBs in one frame
         centers(i,:) = centers(i,:) / numel(index);
     end
 end
@@ -42,6 +44,7 @@ for j = 2:num
     count = count + 1;
 end
 if count
+    % mean x and y velocities over all frames
     vx = vx / count;
     vy = vy / count;
 end

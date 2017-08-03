@@ -5,7 +5,8 @@
 % Written by Yu Xiang
 % --------------------------------------------------------
 function dres_new = concatenate_dres(dres1, dres2)
-
+% concatenate the contents of  each of the individual fields of the two
+% structures
 if isempty(dres2) == 1
     dres_new = dres1;
 else

@@ -9,7 +9,6 @@
 function [I_crop, BB_crop, bb_crop, s] = LK_crop_image_box(I, BB, tracker)
 
 s = [tracker.std_box(1)/bb_width(BB), tracker.std_box(2)/bb_height(BB)];
-% change the aspect ratio of BB to be same as std_box, i.e. 1:2
 bb_scale = round([BB(1)*s(1); BB(2)*s(2); BB(3)*s(1); BB(4)*s(2)]);
 bb_scale(3) = bb_scale(1) + tracker.std_box(1) - 1;
 bb_scale(4) = bb_scale(2) + tracker.std_box(2) - 1;    
@@ -18,3 +17,13 @@ I_scale = imResample(I, imsize, 'bilinear');
 bb_crop = bb_rescale_relative(bb_scale, tracker.enlarge_box);
 I_crop = im_crop(I_scale, bb_crop);
 BB_crop = bb_shift_absolute(bb_scale, [-bb_crop(1) -bb_crop(2)]);
+
+% bb_scale: location of BB in the resized image
+
+% bb_crop: enlarged version of bb_scale with constant width/height borders
+% added arund the latter; this is the location from where the patch is 
+% extracted from within the resized image
+
+% BB_crop: negatively shifted version of bb_scale where the shidt amount is
+% equal to the top left corner of bb_crop; this corresponds to the location
+% of for bb_scale within the cropped patch image

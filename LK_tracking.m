@@ -30,6 +30,9 @@ BB3 = [ctrack(1)-w/2; ctrack(2)-h/2; ctrack(1)+w/2; ctrack(2)+h/2];
 [J_crop, BB3_crop, bb_crop, s] = LK_crop_image_box(J, BB3, tracker);
 
 num_det = numel(dres_det.x);
+
+% track each of the stored templates or frame/BB combo in the latest image
+% also extract and store tracking features for each
 for i = 1:tracker.num
     BB1 = [tracker.x1(i); tracker.y1(i); tracker.x2(i); tracker.y2(i)];
     I_crop = tracker.Is{i};
@@ -40,11 +43,13 @@ for i = 1:tracker.num
     [BB2, xFJ, flag, medFB, medNCC, medFB_left, medFB_right, medFB_up, medFB_down] = LK(I_crop, J_crop, ...
         BB1_crop, BB3_crop, tracker.margin_box, tracker.level_track);
     
-    % still not clear why this shift is performed
+    % change the coordinate system of  BB2 from the cropped resized image
+    % to the original image
     BB2 = bb_shift_absolute(BB2, [bb_crop(1) bb_crop(2)]);
     BB2 = [BB2(1)/s(1); BB2(2)/s(2); BB2(3)/s(1); BB2(4)/s(2)];
     
 
+    % ratio of the heights of the new and old BB
     ratio = (BB2(4)-BB2(2)) / (BB1(4)-BB1(2));
     ratio = min(ratio, 1/ratio);
     
@@ -64,7 +69,7 @@ for i = 1:tracker.num
         flag = 2;
         BB2 = [NaN; NaN; NaN; NaN];
     else
-        % compute overlap
+        % compute overlap with detections
         dres.x = BB2(1);
         dres.y = BB2(2);
         dres.w = BB2(3) - BB2(1);
@@ -79,7 +84,8 @@ for i = 1:tracker.num
             ind = 0;
         end
         
-        % compute angle
+        % compute angle between the current velociy and the mean velocities
+        % over all stored frames
         centerI = [(BB1(1)+BB1(3))/2 (BB1(2)+BB1(4))/2];
         centerJ = [(BB2(1)+BB2(3))/2 (BB2(2)+BB2(4))/2];
         v = compute_velocity(tracker);
@@ -91,37 +97,47 @@ for i = 1:tracker.num
         end        
     end
     
-    tracker.bbs{i} = BB2;
-    tracker.points{i} = xFJ;
-    tracker.flags(i) = flag;
-    tracker.medFBs(i) = medFB;
-    tracker.medFBs_left(i) = medFB_left;
-    tracker.medFBs_right(i) = medFB_right;
-    tracker.medFBs_up(i) = medFB_up;
-    tracker.medFBs_down(i) = medFB_down;
-    tracker.medNCCs(i) = medNCC;
-    tracker.overlaps(i) = o;
-    tracker.scores(i) = score;
-    tracker.indexes(i) = ind;
-    tracker.angles(i) = angle;
-    tracker.ratios(i) = ratio;
+    tracker.bbs{i} = BB2; % new estimated BB using reliable OF points
+    tracker.points{i} = xFJ; % coordinates, FB and NCC for all OF points
+    
+    tracker.flags(i) = flag; % indicates success/reliability of OF
+    % 1: successful
+    % 2: unsuccessful - NaNs or out of image
+    % 3: unreliable - median FB > 10
+    
+    tracker.medFBs(i) = medFB; % median of FB over all OF points 
+    tracker.medFBs_left(i) = medFB_left; % median of FB over OF points left of center
+    tracker.medFBs_right(i) = medFB_right; % median of FB over OF points right of center
+    tracker.medFBs_up(i) = medFB_up; % median of FB over OF points above center
+    tracker.medFBs_down(i) = medFB_down; % median of FB over OF points below center
+    tracker.medNCCs(i) = medNCC; % median of NCC over all OF points
+    tracker.overlaps(i) = o; % max overlap among all detections
+    tracker.scores(i) = score; % score of this detection
+    tracker.indexes(i) = ind; % index of this detection
+    tracker.angles(i) = angle; % angle between the current velociy and the mean velocities over all stored frames
+    tracker.ratios(i) = ratio; %  ratio of the heights of the new and old BB
 end
 
 % combine tracking and detection results
 % [~, ind] = min(tracker.medFBs);
-ind = tracker.anchor;
+ind = tracker.anchor; % ID of the current template
 if tracker.overlaps(ind) > tracker.overlap_box
     index = tracker.indexes(ind);
     bb_det = [dres_det.x(index); dres_det.y(index); ...
         dres_det.x(index)+dres_det.w(index); dres_det.y(index)+dres_det.h(index)];
+    % weighted average of the tracked BB corresponding to the template and
+    % the BB corresponding to the detection that has maximum overlap with
+    % this BB
     tracker.bb = mean([repmat(tracker.bbs{ind}, 1, tracker.weight_tracking) ...
         repmat(bb_det, 1, tracker.weight_detection)], 2);
 else
     tracker.bb = tracker.bbs{ind};
 end
 
-% compute pattern similarity
+% compute pattern similarity - NCC between the patch within the latest BB
+% and all stored patches
 if bb_isdef(tracker.bb)
+    % normalized pixel values within the resized patch
     pattern = generate_pattern(dres_image.Igray{frame_id}, tracker.bb, tracker.patchsize);
     nccs = distance(pattern, tracker.patterns, 1); % measure NCC to positive examples
     tracker.nccs = nccs';

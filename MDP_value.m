@@ -34,7 +34,11 @@ if tracker.state == 2
     
     % compute qscore
     qscore = 0;
-    if f(1) == 1 && f(2) > tracker.threshold_box
+    if f(1) == 1 && f(2) > tracker.threshold_box % 0.8
+        % tracking of the main template was successful and object is visible
+        % in the current frame as the average overlap of BBs of all stored
+        % frames is pretty high too so that most of them were presumably 
+        % successfully tracked too        % 
         label = 1;
     else
         label = -1;
@@ -42,6 +46,8 @@ if tracker.state == 2
 
     % make a decision
     if label > 0
+        % tracking was successful so the current state remains/becomes
+        % tracked
         tracker.state = 2;
         dres_one.state = 2;
         tracker.dres = concatenate_dres(tracker.dres, dres_one);
