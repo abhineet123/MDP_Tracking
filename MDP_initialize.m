@@ -39,7 +39,7 @@ tracker.state = 1;
 
 % association model
 tracker.fnum_tracked = 2;
-
+% number of features in the occluded state
 tracker.fnum_occluded = 12;
 tracker.w_occluded = [];
 tracker.f_occluded = [];

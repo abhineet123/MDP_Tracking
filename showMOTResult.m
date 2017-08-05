@@ -8,11 +8,18 @@ save_video = 1;
 db_type = 2;
 results_dir = 'results';
 save_input_images = 0;
-start_idx = 1;
+start_idx = 68;
 end_idx = 1;
 n_frames = 1000;
-% seq_idx_list = [10:15, 25:30, 51:60];
-seq_idx_list = start_idx:end_idx;
+seq_idx_list = [1:2, 66:78];
+
+
+if ~exist('seq_idx_list', 'var')
+    if end_idx<start_idx
+        end_idx = start_idx;
+    end
+    seq_idx_list = start_idx:end_idx;
+end
 
 traj_line_width = 2;
 box_line_width = 2;
@@ -89,10 +96,9 @@ for seq_idx = seq_idx_list
         end
         filename = sprintf('%s/%s_%d_%d_dres_image.mat',...
             opt.results, seq_name, start_idx, end_idx);
-        if n_frames>0
-            seq_num = n_frames;
-        else
-            seq_num = end_idx - start_idx + 1;
+        seq_num = end_idx - start_idx + 1;
+        if n_frames > 0 && n_frames < seq_num
+            seq_num = n_frames;           
         end
     end
     
@@ -135,20 +141,15 @@ for seq_idx = seq_idx_list
         if ~exist(video_dir, 'dir')
             mkdir(video_dir);
         end
-        if n_frames>0
-            file_video = sprintf('%s/%s_%d_%d_%d.mp4', video_dir, seq_name,...
-                start_idx, end_idx, n_frames);
-        else
-            file_video = sprintf('%s/%s_%d_%d.mp4', video_dir, seq_name,...
-                start_idx, end_idx);
-        end
+        file_video = sprintf('%s/%s_%d_%d_%d.mp4', video_dir, seq_name,...
+            start_idx, end_idx, seq_num);
         
         dres_track = read_gram2dres(filename);
     end
     fprintf('reading tracking results from %s\n', filename);
     
     if save_video
-        aviobj = VideoWriter(file_video);
+        aviobj = VideoWriter(file_video, 'MPEG-4');
         aviobj.FrameRate = 30;
         open(aviobj);
         fprintf('saving video to %s\n', file_video);

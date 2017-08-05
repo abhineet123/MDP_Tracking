@@ -13,8 +13,10 @@ show_detections = 1;
 db_type = 2;
 start_idx = 73;
 end_idx = 73;
-seq_start_offset_ratio = 0.2;
-seq_ratio = -0.1;
+seq_idx_list = [1:3, 66:78];
+
+seq_start_offset_ratio = 0;
+seq_ratio = 0.1;
 
 save_input_images = 0;
 video_fps = 30;
@@ -48,11 +50,12 @@ for i = 1:n_cols
     colors_rgb{i} = col_rgb{strcmp(col_names,colors{i})};
 end
 
-if end_idx < start_idx
-    end_idx = start_idx;
+if ~exist('seq_idx_list', 'var')
+    if end_idx<start_idx
+        end_idx = start_idx;
+    end
+    seq_idx_list = start_idx:end_idx;
 end
-
-seq_idx_list = start_idx:end_idx;
 opt = globals();
 
 if db_type == 0

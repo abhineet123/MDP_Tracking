@@ -9,6 +9,8 @@
 function [dres_train, dres_det, labels] = generate_training_data_gram(db_path,...
     seq_name, dres_image, opt, train_start_idx, train_end_idx)
 
+% dres.covered: Normalized overlap between the bounding box for each target
+% in each frame with the maximally overlapping GT box in the same frame
 is_show = 0;
 
 % read detections

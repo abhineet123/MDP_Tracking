@@ -58,15 +58,15 @@ medFB_down = median2(xFJ(3, index));
 % save selected points (only for display purposes)
 xFJ = xFJ(:, idxF);
 
-flag = 1;
+flag = 1; % success
 % detect failures
 % bounding box out of image
 if ~bb_isdef(BB3) || bb_isout(BB3, size(J))
-    flag = 2;
+    flag = 2; % complete failure
     return;
 end
 % too unstable predictions
 if medFB > 10
-    flag = 3;
+    flag = 3; % unstable/unreliable tracking
     return;
 end

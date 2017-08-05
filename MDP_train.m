@@ -215,7 +215,7 @@ while 1 % for multiple passes
     % one dres_gt for each unique ID in the GT
     dres_gt = dres_train{t};
     
-    % first frame
+    % first frame for this sequence
     fr = dres_gt.fr(1);
     % target ID which is apparently set to be same as the GT ID
     id = dres_gt.id(1);
@@ -232,7 +232,7 @@ while 1 % for multiple passes
             fprintf('\nframe %d, state %d\n', fr, tracker.state);
         end
         
-        % extract detection
+        % extract detections in this frame
         index = find(dres_det.fr == fr);
         dres = sub(dres_det, index);
         num_det = numel(dres.fr);
@@ -279,8 +279,8 @@ while 1 % for multiple passes
             % contains only the maximum overlap detection
             dres_one = sub(dres, ind);
             tracker.dres = dres_one;
-            tracker.dres.id = tracker.target_id;
-            tracker.dres.state = tracker.state;
+            tracker.dres.id = tracker.targe_id;
+            tracker.dres.state = trackert.state;
             
             % tracked
         elseif tracker.state == 2
@@ -293,8 +293,29 @@ while 1 % for multiple passes
             tracker.streak_occluded = tracker.streak_occluded + 1;
             
             % find a set of detections for association
+            % input dres: all the detections in the current frame;
+            % output dres: Input dres with several fields added on to it
+            % to correspond to the cropped image around each detection 
+            % as well as the supplementary information that is needed to 
+            % perform the change of coordinates from this cropped image 
+            % back to the original image
             dres = MDP_crop_image_box(dres, dres_image.Igray{fr}, tracker);
+            % Obtain the indices of all the detections which are close to 
+            % the last known location of the object and whose height ratio 
+            % with this object is close to one where both the conditions are
+            % satisfied on the basis of two thresholds
+            % the set of all the detections in this frame which is used as 
+            % one of the inputs to this function is also augmented with the
+            % ratios and the distances of all of these detections from 
+            % this last known location
             [dres, index_det, ctrack] = generate_association_index(tracker, fr, dres);
+            % The first bounding box of this target in the current frame
+            % should be such that it is completely uncovered
+            % for the set of nearby/associated detections to be passed 
+            % to MDP_value;
+            % Since a particular target can only occur once in any given frame 
+            % it is not quite clear why we needs just the first matching object
+            % for this frame;
             index_gt = find(dres_gt.fr == fr, 1);
             if dres_gt.covered(index_gt) ~= 0
                 index_det = [];

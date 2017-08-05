@@ -7,7 +7,13 @@
 %
 % apply motion models to predict the next locations of the targets
 function [prediction, prediction1] = apply_motion_prediction(fr_current, tracker)
-
+% this actually returns only the predicted location of the last bonding box
+% though it uses all the bonding boxes in the history to compute the mean
+% velocity which in turn is used to compute this a predicted location of last bonding box;
+% therefore its output is actually just two numbers - they are not two 
+% vectors but just two numbers;
+% the first output is the centre of this predicted box and the next output 
+% is the size in terms of the width  and the height;
 % apply motion model and predict next location
 dres = tracker.dres;
 % consider only those frames where the object was actually tracked
@@ -48,6 +54,7 @@ for j = 2:num
     count = count + 1;
 end
 if count
+    % Compute the mean
     vx = vx / count;
     vy = vy / count;
     vw = vw / count;

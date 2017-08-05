@@ -50,10 +50,22 @@ if tracker.state == 2
         % tracked
         tracker.state = 2;
         dres_one.state = 2;
+        % tracker.dres basically contains the set of all the final locations
+        % of the corresponding object in all the frames in which it has been
+        % successfully tracked so far
+        % as far as I can see, it continues to get added on to without any filtering
+        % so it doesn't really seem to have anything to do with the history itself
+        % the history is stored in different structures called Is and BBs
+        % while dres basically just stores the complete set of all the
+        % locations this particular object has been in
+        % since each object in any given scenario will presumably be in the
+        % scene for only a few frames, this should not be a big problem
+        % but potentially if a particular object remains there forever then this restructure will grow out of bounds very quickly indeed
         tracker.dres = concatenate_dres(tracker.dres, dres_one);
         % update LK tracker
         tracker = LK_update(frame_id, tracker, dres_image.Igray{frame_id}, dres_det, 0);
     else
+        % transfer to occluded
         tracker.state = 3;
         dres_one.state = 3;
         tracker.dres = concatenate_dres(tracker.dres, dres_one);        
@@ -65,11 +77,18 @@ elseif tracker.state == 3
 
     % association
     if isempty(index_det) == 1
+        % This occurs if the bonding box of this object is not completely
+        % uncovered, that is, its coverage is not equal to zero
+        % since the label now becomes -1, this is evidently like a negative 
+        % training sample probably
         qscore = 0;
         label = -1;
         f = [];
     else
         % extract features with LK association
+        % Get all the detections that are likely to correspond to this 
+        % particular object based on some preliminary thresholding that was
+        % performed during association to obtain the indices in index_det
         dres = sub(dres_det, index_det);
         [features, flag] = MDP_feature_occluded(frame_id, dres_image, dres, tracker);
 

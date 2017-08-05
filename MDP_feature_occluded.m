@@ -9,7 +9,18 @@
 function [feature, flag] = MDP_feature_occluded(frame_id, dres_image, dres, tracker)
 
 f = zeros(1, tracker.fnum_occluded);
+% Number of candidate bonding boxes with respect to which these occluded 
+% features have to be computed
+% the lengths of dres.fr does not mean that we have multiple frames, it only 
+% means that we have multiple objects - all of which might actually be present
+% in the same frame so that dres.fr actually contains all of the same values
+% but this is still an array because there must be one value for each object
+% since each object is associated with a particular frame
 m = numel(dres.fr);
+% Features are computed with respect to each candidate bonding box so that the
+% feature array has number of rows equal to the number of candidate bonding boxes
+% and the number of columns is equal to the dimensionality of the of occlusion 
+% feature which is 12
 feature = zeros(m, tracker.fnum_occluded);
 flag = zeros(m, 1);
 for i = 1:m
@@ -17,8 +28,10 @@ for i = 1:m
     tracker = LK_associate(frame_id, dres_image, dres_one, tracker);
     
     % design features
+    % all stored templates for which the tracking/OF succeeded;
     index = find(tracker.flags ~= 2);
     if isempty(index) == 0
+        % mean of features over non-tracked (presumably occluded) frames
         f(1) = mean(exp(-tracker.medFBs(index) / tracker.fb_factor));
         f(2) = mean(exp(-tracker.medFBs_left(index) / tracker.fb_factor));
         f(3) = mean(exp(-tracker.medFBs_right(index) / tracker.fb_factor));
@@ -28,6 +41,8 @@ for i = 1:m
         f(7) = mean(tracker.overlaps(index));
         f(8) = mean(tracker.nccs(index));
         f(9) = mean(tracker.ratios(index));
+        % for some reason, only the first value is used in the following
+        % instead of the mean
         f(10) = tracker.scores(1) / tracker.max_score;
         f(11) = dres_one.ratios(1);
         f(12) = exp(-dres_one.distances(1));
@@ -38,7 +53,10 @@ for i = 1:m
     feature(i,:) = f;
     
     if isempty(find(tracker.flags ~= 2, 1)) == 1
-        flag(i) = 0;
+        flag(i) = 0; % Indicates which of the occluded features are valid 
+        % and which are just zeros due to the corresponding patches having 
+        % failed to be tracked;
+
     else
         flag(i) = 1;
     end

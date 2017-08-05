@@ -7,7 +7,7 @@
 %
 % add cropped image and box to dres
 function dres = MDP_crop_image_box(dres, I, tracker)
-
+% call LK_crop_image_box for each object in dres
 num = numel(dres.fr);
 dres.I_crop = cell(num, 1);
 dres.BB_crop = cell(num, 1);
