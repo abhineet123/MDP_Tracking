@@ -314,7 +314,7 @@ while 1 % for multiple passes
             % for the set of nearby/associated detections to be passed 
             % to MDP_value;
             % Since a particular target can only occur once in any given frame 
-            % it is not quite clear why we needs just the first matching object
+            % it is not quite clear why we need just the first matching object
             % for this frame;
             index_gt = find(dres_gt.fr == fr, 1);
             if dres_gt.covered(index_gt) ~= 0

@@ -9,9 +9,27 @@
 function tracker = LK_associate(frame_id, dres_image, dres_det, tracker)
 
 % get cropped images and boxes 
-% Only the first potentially associated associated detection
-% not quite clear why only the first bounding box is being considered here 
-% will have to study the code for determining that
+% Only the first potentially associated detection is considered
+
+% the cropped image associated with this detection is supposed to act like
+% a proxy for the predicted location ROI of the bonding box for all 
+% of the stored templates;
+% since all of these potentially associated detections are picked so as
+% to be similar to the last known location of the object in both size and
+% location, therefore this assumption holds true for all of the detections 
+% and using the first one is just a random choice - we could have just as
+% well have used any of the other detections;
+% as long as the criteria used for picking these associated detections is
+% good enough, we can expect the object to be present in the cropped image
+% of any one of these detections, assuming of course that the object is 
+% present in this frame at all or at least visible in this frame at all
+
+% It turns out that only the best matching detection is passed to this 
+% function from MDP_value in the first place so the '1' is rather superficial
+% This also explains why there is no attempt to find the detection with the
+% maximum overlap - we just find the overlap with the single detection and that 
+% itself becomes the feature
+
 J_crop = dres_det.I_crop{1};
 BB2_crop = dres_det.BB_crop{1};
 bb_crop_J = dres_det.bb_crop{1};
@@ -22,7 +40,6 @@ for i = 1:tracker.num
     BB1 = [tracker.x1(i); tracker.y1(i); tracker.x2(i); tracker.y2(i)];
     I_crop = tracker.Is{i};
     BB1_crop = tracker.BBs{i};
-    hello hello hello hello hello
     % LK tracking
     % try to track the current template from its own frame to the cropped image
     % corresponding to the first potentially associated detection
@@ -106,7 +123,10 @@ for i = 1:tracker.num
         % and therefore if it is still fails it most probably
         % indicates that the object is not present in this new frame
         % at all or at least it is not visible
+        
         o = calc_overlap(dres, 1, dres_det, 1);
+        
+        % indexes into the detections
         ind = 1;
         score = dres_det.r(1);
         
@@ -133,19 +153,25 @@ for i = 1:tracker.num
     tracker.medNCCs(i) = medNCC;
     tracker.overlaps(i) = o;
     tracker.scores(i) = score;
+     % indexes into the detections
     tracker.indexes(i) = ind;
     tracker.angles(i) = angle;
     tracker.ratios(i) = ratio;
 end
 
 % combine tracking and detection results
+% Choose the stored template with the minimum median of forward backward 
+% errors during optical flow
 [~, ind] = min(tracker.medFBs);
 index = tracker.indexes(ind);
 bb_det = [dres_det.x(index); dres_det.y(index); ...
     dres_det.x(index)+dres_det.w(index); dres_det.y(index)+dres_det.h(index)];
 if tracker.overlaps(ind) > tracker.overlap_box
+    % weighted average of tracked box and detection box
     tracker.bb = mean([repmat(tracker.bbs{ind}, 1, tracker.weight_association) bb_det], 2);
 else
+    % tracking is assumed to be less reliable than detection, hence
+    % considered to have failed and its output thus rejected
     tracker.bb = bb_det;
 end
 

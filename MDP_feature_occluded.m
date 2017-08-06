@@ -24,6 +24,24 @@ m = numel(dres.fr);
 feature = zeros(m, tracker.fnum_occluded);
 flag = zeros(m, 1);
 for i = 1:m
+    % The features for each of the potentially associated detections
+    % are obtained by first trying to track each one of the stored
+    % templates into the region of interest around that detection and then
+    % comparing the result of this tracking or optical flow with
+    % the detection itself
+    % if a particular detection corresponds to the true location of
+    % the object in that frame then many of the stored templates will, on being
+    % tracked, give a bounding box which agrees very well with this detection
+    % after these features are passed to SVM to obtain their labels
+    % and probabilities, the detection with the maximum probability is
+    % considered to be the most likely detection to correspond to
+    % the true location of the object and all of the stored templates
+    % are again tracked with respect to this particular detection again
+    % therefore the tracking of all of the stored templates with respect
+    % to this particular detection's ROI is performed twice and
+    % this is at least one place. Some computation can be reduced
+    % by separately storing the result of all of these optical flow
+    % computations for each of one of the potential associated detections
     dres_one = sub(dres, i);
     tracker = LK_associate(frame_id, dres_image, dres_one, tracker);
     
@@ -53,10 +71,10 @@ for i = 1:m
     feature(i,:) = f;
     
     if isempty(find(tracker.flags ~= 2, 1)) == 1
-        flag(i) = 0; % Indicates which of the occluded features are valid 
+        % Indicates which of the occluded features are valid 
         % and which are just zeros due to the corresponding patches having 
         % failed to be tracked;
-
+        flag(i) = 0;
     else
         flag(i) = 1;
     end
