@@ -166,7 +166,7 @@ elseif tracker.state == 3
     else
         % no association
         tracker.state = 3;
-        % Extract the last bonding box that is present in the history
+        % Extract the last bounding box that is present in the history
         % of tracked bounding boxes within the tracker and modify
         % frame ID to be the current frame ID and also its target ID
         % to be the current one and its state to be 3 or occluded

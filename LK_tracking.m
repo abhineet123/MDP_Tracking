@@ -19,6 +19,10 @@
 
 function tracker = LK_tracking(frame_id, dres_image, dres_det, tracker)
 
+% tracker.flag = 1; % success
+% tracker.flag = 2; % complete failure
+% tracker.flag = 3; % unstable/unreliable tracking
+
 % current frame + motion
 J = dres_image.Igray{frame_id};
 % ignoring the w,h predictions
