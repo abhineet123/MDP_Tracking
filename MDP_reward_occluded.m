@@ -9,7 +9,12 @@
 function [reward, label, f, is_end] = MDP_reward_occluded(fr, f, dres_image, dres_gt, ...
     dres, index_det, tracker, opt, is_text)
 
+% This function is only called the tracker was in the occluded
+% state in the last frame
+
+ % Seems to be getting set to 1 whenever the reward is -1
 is_end = 0;
+
 label = 0;
 % check if any detection overlap with gt
 
@@ -43,17 +48,18 @@ if max(overlap) > opt.overlap_pos % 0.5
         
         % Compute the overlap between the object location from the ground truth
         % and the last known location of the object in the tracker
-        % which is the tracked location of the object in the current frame;
+        % which is the tracked location of the object in the current frame;      
+        ov = calc_overlap(dres_gt, index, tracker.dres, numel(tracker.dres.fr));
         % so basically we are here comparing the result of the tracking
         % with the ground truth to see if it is correct and
         % therefore decide what the reward should be;
-        ov = calc_overlap(dres_gt, index, tracker.dres, numel(tracker.dres.fr));
         if ov > opt.overlap_pos % 0.5
             % Both the detector and the tracker were successful with respect 
             % to this object in this frame
             reward = 1;
         else
             % Detector was successful but tracker was unsuccessful
+            % The tracker did associate but with the wrong detection
             reward = -1;
             label = -1;
             is_end = 1;
@@ -63,6 +69,9 @@ if max(overlap) > opt.overlap_pos % 0.5
         end
     else  % target not associated  
         
+        % Tracker remained in the occluded estate as it was not able
+        % to associate with any of the detections
+        
         % detector was able to detect this object in the current frame
         % but tracker was unable to track it successfully
         % so there is a disagreement between the
@@ -70,7 +79,11 @@ if max(overlap) > opt.overlap_pos % 0.5
         if dres_gt.covered(index) == 0
             % Object is visible in this scene
             
-            % Try to find the stored templates which were tracked
+            % This is the only case where the tracker is even given a chance
+            % to associate since, in the other case, the potential detections
+            % are discarded before calling MDP_value
+            
+            % find if any of the stored templates were tracked
             % successfully in this frame
             if isempty(find(tracker.flags ~= 2, 1)) == 1
                 % None of the stored templates were tracked successfully
@@ -80,9 +93,21 @@ if max(overlap) > opt.overlap_pos % 0.5
             else
                 % detector was successful and at least
                 % one of the stored templates were tracked successfully
+                % But the overall association was still incorrect since the 
+                % tracker remained in the occluded state therefore this
+                % must be regarded as a failure               
                 reward = -1;   % no association
+                
+                % but the corresponding feature is regarded as a positive
+                % training sample for some reason 
                 label = 1;
+                
                 % extract features
+                
+                % The feature is changed to be the one that is obtained by
+                % trying to track this object from its last known location
+                % to the detection that has the maximum overlap with
+                % the ground truth
                 
                 % Find the detection that has the maximum overlap with the
                 % ground truth bounding box
@@ -95,6 +120,12 @@ if max(overlap) > opt.overlap_pos % 0.5
                 is_end = 1;
             end
         else
+            % We know from MDP_train that the tracker can only associate
+            % successfully if the object is completely uncovered
+            % therefore in this particular case the tracker was not even
+            % given a chance to associate with any of the detections and
+            % hence its reward will remain 1 since it obviously did not fail
+            
             % Detector was able to find an object in this scene but
             % the ground truth says that the object is covered
             % therefore, since the tracker was also unable to track
@@ -119,8 +150,8 @@ else
         % Detector was unable to find this object in the current frame
         % but the tracker was able to track it since its current state
         % is tracked therefore the tracker must have associated with
-        % the wrong the detection and hence it is at fault and needs
-        % to be given negative or may be null reward  to correct it
+        % the wrong detection and hence it is at fault and needs
+        % to be given negative or maybe null reward  to correct it
         
         % Find the overlap between the ground truth location of the object
         % and the tracked location of the object

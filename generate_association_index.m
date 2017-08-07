@@ -6,7 +6,8 @@
 % --------------------------------------------------------
 %
 % find detections for association
-function [dres_det, index_det, ctrack] = generate_association_index(tracker, frame_id, dres_det)
+function [dres_det, index_det, ctrack] = generate_association_index(tracker,...
+    frame_id, dres_det)
 % Returns the detections that are close to the last known location of the object
 % and whose height is very similar to the height of that last known object
 % also augments the input structure containing all of the detections with 

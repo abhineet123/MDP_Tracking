@@ -308,7 +308,8 @@ while 1 % for multiple passes
             % one of the inputs to this function is also augmented with the
             % ratios and the distances of all of these detections from 
             % this last known location
-            [dres, index_det, ctrack] = generate_association_index(tracker, fr, dres);
+            [dres, index_det, ctrack] = generate_association_index(tracker,...
+                fr, dres);
             % The first bounding box of this target in the current frame
             % should be such that it is completely uncovered
             % for the set of nearby/associated detections to be passed 
@@ -318,8 +319,24 @@ while 1 % for multiple passes
             % for this frame;
             index_gt = find(dres_gt.fr == fr, 1);
             if dres_gt.covered(index_gt) ~= 0
+                % If this target is even partially covered by another object
+                % in the current frame then the associated detections that we found
+                % earlier are discarded when trying to perform the association
                 index_det = [];
             end
+            % Association can only be successful or in other words the
+            % tracker can only move to tracked state if the associated
+            % detections are rather the potentially associated detections
+            % are passed to this function
+            % since we are discarding the potentially associated detections if
+            % this object is even partially covered in the ground truth,
+            % therefore the tracker will remain unassociated if it is
+            % even partially covered
+            % we seem to be the performing some kind of cheating here by
+            % using information from the ground truth to apriorily remove
+            % the detections and thus condemn the tracker to fail to associate
+            % in other words, the tracker will only associate if this object
+            % is known to be completely uncovered in the ground truth
             [tracker, ~, f] = MDP_value(tracker, fr, dres_image, dres, index_det);
             
             if is_show
@@ -329,10 +346,18 @@ while 1 % for multiple passes
                 hold on;
                 plot(ctrack(1), ctrack(2), 'ro', 'LineWidth', 2);
                 hold off;
-            end
-            
+            end           
+          
             if isempty(index_det) == 0
                 % compute reward
+                
+                % reward computation in the occluded state is only done
+                % if the potentially associated detections were not discarded
+                % which in turn means that the the object in the GT must be
+                % completely uncovered for any of this to happen
+                % we can therefore take the complete uncoverage of the object
+                % in the ground truth as a priori condition or calling the
+                % reward computing function in the occluded state
                 [reward, label, f, is_end] = MDP_reward_occluded(fr, f, dres_image, ...
                     dres_gt, dres, index_det, tracker, opt, is_text);
                 
@@ -343,11 +368,47 @@ while 1 % for multiple passes
                     tracker.w_occluded = svmtrain(tracker.l_occluded,...
                         tracker.f_occluded, '-c 1 -q -g 1 -b 1');
                     if is_text
-                        fprintf('training examples in occluded state %d\n', size(tracker.f_occluded,1));
+                        fprintf('training examples in occluded state %d\n',...
+                            size(tracker.f_occluded,1));
                     end
                 end
                 
                 if is_end
+                    % this seems to be getting set to 1 in MDP_reward_occluded
+                    % whenever the reward is negative;
+                    % therefore the tracker seems to be transitioning to the
+                    % inactive state whenever we get a negative reward
+                    % the transition to inactive estate in turn means that this
+                    % particular trajectory will be set to good in the next
+                    % frame and then we will break it
+                    % this in turn seems to suggest that each trajectory is only
+                    % used for training as long as we continue to get
+                    % positive reward out of it
+                    % and since we only update the SVM whenever we get a
+                    % negative reward, it further seems that the we only train from
+                    % each trajectory only once when we get negative reward
+                    % and as soon as that happens, we break it in the next frame
+                    % itself and do not train on it again 
+                    
+                    % In fact a correction is needed here since the we actually set
+                    % this trajectory to good only if the reward is 1
+                    % therefore if the tracker state is inactive but the reward is
+                    % negative, then we simply break this trajectory without setting
+                    % it to good
+                    % therefore when we are looking for a trajectory to train on
+                    % next time, we might be able to find it - in fact we will be able
+                    % to find it when all of the other trajectories have been
+                    % used for training too
+                    % since the process for finding a trajectory to train is
+                    % circular in nature, it always go to the next trajectory first
+                    % or rather we always check the next trajectory first but
+                    % when we reach the last trajectory, we circle back
+                    % to the first one
+                    % therefore, if any trajectory is broken down because we got
+                    % a negative reward and we set the tracker state to inactive,
+                    % we will be able to find it sometime in the future after we are
+                    % done training on the subsequent trajectories
+                    % which have not been set to good yet
                     tracker.state = 0;
                 end
             end
@@ -356,6 +417,20 @@ while 1 % for multiple passes
             if tracker.streak_occluded > opt.max_occlusion
                 tracker.state = 0;
                 if isempty(find(dres_gt.fr == fr, 1)) == 1
+                    % This particular object is actually not present in this
+                    % frame according to the GT therefore the fact of finding
+                    % it to be occluded for very long time in the tracker
+                    % means that this object has permanently left the scene
+                    % in actuality and therefore the tracker did not fail
+                    % and its reward remains positive
+                    
+                    % In this case, this particular trajectory will be set
+                    % to good in the next frame and we will no longer train
+                    % on it again because, as we saw before, the object
+                    % has been assumed to have left the scene permanently
+                    % so there is no further point in training on it again
+                    % in other words, we have already trained on all of the  
+                    % frames in which the object was actually present scene
                     reward = 1;
                 end
                 if is_text
@@ -366,11 +441,23 @@ while 1 % for multiple passes
         
         % check if outside image
         if tracker.state == 2
-            [~, ov] = calc_overlap(tracker.dres, numel(tracker.dres.fr), dres_image, fr);
+            [~, ov] = calc_overlap(tracker.dres, numel(tracker.dres.fr),...
+                dres_image, fr);
             if ov < opt.exit_threshold
                 if is_text
                     fprintf('target outside image by checking boarders\n');
                 end
+                % If the tracker state is 2, that is, it is in the tracked state
+                % but the current location of the object is too far outside the image
+                % or in other words its overlap with the BB corresponding
+                % to the entire image is below a threshold we can assume
+                % that the object has left the scene by simply going out
+                % of its borders and therefore we set the reward to 1 and the
+                % tracker state to inactive so that this trajectory is set
+                % to good in the next frame and we no longer train on it again
+                % here, as in the case of long-term occlusion, we have already
+                % trained on all of the frames in which the object
+                % is actually present in the scene
                 tracker.state = 0;
                 reward = 1;
             end
@@ -404,6 +491,22 @@ while 1 % for multiple passes
         
         % try to connect recently lost target
         if ~(tracker.state == 3 && tracker.prev_state == 2)
+            % We do not move on to the next frame if the tracker was
+            % in the tracked state in the last frame and is occluded
+            % in the current frame
+            % or, in other words, if it has been very recently lost
+            % in the current frame itself then we try to track it again
+            % it is not quite clear what has changed in this
+            % particular iteration that we expect the next iteration on
+            % the same frame to lead to a different result
+            % that is, we seem to be expecting the tracker state to
+            % become 2 again when we track this same frame the next
+            % time round in the next iteration
+            
+            % It must be that to the change in parameters by retraining the SVM,
+            % if indeed such was done, is expected to have improved the
+            % tracker enough to be able to find this object in this frame
+            % whwn we track on it again in the next iteration
             fr = fr + 1;
         end        
     end % end tracking this sequence
@@ -414,6 +517,9 @@ while 1 % for multiple passes
     end
     counter(t) = counter(t) + 1;
     if counter(t) > max_count
+        % Exceeded the maximum number of iterations, therefore we will
+        % not train on this particular trajectory again
+        % it has been discarded as being too difficult to train on
         is_good(t) = 1;
         is_difficult(t) = 1;
         fprintf('sequence %d max iteration\n', t);
