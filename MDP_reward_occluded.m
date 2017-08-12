@@ -12,6 +12,40 @@ function [reward, label, f, is_end] = MDP_reward_occluded(fr, f, dres_image, dre
 % This function is only called the tracker was in the occluded
 % state in the last frame
 
+% Possible scenarios:
+% detected
+%     tracked/associated
+%         correctly
+%             reward = 1;
+%             label = 0;
+%         incorrectly     
+%             reward = -1;
+%             label = -1;
+%     not tracked/associated
+%         visible/uncovered
+%             all templates failed to track
+%                 reward = 0;
+%                 label = 0;
+%             at least one template tracked
+%                 reward = -1;                
+%                 label = 1;
+%                 feature from max overlapping detection with GT
+%         covered/not visible
+%             reward = 1;
+%             label = 0;
+% not detected
+%     not tracked/associated
+%         reward = 1;
+%         label = 0;
+%     tracked/associated
+%         tracked or detected location does not match GT at all
+%             reward = -1;
+%             label = -1;
+%         otherwise
+%             reward = 0;
+%             label = 0;
+
+
  % Seems to be getting set to 1 whenever the reward is -1
 is_end = 0;
 

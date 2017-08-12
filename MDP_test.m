@@ -203,7 +203,7 @@ for fr = 1:seq_num
         end        
     end
     
-    % extract detection
+    % get all the detections in this frame    
     index = find(dres_det.fr == fr);
     dres = sub(dres_det, index);
     
@@ -219,6 +219,11 @@ for fr = 1:seq_num
         dres = sub(dres, index);        
     end
     
+    % Extract an image patch around each of the detections so that
+    % the optical flow might be carried out from the last known
+    % location of the tracked object to all of these patches
+    % to see which one is easiest to track and therefore
+    % most likely to correspond to the tracked object    
     dres = MDP_crop_image_box(dres, dres_image.Igray{fr}, tracker);
     
     if is_show
@@ -235,7 +240,7 @@ for fr = 1:seq_num
         show_dres(fr, dres_image.I{fr}, 'Detections', dres);
     end
     
-    % sort trackers
+    % sort trackers by no. of tracked frames
     if db_type == 1
         index_track = sort_trackers_kitti(fr, trackers, dres, opt);        
     else
@@ -361,260 +366,4 @@ else
             seq_name, test_start_idx, test_end_idx);
         save(filename, 'dres_track');
     end 
-end
-
-% sort trackers according to number of tracked frames
-function index = sort_trackers(trackers)
-
-sep = 10;
-num = numel(trackers);
-len = zeros(num, 1);
-state = zeros(num, 1);
-for i = 1:num
-    len(i) = trackers{i}.streak_tracked;
-    state(i) = trackers{i}.state;
-end
-
-index1 = find(len > sep);
-[~, ind] = sort(state(index1));
-index1 = index1(ind);
-
-index2 = find(len <= sep);
-[~, ind] = sort(state(index2));
-index2 = index2(ind);
-index = [index1; index2];
-
-
-% sort trackers according to number of tracked frames
-function index = sort_trackers_kitti(fr, trackers, dres, opt)
-
-sep = 10;
-num = numel(trackers);
-num_det = numel(dres.fr);
-len = zeros(num, 1);
-state = zeros(num, 1);
-overlap = zeros(num, 1);
-for i = 1:num
-    len(i) = trackers{i}.streak_tracked;
-    state(i) = trackers{i}.state;
-    
-    % predict the new location
-    if state(i) > 0 && num_det > 0
-        [ctrack, wh] = apply_motion_prediction(fr-1, trackers{i});
-        dres_one.x = ctrack(1) - wh(1) / 2;
-        dres_one.y = ctrack(2) - wh(2) / 2;
-        dres_one.w = wh(1);
-        dres_one.h = wh(2);
-        
-        if dres_one.w > 0 && dres_one.h > 0 && opt.is_text
-            figure(1); hold on;
-            rectangle('Position', [dres_one.x dres_one.y dres_one.w dres_one.h], 'EdgeColor', 'r');
-            hold off;
-        end
-        
-        ov = calc_overlap(dres_one, 1, dres, 1:num_det);
-        overlap(i) = max(ov);
-    end
-end
-
-index1 = find(len > sep);
-% tracked objects
-index_tracked = index1(state(index1) == 2);
-[~, ind] = sort(overlap(index_tracked), 'descend');
-index_tracked = index_tracked(ind);
-% lost objects
-index_lost = index1(state(index1) == 3);
-[~, ind] = sort(overlap(index_lost), 'descend');
-index_lost = index_lost(ind);
-index1 = [index_tracked; index_lost];
-
-index2 = find(len <= sep);
-% tracked objects
-index_tracked = index2(state(index2) == 2);
-[~, ind] = sort(len(index_tracked), 'descend');
-index_tracked = index_tracked(ind);
-% lost objects
-index_lost = index2(state(index2) == 3);
-[~, ind] = sort(len(index_lost), 'descend');
-index_lost = index_lost(ind);
-index2 = [index_tracked; index_lost];
-
-index = [index1; index2];
-
-if opt.is_text
-    fprintf('order: ');
-    for i = 1:numel(index)
-        fprintf('%d %.2f, %d\n', index(i), overlap(index(i)), len(index(i)));
-    end
-    fprintf('\n');
-end
-
-
-% initialize a tracker
-% dres: detections
-function tracker = initialize(fr, dres_image, id, dres, ind, tracker)
-
-if tracker.state ~= 1
-    return;
-else  % active
-
-    % initialize the LK tracker
-    tracker = LK_initialize(tracker, fr, id, dres, ind, dres_image);
-    tracker.state = 2;
-    tracker.streak_occluded = 0;
-    tracker.streak_tracked = 0;
-
-    % build the dres structure
-    dres_one.fr = dres.fr(ind);
-    dres_one.id = tracker.target_id;
-    dres_one.x = dres.x(ind);
-    dres_one.y = dres.y(ind);
-    dres_one.w = dres.w(ind);
-    dres_one.h = dres.h(ind);
-    dres_one.r = dres.r(ind);
-    dres_one.state = tracker.state;
-    if isfield(dres, 'type')
-        dres_one.type = {dres.type{ind}};
-    end        
-    tracker.dres = dres_one;
-end
-
-% track a target
-function tracker = track(fr, dres_image, dres, tracker, opt)
-
-% tracked    
-if tracker.state == 2
-    tracker.streak_occluded = 0;
-    tracker.streak_tracked = tracker.streak_tracked + 1;
-    tracker = MDP_value(tracker, fr, dres_image, dres, []);
-
-    % check if target outside image
-    [~, ov] = calc_overlap(tracker.dres, numel(tracker.dres.fr), dres_image, fr);
-    
-    if ov < opt.exit_threshold
-        if opt.is_text
-            fprintf('target outside image by checking boarders\n');
-        end
-        tracker.state = 0;
-    end    
-end
-
-
-% associate a lost target
-function tracker = associate(fr, dres_image, dres_associate, tracker, opt)
-
-% occluded
-if tracker.state == 3
-    tracker.streak_occluded = tracker.streak_occluded + 1;
-    % find a set of detections for association
-    [dres_associate, index_det] = generate_association_index(tracker, fr, dres_associate);
-    tracker = MDP_value(tracker, fr, dres_image, dres_associate, index_det);
-    if tracker.state == 2
-        tracker.streak_occluded = 0;
-        if opt.is_text
-            fprintf('target %d associated\n', tracker.target_id);
-        end
-    else
-        if opt.is_text
-            fprintf('target %d not associated\n', tracker.target_id);
-        end
-    end
-
-    if tracker.streak_occluded > opt.max_occlusion
-        tracker.state = 0;
-        if opt.is_text
-            fprintf('target %d exits due to long time occlusion\n', tracker.target_id);
-        end
-    end
-    
-    % check if target outside image
-    [~, ov] = calc_overlap(tracker.dres, numel(tracker.dres.fr), dres_image, fr);
-    
-    % predict the new location
-    ctrack = apply_motion_prediction(fr+1, tracker);
-    dres_one.x = ctrack(1);
-    dres_one.y = ctrack(2);
-    dres_one.w = tracker.dres.w(end);
-    dres_one.h = tracker.dres.h(end);
-    [~, ov1] = calc_overlap(dres_one, 1, dres_image, fr);
-    
-    if ov < opt.exit_threshold || (ov1 < 0.05 && tracker.state == 3)
-        if opt.is_text
-            fprintf('target outside image by checking boarders\n');
-        end
-        tracker.state = 0;
-    end    
-end
-
-
-% resolve conflict between trackers
-function trackers = resolve(trackers, dres_det, opt)
-
-% collect dres from trackers
-dres_track = [];
-for i = 1:numel(trackers)
-    tracker = trackers{i};
-    dres = sub(tracker.dres, numel(tracker.dres.fr));
-    
-    if tracker.state == 2
-        if isempty(dres_track)
-            dres_track = dres;
-        else
-            dres_track = concatenate_dres(dres_track, dres);
-        end
-    end
-end   
-
-% compute overlaps
-num_det = numel(dres_det.fr);
-if isempty(dres_track)
-    num_track = 0;
-else
-    num_track = numel(dres_track.fr);
-end
-
-flag = zeros(num_track, 1);
-for i = 1:num_track
-    [~, o] = calc_overlap(dres_track, i, dres_track, 1:num_track);
-    o(i) = 0;
-    o(flag == 1) = 0;
-    [mo, ind] = max(o);
-    
-    if isfield(dres_track, 'type')
-        cls = dres_track.type{i};
-        if strcmp(cls, 'Pedestrian') == 1 || strcmp(cls, 'Cyclist') == 1
-            overlap_sup = opt.overlap_sup;
-        elseif strcmp(cls, 'Car') == 1
-            overlap_sup = 0.95;
-        end
-    else
-        overlap_sup = opt.overlap_sup;
-    end
-        
-    
-    if mo > overlap_sup 
-        num1 = trackers{dres_track.id(i)}.streak_tracked;
-        num2 = trackers{dres_track.id(ind)}.streak_tracked;
-        o1 = max(calc_overlap(dres_track, i, dres_det, 1:num_det));
-        o2 = max(calc_overlap(dres_track, ind, dres_det, 1:num_det));
-        
-        if num1 > num2
-            sup = ind;
-        elseif num1 < num2
-            sup = i;
-        else
-            if o1 > o2
-                sup = ind;
-            else
-                sup = i;
-            end
-        end
-        
-        trackers{dres_track.id(sup)}.state = 3;
-        trackers{dres_track.id(sup)}.dres.state(end) = 3;
-        if opt.is_text
-            fprintf('target %d suppressed\n', dres_track.id(sup));
-        end
-        flag(sup) = 1;
-    end
 end
