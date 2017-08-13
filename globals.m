@@ -138,6 +138,8 @@ opt.kitti_test_nums = [465, 147, 243, 257, 421, 809, 114, 215, 165, 349, 1176, .
     170, 85, 175];
 opt.kitti_types = {'Car', 'Pedestrian', 'Cyclist'};
 
+%% Add paths
+
 % addpath(fullfile(opt.mot, 'devkit', 'utils'));
 % addpath(fullfile(opt.kitti, 'devkit', 'matlab'));
 addpath(fullfile('utils'));
@@ -162,7 +164,8 @@ if exist(opt.results_gram, 'dir') == 0
     mkdir(opt.results_gram);
 end
 
-% tracking parameters
+%% tracking parameters
+
 opt.num = 10;                 % number of templates in tracker (default 10)
 opt.fb_factor = 30;           % normalization factor for forward-backward error in optical flow
 opt.threshold_ratio = 0.6;    % aspect ratio threshold in target association
