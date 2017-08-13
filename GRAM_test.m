@@ -7,7 +7,7 @@
 %
 % cross_validation on the KITTI benchmark
 function GRAM_test(is_train, seq_idx_train, seq_idx_test,...
-    continue_from_seq)
+    continue_from_seq, use_hungarian)
 
 % set is_train to 0 if testing trained trackers only
 if nargin<1
@@ -26,7 +26,9 @@ end
 if nargin<4
     continue_from_seq = 0;
 end
-
+if nargin<5
+    use_hungarian = 0;
+end
 db_type = 2;
 opt = globals();
 seq_set_test = 'testing';
@@ -40,6 +42,10 @@ else
 end
 
 diary(log_fname);
+
+if use_hungarian
+    fprinf('Using Hungarian variani\n');
+end
 
 % for each training-testing pair
 for i = 1:N
@@ -87,7 +93,11 @@ for i = 1:N
     num = numel(idx_test);
     for j = 1:num
         fprintf('Testing on sequence: %s\n', opt.gram_seqs{idx_test(j)});
-        MDP_test(idx_test(j), seq_set_test, tracker, db_type);
+        if use_hungarian
+            MDP_test_hungarian(idx_test(j), seq_set_test, tracker, db_type);
+        else           
+            MDP_test(idx_test(j), seq_set_test, tracker, db_type);
+        end
     end    
     GRAM_evaluation_only(idx_test);
 end
