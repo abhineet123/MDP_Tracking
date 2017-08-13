@@ -164,6 +164,8 @@ if nargin < 3
     tracker = object.tracker;
 end
 
+%% perform tracking
+
 % intialize tracker
 I = dres_image.I{1};
 tracker = MDP_initialize_test(tracker, size(I,2), size(I,1), dres_det, is_show);
@@ -171,6 +173,7 @@ tracker = MDP_initialize_test(tracker, size(I,2), size(I,1), dres_det, is_show);
 % for each frame
 trackers = [];
 id = 0;
+start_t = tic;
 for fr = 1:seq_num
     if is_text
         fprintf('frame %d\n', fr);
@@ -370,8 +373,12 @@ for fr = 1:seq_num
     %     end
     % end
 end
+elapsed_time  = toc(start_t);
+fprintf('\nTotal time taken: %.2f secs.\nAverage FPS: %.2f\n',...
+    elapsed_time, double(seq_num)/double(elapsed_time));
 
-% write tracking results
+%% write tracking results
+
 if db_type == 0
     filename = sprintf('%s/%s.txt', opt.results, seq_name);
     fprintf('write results: %s\n', filename);
