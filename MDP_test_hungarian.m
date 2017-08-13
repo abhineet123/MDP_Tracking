@@ -6,10 +6,10 @@
 % --------------------------------------------------------
 %
 % testing MDP
-function metrics = MDP_test_hungarian(seq_idx, seq_set, tracker, is_kitti)
+function metrics = MDP_test_hungarian(seq_idx, seq_set, tracker, db_type)
 
 if nargin < 4
-    is_kitti = 0;
+    db_type = 0;
 end
 
 is_show = 0;
@@ -21,18 +21,18 @@ opt = globals();
 opt.is_text = is_text;
 opt.exit_threshold = 0.7;
 
-if is_kitti == 1
+if db_type == 1
     opt.max_occlusion = 20;
     opt.tracked = 10;
     opt.threshold_dis = 1;
     tracker.threshold_dis = opt.threshold_dis;
 end
 
-if is_show
-%     close all;
-end
+% if is_show
+% %     close all;
+% end
 
-if is_kitti == 0
+if db_type == 0
     if strcmp(seq_set, 'train') == 1
         seq_name = opt.mot2d_train_seqs{seq_idx};
         seq_num = opt.mot2d_train_nums(seq_idx);
@@ -40,7 +40,7 @@ if is_kitti == 0
         seq_name = opt.mot2d_test_seqs{seq_idx};
         seq_num = opt.mot2d_test_nums(seq_idx);
     end
-
+    
     % build the dres structure for images
     filename = sprintf('%s/%s_dres_image.mat', opt.results, seq_name);
     if exist(filename, 'file') ~= 0
@@ -52,18 +52,18 @@ if is_kitti == 0
         fprintf('read images done\n');
         save(filename, 'dres_image', '-v7.3');
     end
-
+    
     % read detections
     filename = fullfile(opt.mot, opt.mot2d, seq_set, seq_name, 'det', 'det.txt');
     dres_det = read_mot2dres(filename);
-
+    
     if strcmp(seq_set, 'train') == 1
         % read ground truth
         filename = fullfile(opt.mot, opt.mot2d, seq_set, seq_name, 'gt', 'gt.txt');
         dres_gt = read_mot2dres(filename);
         dres_gt = fix_groundtruth(seq_name, dres_gt);
     end
-else
+elseif db_type == 1
     if strcmp(seq_set, 'training') == 1
         seq_name = opt.kitti_train_seqs{seq_idx};
         seq_num = opt.kitti_train_nums(seq_idx);
@@ -71,7 +71,7 @@ else
         seq_name = opt.kitti_test_seqs{seq_idx};
         seq_num = opt.kitti_test_nums(seq_idx);
     end
-
+    
     % build the dres structure for images
     filename = sprintf('%s/kitti_%s_%s_dres_image.mat', opt.results_kitti, seq_set, seq_name);
     if exist(filename, 'file') ~= 0
@@ -83,15 +83,73 @@ else
         fprintf('read images done\n');
         save(filename, 'dres_image', '-v7.3');
     end
-
+    
     % read detections
     filename = fullfile(opt.kitti, seq_set, 'det_02', [seq_name '.txt']);
-    dres_det = read_kitti2dres(filename);    
-
+    dres_det = read_kitti2dres(filename);
+    
     if strcmp(seq_set, 'training') == 1
         % read ground truth
         filename = fullfile(opt.kitti, seq_set, 'label_02', [seq_name '.txt']);
         dres_gt = read_kitti2dres(filename);
+    end
+else
+    % GRAM and IDOT
+    if db_type == 2
+        db_path = opt.gram;
+        res_path = opt.results_gram;
+        test_seqs = opt.gram_seqs;
+        test_nums = opt.gram_nums;
+        train_ratio = opt.gram_train_ratio;
+        test_ratio = opt.gram_test_ratio;
+    else
+        db_path = opt.idot;
+        res_path = opt.results_idot;
+        test_seqs = opt.idot_seqs;
+        test_nums = opt.idot_nums;
+        train_ratio = opt.idot_train_ratio;
+        test_ratio = opt.idot_test_ratio;
+    end
+    seq_name = test_seqs{seq_idx};
+    seq_n_frames = test_nums(seq_idx);
+    if test_ratio(seq_idx)<=0
+        seq_train_ratio = train_ratio(seq_idx);
+        [ test_start_idx, test_end_idx ] = getInvSubSeqIdx(seq_train_ratio,...
+            seq_n_frames);
+    else
+        seq_test_ratio = test_ratio(seq_idx);
+        [ test_start_idx, test_end_idx ] = getSubSeqIdx(seq_test_ratio,...
+            seq_n_frames);
+    end
+    seq_num = test_end_idx - test_start_idx + 1;
+    
+    fprintf('Testing sequence %s from frame %d to %d\n',...
+        seq_name, test_start_idx, test_end_idx);
+    % build the dres structure for images
+    filename = sprintf('%s/gram_%s_%d_%d_dres_image.mat',...
+        res_path, seq_name, test_start_idx, test_end_idx);
+    if exist(filename, 'file') ~= 0
+        object = load(filename);
+        dres_image = object.dres_image;
+        fprintf('load images from file %s done\n', filename);
+    else
+        fprintf('reading images....\n');
+        dres_image = read_dres_image_gram(db_path, seq_name,...
+            test_start_idx, test_end_idx);
+        fprintf('done\n');
+        if save_images
+            save(filename, 'dres_image', '-v7.3');
+        end
+    end
+    
+    % read detections
+    filename = fullfile(db_path, 'Detections', [seq_name '.txt']);
+    dres_det = read_gram2dres(filename, test_start_idx, test_end_idx);
+    
+    if strcmp(seq_set, 'training') == 1
+        % read ground truth
+        filename = fullfile(db_path, 'Annotations', [seq_name '.txt']);
+        dres_gt = read_gram2dres(filename, test_start_idx, test_end_idx);
     end
 end
 
@@ -115,7 +173,7 @@ for fr = 1:seq_num
         fprintf('.');
         if mod(fr, 100) == 0
             fprintf('\n');
-        end        
+        end
     end
     
     % extract detection
@@ -123,11 +181,11 @@ for fr = 1:seq_num
     dres = sub(dres_det, index);
     
     % nms
-    if is_kitti
+    if db_type==1
         boxes = [dres.x dres.y dres.x+dres.w dres.y+dres.h dres.r];
         index = nms_new(boxes, 0.6);
         dres = sub(dres, index);
-
+        
         % only keep cars and pedestrians
         ind = strcmp('Car', dres.type) | strcmp('Pedestrian', dres.type);
         index = find(ind == 1);
@@ -136,19 +194,19 @@ for fr = 1:seq_num
     
     dres = MDP_crop_image_box(dres, dres_image.Igray{fr}, tracker);
     
-    if is_show
-        figure(1);
-        
-        % show ground truth
-        if strcmp(seq_set, 'train') == 1
-            subplot(2, 2, 1);
-            show_dres(fr, dres_image.I{fr}, 'GT', dres_gt);
-        end
-
-        % show detections
-%         subplot(2, 2, 2);
-        show_dres(fr, dres_image.I{fr}, 'Detections', dres);
-    end
+    % if is_show
+    %     figure(1);
+    %
+    %     % show ground truth
+    %     if strcmp(seq_set, 'train') == 1
+    %         subplot(2, 2, 1);
+    %         show_dres(fr, dres_image.I{fr}, 'GT', dres_gt);
+    %     end
+    %
+    %     % show detections
+    % %         subplot(2, 2, 2);
+    %     show_dres(fr, dres_image.I{fr}, 'Detections', dres);
+    % end
     
     % separate trackers into the first and the second class
     [index1, index2] = sort_trackers_hgn(trackers);
@@ -160,10 +218,10 @@ for fr = 1:seq_num
         else
             index_track = index2;
         end
-           
+        
         num_track = numel(index_track);
         flags = zeros(num_track, 1);
-
+        
         % process tracked targets
         for i = 1:num_track
             ind = index_track(i);
@@ -178,28 +236,28 @@ for fr = 1:seq_num
                         index_tmp = index_track(1:i-1);
                     else
                         index_tmp = [index_track(1:i-1); index1];
-                    end                    
+                    end
                     [dres_tmp, index] = generate_initial_index(trackers(index_tmp), dres);
                     dres_associate = sub(dres_tmp, index);
                     trackers{ind} = associate_hungarian(fr, dres_image,  dres_associate, trackers{ind}, opt);
-                end                
+                end
                 
                 if trackers{ind}.state == 2 || trackers{ind}.state == 0
                     flags(i) = 1;
                 end
             end
         end
-
+        
         % process lost targets
         if k == 1
             index_tmp = index_track(flags == 1);
         else
             index_tmp = [index_track(flags == 1); index1];
         end
-        [dres_tmp, index] = generate_initial_index(trackers(index_tmp), dres);    
+        [dres_tmp, index] = generate_initial_index(trackers(index_tmp), dres);
         dres_associate = sub(dres_tmp, index);
         num_det = numel(index);
-
+        
         % compute distance matrix
         index_track = index_track(flags == 0);
         num_track = numel(index_track);
@@ -209,10 +267,10 @@ for fr = 1:seq_num
             ind = index_track(i);
             dist(i,:) = compute_distance_hungarian(fr, dres_image, dres_associate, trackers{ind});
         end
-
+        
         % Hungarian algorithm
         assignment = assignmentoptimal(dist);
-
+        
         % process the assignment
         for i = 1:numel(assignment)
             det_id = assignment(i);
@@ -224,18 +282,18 @@ for fr = 1:seq_num
                 dres_one.fr = fr;
                 dres_one.id = trackers{ind}.target_id;
                 dres_one.state = 3;
-
+                
                 if trackers{ind}.dres.fr(end) == fr
                     dres_tmp = trackers{ind}.dres;
                     index_tmp = 1:numel(dres_tmp.fr)-1;
                     trackers{ind}.dres = sub(dres_tmp, index_tmp);
-                end        
+                end
                 trackers{ind}.dres = concatenate_dres(trackers{ind}.dres, dres_one);
             else
                 % association
                 dres_one = sub(dres_associate, det_id);
                 trackers{ind} = LK_associate(fr, dres_image, dres_one, trackers{ind});
-
+                
                 trackers{ind}.state = 2;
                 % build the dres structure
                 dres_one = [];
@@ -249,16 +307,16 @@ for fr = 1:seq_num
                 dres_one.state = 2;
                 if isfield(trackers{ind}.dres, 'type')
                     dres_one.type = {trackers{ind}.dres.type{1}};
-                end    
-
+                end
+                
                 if trackers{ind}.dres.fr(end) == fr
                     dres_tmp = trackers{ind}.dres;
                     index_tmp = 1:numel(dres_tmp.fr)-1;
-                    trackers{ind}.dres = sub(dres_tmp, index_tmp);            
+                    trackers{ind}.dres = sub(dres_tmp, index_tmp);
                 end
                 trackers{ind}.dres = interpolate_dres(trackers{ind}.dres, dres_one);
                 % update LK tracker
-                trackers{ind} = LK_update(fr, trackers{ind}, dres_image.Igray{fr}, dres_associate, 1);              
+                trackers{ind} = LK_update(fr, trackers{ind}, dres_image.Igray{fr}, dres_associate, 1);
             end
         end
     end
@@ -278,42 +336,42 @@ for fr = 1:seq_num
         
         % reset tracker
         tracker.prev_state = 1;
-        tracker.state = 1;            
+        tracker.state = 1;
         id = id + 1;
         
         trackers{end+1} = initialize_hungarian(fr, dres_image, id, dres, index(i), tracker);
     end
     
     % resolve_hungarian tracker conflict
-    trackers = resolve_hungarian(trackers, dres, opt);    
+    trackers = resolve_hungarian(trackers, dres, opt);
     
     dres_track = generate_results(trackers);
-    if is_show
-        figure(2);
-
-        % show tracking results
-%         subplot(2, 2, 3);
-        show_dres(fr, dres_image.I{fr}, 'Tracking', dres_track, 2);
-
-        % show lost targets
-%         subplot(2, 2, 4);
-        figure(3);
-        show_dres(fr, dres_image.I{fr}, 'Lost', dres_track, 3);
-
-        if is_pause
-            pause();
-        else
-            pause(0.01);
-        end
-    end  
+    % if is_show
+    %     figure(2);
+    %
+    %     % show tracking results
+    %     subplot(2, 2, 3);
+    %     show_dres(fr, dres_image.I{fr}, 'Tracking', dres_track, 2);
+    %
+    %     % show lost targets
+    %     subplot(2, 2, 4);
+    %     figure(3);
+    %     show_dres(fr, dres_image.I{fr}, 'Lost', dres_track, 3);
+    %
+    %     if is_pause
+    %         pause();
+    %     else
+    %         pause(0.01);
+    %     end
+    % end
 end
 
 % write tracking results
-if is_kitti == 0
+if db_type == 0
     filename = sprintf('%s/%s.txt', opt.results, seq_name);
     fprintf('write results: %s\n', filename);
     write_tracking_results(filename, dres_track, opt.tracked);
-
+    
     % evaluation
     if strcmp(seq_set, 'train') == 1
         benchmark_dir = fullfile(opt.mot, opt.mot2d, seq_set, filesep);
@@ -321,13 +379,13 @@ if is_kitti == 0
     else
         metrics = [];
     end
-
+    
     % save results
     if is_save
         filename = sprintf('%s/%s_results.mat', opt.results, seq_name);
         save(filename, 'dres_track', 'metrics');
     end
-else
+elseif db_type == 1
     filename = sprintf('%s/%s.txt', opt.results_kitti, seq_name);
     fprintf('write results: %s\n', filename);
     write_tracking_results_kitti(filename, dres_track, opt.tracked);
@@ -346,5 +404,17 @@ else
     if is_save
         filename = sprintf('%s/kitti_%s_%s_results.mat', opt.results_kitti, seq_set, seq_name);
         save(filename, 'dres_track');
-    end    
+    end
+else
+    filename = sprintf('%s/%s_%d_%d.txt', opt.results_gram, seq_name,...
+        test_start_idx, test_end_idx);
+    fprintf('writing results to: %s\n', filename);
+    write_tracking_results(filename, dres_track, opt.tracked);
+    
+    % save results
+    if is_save
+        filename = sprintf('%s/%s_%d_%d_results.mat', opt.results,...
+            seq_name, test_start_idx, test_end_idx);
+        save(filename, 'dres_track');
+    end
 end
