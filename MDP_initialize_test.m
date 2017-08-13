@@ -6,7 +6,8 @@
 % --------------------------------------------------------
 %
 % initialization for testing
-function tracker = MDP_initialize_test(tracker, image_width, image_height, dres_det, is_show)
+function tracker = MDP_initialize_test(tracker, image_width, image_height,...
+    dres_det, is_show)
 
 % normalization factor for features
 tracker.image_width = image_width;

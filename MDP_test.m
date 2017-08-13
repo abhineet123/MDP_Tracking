@@ -296,23 +296,23 @@ for fr = 1:seq_num
     trackers = resolve(trackers, dres, opt);    
     
     dres_track = generate_results(trackers);
-    if is_show
-        figure(1);
-
-        % show tracking results
-        subplot(2, 2, 3);
-        show_dres(fr, dres_image.I{fr}, 'Tracking', dres_track, 2);
-
-        % show lost targets
-        subplot(2, 2, 4);
-        show_dres(fr, dres_image.I{fr}, 'Lost', dres_track, 3);
-
-        if is_pause
-            pause();
-        else
-            pause(0.01);
-        end
-    end  
+    % if is_show
+    %     figure(1);
+    %
+    %     % show tracking results
+    %     subplot(2, 2, 3);
+    %     show_dres(fr, dres_image.I{fr}, 'Tracking', dres_track, 2);
+    %
+    %     % show lost targets
+    %     subplot(2, 2, 4);
+    %     show_dres(fr, dres_image.I{fr}, 'Lost', dres_track, 3);
+    %
+    %     if is_pause
+    %         pause();
+    %     else
+    %         pause(0.01);
+    %     end
+    % end
 end
 elapsed_time  = toc(start_t);
 fprintf('\nTotal time taken: %.2f secs.\nAverage FPS: %.2f\n',...
