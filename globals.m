@@ -12,11 +12,13 @@ gram_train_ratio = 1;
 gram_split_train_ratio = 0.6;
 idot_train_ratio = -0.4;
 lost_train_ratio = 0.6;
+isl_train_ratio = 0.6;
 
 gram_test_ratio = 1;
 gram_split_test_ratio = 1;
 idot_test_ratio = 1;
 lost_test_ratio = 1;
+isl_test_ratio = 1;
 
 if isunix
     gram_paths = {'/data/GRAM'};
@@ -70,10 +72,27 @@ opt.lost_nums = [3027, 5000];
 opt.lost_train_ratio = ones(1, numel(opt.lost_nums)) * lost_train_ratio;
 opt.lost_test_ratio = ones(1, numel(opt.lost_nums)) * lost_test_ratio;
 
-opt.gram_seqs = cat(2, opt.gram_seqs, opt.gram_split_seqs, opt.idot_seqs, opt.lost_seqs);
-opt.gram_nums = cat(2, opt.gram_nums, opt.gram_split_nums, opt.idot_nums, opt.lost_nums);
-opt.gram_train_ratio = cat(2, opt.gram_train_ratio, opt.gram_split_train_ratio, opt.idot_train_ratio, opt.lost_train_ratio);
-opt.gram_test_ratio = cat(2, opt.gram_test_ratio, opt.gram_split_test_ratio, opt.idot_test_ratio, opt.lost_test_ratio);
+opt.isl_seqs = {
+    '20170620-055940', '20170620-060941',...
+    '20170620-061942', '20170620-062943', '20170620-063943',...
+    '20170620-064944', '20170620-065944', '20170620-070945',...
+    '20170620-071946', '20170620-072946', '20170620-073947',...
+    '20170620-074947', '20170620-075949'
+    };
+opt.isl_nums = [18000, 18000, 18000, 18000, 18000, 18000, 18000, 18000,...
+    18000, 18000, 18000, 18000, 18000];
+opt.isl_train_ratio = ones(1, numel(opt.isl_nums)) * isl_train_ratio;
+opt.isl_test_ratio = ones(1, numel(opt.isl_nums)) * isl_test_ratio;
+
+opt.gram_seqs = cat(2, opt.gram_seqs, opt.gram_split_seqs, opt.idot_seqs,...
+    opt.lost_seqs,opt.isl_seqs);
+opt.gram_nums = cat(2, opt.gram_nums, opt.gram_split_nums, opt.idot_nums,...
+    opt.lost_nums, opt.isl_nums);
+opt.gram_train_ratio = cat(2, opt.gram_train_ratio,...
+    opt.gram_split_train_ratio, opt.idot_train_ratio,...
+    opt.lost_train_ratio, opt.isl_train_ratio);
+opt.gram_test_ratio = cat(2, opt.gram_test_ratio, opt.gram_split_test_ratio,...
+    opt.idot_test_ratio, opt.lost_test_ratio, opt.isl_test_ratio);
 
 % opt.stanford_seqs = {{'quad', [0:3]}, {'bookstore', [0:6]}, {'coupa', [0:3]},...
 %     {'deathCircle', [0:4]},...

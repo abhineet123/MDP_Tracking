@@ -211,7 +211,7 @@ for fr = 1:seq_num
     dres = sub(dres_det, index);
     
     % nms
-    if db_type==1
+    if db_type == 1
         boxes = [dres.x dres.y dres.x+dres.w dres.y+dres.h dres.r];
         index = nms_new(boxes, 0.6);
         dres = sub(dres, index);
@@ -229,20 +229,20 @@ for fr = 1:seq_num
     % most likely to correspond to the tracked object    
     dres = MDP_crop_image_box(dres, dres_image.Igray{fr}, tracker);
     
-    if is_show
-        figure(1);
-        
-        % show ground truth
-        if strcmp(seq_set, 'train') == 1 || strcmp(seq_set, 'training') == 1
-            subplot(2, 2, 1);
-            show_dres(fr, dres_image.I{fr}, 'GT', dres_gt);
-        end
+    % if is_show
+    %     figure(1);
+    %
+    %     % show ground truth
+    %     if strcmp(seq_set, 'train') == 1 || strcmp(seq_set, 'training') == 1
+    %         subplot(2, 2, 1);
+    %         show_dres(fr, dres_image.I{fr}, 'GT', dres_gt);
+    %     end
+    %
+    %     % show detections
+    %     subplot(2, 2, 2);
+    %     show_dres(fr, dres_image.I{fr}, 'Detections', dres);
+    % end
 
-        % show detections
-        subplot(2, 2, 2);
-        show_dres(fr, dres_image.I{fr}, 'Detections', dres);
-    end
-    
     % sort trackers by no. of tracked frames
     if db_type == 1
         index_track = sort_trackers_kitti(fr, trackers, dres, opt);        
