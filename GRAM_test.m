@@ -44,7 +44,7 @@ end
 diary(log_fname);
 
 if use_hungarian
-    fprinf('Using Hungarian variani\n');
+    fprintf('Using Hungarian variani\n');
 end
 
 % for each training-testing pair
