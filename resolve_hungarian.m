@@ -25,6 +25,7 @@ else
 end
 
 flag = zeros(num_track, 1);
+overlap_sup = opt.overlap_sup;
 for i = 1:num_track
     [~, o] = calc_overlap(dres_track, i, dres_track, 1:num_track);
     o(i) = 0;
