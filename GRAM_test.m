@@ -111,5 +111,5 @@ for i = 1:N
             MDP_test(idx_test(j), seq_set_test, tracker, db_type);
         end
     end
-    GRAM_evaluation_only(idx_test);
+    GRAM_evaluation_only(idx_test, 0);
 end

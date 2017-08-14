@@ -1,4 +1,4 @@
-function GRAM_evaluation_only(seq_idx_list)
+function GRAM_evaluation_only(seq_idx_list, record_diary)
 if nargin < 1
     % start_idx = 51;
     % end_idx = 60;
@@ -10,6 +10,19 @@ if nargin < 1
     % seq_idx_list = [10:15, 25:30];
     % seq_idx_list = [10:15, 25:30, 51:60];
 end
+if nargin < 2
+    record_diary = 1;
+end
+if record_diary
+    if ~exist('datetime')
+        log_fname = sprintf('%s/log_eval.txt', opt.results_gram);
+    else
+        log_fname = sprintf('%s/log_eval_%s.txt', opt.results_gram,...
+            char(datetime('now', 'Format','yyMMdd_HHmm')));
+    end
+    diary(log_fname);
+end
+
 n_seq_idx = numel(seq_idx_list);
 start_idx_list = zeros(n_seq_idx, 1);
 end_idx_list = zeros(n_seq_idx, 1);
