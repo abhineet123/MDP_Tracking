@@ -25,13 +25,41 @@ if tracker.state == 3
         [features, flag] = MDP_feature_occluded(fr, dres_image, dres, tracker);
 
         m = size(features, 1);
-        labels = -1 * ones(m, 1);
+        labels = -1 * ones(m, 1);        
         [~, ~, probs] = svmpredict(labels, features, tracker.w_occluded, '-b 1 -q');
         
         % It is not quite clear how the probability value can become a distance
         % measure without negating it in some way
         % one would imagine that a higher probability would be equivalent
         % to a smaller distance but that does not seem to be the case here
+        
+        % In this case we are considering the probability of this feature
+        % corresponding to the second class since we are extracting the
+        % probability from the second column
+        % the way that svmpredict works is that the each column of
+        % its probability matrix corresponds to the probability of the
+        % corresponding feature belonging to the corresponding class
+        % therefore, the first column corresponds to the probability of
+        % belonging to the first class, that is, the class with the label 1
+        % in this case and the second column corresponds to the probability of
+        % the feature belonging to the second class which is the class
+        % corresponding to the label of -1 in this case
+        % therefore, when we have to decide if an occluded object can be
+        % associated with one of the detections, we use the probability
+        % of the first class, that is, we extract the probability value
+        % from the first column but when we need a distance measure
+        % between an occluded object and a detection, we extract the
+        % value from the second column so this is a probably of the
+        % association being incorrect
+        % there exists a kind of complementary relationship
+        % between the values in the first column and those in the
+        % second column;
+        % so, instead of finding some kind of complement of the
+        % probability from the first column, we can directly use thr
+        % probability from the second column as an alternative and this
+        % also makes more sense since the the distance between an occluded
+        % object and the detection corresponds quite directly with the
+        % probability of them having been associated incorrectly        
         dist(index_det(flag == 1)) = probs(flag == 1, 2);
         dist(dist > 0.5) = inf;
     end

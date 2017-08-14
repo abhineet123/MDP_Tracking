@@ -13,7 +13,7 @@ function [reward, label, f, is_end] = MDP_reward_occluded(fr, f, dres_image, dre
 % state in the last frame
 
 % Possible scenarios:
-% detected
+% detected - good match between GT and one of the detections
 %     tracked/associated
 %         correctly
 %             reward = 1;
@@ -21,6 +21,7 @@ function [reward, label, f, is_end] = MDP_reward_occluded(fr, f, dres_image, dre
 %         incorrectly     
 %             reward = -1;
 %             label = -1;
+%             feature from max probability detection associated with the tracker
 %     not tracked/associated
 %         visible/uncovered
 %             all templates failed to track
@@ -33,7 +34,7 @@ function [reward, label, f, is_end] = MDP_reward_occluded(fr, f, dres_image, dre
 %         covered/not visible
 %             reward = 1;
 %             label = 0;
-% not detected
+% not detected - no match between GT and any of the detections
 %     not tracked/associated
 %         reward = 1;
 %         label = 0;
@@ -41,10 +42,28 @@ function [reward, label, f, is_end] = MDP_reward_occluded(fr, f, dres_image, dre
 %         tracked or detected location does not match GT at all
 %             reward = -1;
 %             label = -1;
+%             feature from max probability detection associated with the tracker
 %         otherwise
 %             reward = 0;
 %             label = 0;
 
+% The reward is set to negative or -1 when the predicted decision does not
+% match the ground truth
+% the label is set to -1 when the association between the tracker location
+% or the ground truth and the corresponding detection is correct and it is
+% set to -1 when this association is incorrect
+% in fact it is set to +1 in only one case and in that case the feature
+% is replaced with the one extracted by using the ground truth with the
+% maximally overlapping detection
+% therefore it is obvious that a +1 label corresponds to correct association
+% while -1 corresponds to incorrect association
+
+% The label is set to 0 in all cases where the reward is nonnegative, that is,
+% it is +1 or  0
+% this seems to indicate that in all the cases where the association was
+% definitely correct when compared with the ground truth or in cases where 
+% it was on indecisive, we are ignoring those cases as far as retraining 
+% the SVM is concerned
 
  % Seems to be getting set to 1 whenever the reward is -1
 is_end = 0;

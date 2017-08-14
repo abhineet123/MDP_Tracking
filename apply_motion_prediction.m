@@ -7,9 +7,9 @@
 %
 % apply motion models to predict the next locations of the targets
 function [prediction, prediction1] = apply_motion_prediction(fr_current, tracker)
-% this actually returns only the predicted location of the last bonding box
-% though it uses all the bonding boxes in the history to compute the mean
-% velocity which in turn is used to compute this a predicted location of last bonding box;
+% this actually returns only the predicted location of the last bounding box
+% though it uses all the bounding boxes in the history to compute the mean
+% velocity which in turn is used to compute this a predicted location of last bounding box;
 % therefore its output is actually just two numbers - they are not two 
 % vectors but just two numbers;
 % the first output is the centre of this predicted box and the next output 

@@ -8,11 +8,8 @@
 % use LK trackers for association
 function tracker = LK_associate(frame_id, dres_image, dres_det, tracker)
 
-% get cropped images and boxes 
-% Only the first potentially associated detection is considered
-
 % the cropped image associated with this detection is supposed to act like
-% a proxy for the predicted location ROI of the bonding box for all 
+% a proxy for the predicted location ROI of the bounding box for all 
 % of the stored templates;
 % since all of these potentially associated detections are picked so as
 % to be similar to the last known location of the object in both size and
@@ -94,7 +91,7 @@ for i = 1:tracker.num
         % these potentially associated detections are present
         
         % the main fact be noted is that the concept of cropped images and
-        % cropped bonding boxes is completely transparent to the process of
+        % cropped bounding boxes is completely transparent to the process of
         % computing overlaps and in general processing the result of optical flow
         % this entire concept of using cropped image is entirely for
         % the benefit of the LK optical flow itself

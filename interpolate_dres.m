@@ -12,20 +12,20 @@ if isempty(dres2) == 1
     dres_new = dres1;
     return;
 end
-% Only those bonding boxes that correspond to correctly tracked frames  
+% Only those bounding boxes that correspond to correctly tracked frames  
 index = find(dres1.state == 2);
 if isempty(index) == 0
     ind = index(end);
     fr1 = double(dres1.fr(ind));
     fr2 = double(dres2.fr(1));
 
-    % If the last to bonding box in the first to set and the first bonding box
+    % If the last to bounding box in the first to set and the first bounding box
     % in the second set differ by more than one frame but less than
     % five frames, then the bounding boxes for all the intermediate frames
     % between these two frames are filled in by using linear interpolation
     % between the bounding boxes of these two frames
     
-    % after this is done all of the bonding boxes in the second set
+    % after this is done all of the bounding boxes in the second set
     % are also concatenated at the end of for the bounding boxes in the first set
     % plus all of the bounding boxes that have been computed by interpolation
     if fr2 - fr1 <= 5 && fr2 - fr1 > 1

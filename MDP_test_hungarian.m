@@ -308,10 +308,19 @@ for fr = 1:seq_num
         for i = 1:num_track
             % lost target
             ind = index_track(i);
+            
+            % Each column of the distance matrix contains the distances for the
+            % corresponding track            
             dist(i,:) = compute_distance(fr, dres_image, dres_associate, trackers{ind});
         end
         
-        % Hungarian algorithm
+        % Hungarian algorithm        
+        
+        % The output from of this function is a column vector where each entry
+        % contains the assignment off the corresponding row in its input
+        % distance matrix which in turn contains the distances
+        % of one tracked target
+        % An assignment value of zero response to an invalid assignment
         assignment = assignmentoptimal(dist);
         
         % process the assignment
@@ -325,16 +334,21 @@ for fr = 1:seq_num
                 dres_one.fr = fr;
                 dres_one.id = trackers{ind}.target_id;
                 dres_one.state = 3;
-                
                 if trackers{ind}.dres.fr(end) == fr
+                    %  If the last bounding box within the tracker corresponds
+                    %  to the current frame, then we remove it
                     dres_tmp = trackers{ind}.dres;
                     index_tmp = 1:numel(dres_tmp.fr)-1;
                     trackers{ind}.dres = sub(dres_tmp, index_tmp);
                 end
+                %  Add the new bounding box or object to the list of
+                %  objects within the tracker
                 trackers{ind}.dres = concatenate_dres(trackers{ind}.dres, dres_one);
             else
                 % association
                 dres_one = sub(dres_associate, det_id);
+                % Track the last known location of the target get into a
+                % region of interest around the associated detection
                 trackers{ind} = LK_associate(fr, dres_image, dres_one, trackers{ind});
                 
                 trackers{ind}.state = 2;
@@ -357,9 +371,14 @@ for fr = 1:seq_num
                     index_tmp = 1:numel(dres_tmp.fr)-1;
                     trackers{ind}.dres = sub(dres_tmp, index_tmp);
                 end
+                % Fill-in the location of this object for any missing frames
                 trackers{ind}.dres = interpolate_dres(trackers{ind}.dres, dres_one);
                 % update LK tracker
-                trackers{ind} = LK_update(fr, trackers{ind}, dres_image.Igray{fr}, dres_associate, 1);
+                
+                % change the anchor or the principal template to the one 
+                % with the maximum FB score                
+                trackers{ind} = LK_update(fr, trackers{ind},...
+                    dres_image.Igray{fr}, dres_associate, 1);
             end
         end
     end

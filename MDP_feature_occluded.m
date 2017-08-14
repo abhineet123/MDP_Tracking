@@ -17,8 +17,8 @@ f = zeros(1, tracker.fnum_occluded);
 % but this is still an array because there must be one value for each object
 % since each object is associated with a particular frame
 m = numel(dres.fr);
-% Features are computed with respect to each candidate bonding box so that the
-% feature array has number of rows equal to the number of candidate bonding boxes
+% Features are computed with respect to each candidate bounding box so that the
+% feature array has number of rows equal to the number of candidate bounding boxes
 % and the number of columns is equal to the dimensionality of the of occlusion 
 % feature which is 12
 feature = zeros(m, tracker.fnum_occluded);

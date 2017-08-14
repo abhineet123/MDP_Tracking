@@ -343,7 +343,7 @@ for fr = 1:seq_num
     % will be suppressed
     % by suppressed to be mean that it is marked as occluded
     trackers = resolve(trackers, dres, opt);    
-    % Concatenates the bonding boxes of all of the trackers to
+    % Concatenates the bounding boxes of all of the trackers to
     % gather in the same structure for writing out to the
     % output file
     dres_track = generate_results(trackers);

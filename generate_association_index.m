@@ -22,9 +22,9 @@ function [dres_det, index_det, ctrack] = generate_association_index(tracker,...
 % indices all those that are similar to this predicted bounding box in size 
 % and height, and optionally also the widths, are returned;
 % at the same time, the height ratio and the distances of all of these
-% candidates bonding boxes from the predicted bonding box 
+% candidates bounding boxes from the predicted bounding box 
 % are also computed and added on to the structure containing all of these
-% candidate bonding boxes so that may be reused later
+% candidate bounding boxes so that may be reused later
 
 num_det = numel(dres_det.fr);
 % centers of the detections
@@ -38,10 +38,10 @@ ratios = zeros(num_det, 1);
 ratios_w = zeros(num_det, 1);
 for i = 1:num_det
     % distance between the centre of this detection and the predicted location
-    % of the tracked bonding box normalized by the width of the the last
-    % bonding box stored in the history of the tracker
+    % of the tracked bounding box normalized by the width of the the last
+    % bounding box stored in the history of the tracker
     distances(i) = norm(cdets(i,:) - ctrack) / tracker.dres.w(end);
-    % Ratio of the object bonding box height in the last frame in which it
+    % Ratio of the object bounding box height in the last frame in which it
     % was successfully tracked and the height of this particular detection
     ratio = tracker.dres.h(end) / dres_det.h(i);
     % the ratio must always be between zero and one so if it is greater than

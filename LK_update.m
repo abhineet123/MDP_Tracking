@@ -5,15 +5,16 @@
 % Written by Yu Xiang
 % --------------------------------------------------------
 %
+function tracker = LK_update(frame_id, tracker, img, dres_det, is_change_anchor)
 % update the LK tracker
+
 % mostly about adding the data from the latest tracked frame to the
 % history;
-function tracker = LK_update(frame_id, tracker, img, dres_det, is_change_anchor)
 
 medFBs = tracker.medFBs;
 if is_change_anchor == 0
-% find the template with max FB error but not the anchor
-% this is the one that will presumably be replaced with the new one
+    % find the template with max FB error but not the anchor
+    % this is the one that will presumably be replaced with the new one
     medFBs(tracker.anchor) = -inf;    
     [~, index] = max(medFBs);
 else
@@ -30,6 +31,10 @@ tracker.x1(index) = tracker.bb(1);
 tracker.y1(index) = tracker.bb(2);
 tracker.x2(index) = tracker.bb(3);
 tracker.y2(index) = tracker.bb(4);
+% replace the old pattern with the new one – a pattern is just the the set
+% of pixel values corresponding to the location all for this bounding box
+% that has been subjected to some preliminary preprocessing like
+% normalization and stuff
 tracker.patterns(:,index) = generate_pattern(img, tracker.bb, tracker.patchsize);
 
 % update images and boxes

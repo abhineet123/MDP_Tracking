@@ -136,7 +136,7 @@ end
 % for debugging
 % dres_train = {dres_train{6}};
 
-% intialize tracker
+%% intialize tracker
 if nargin < 2 || isempty(tracker) == 1
     fprintf('initialize tracker from scratch\n');
     tracker = MDP_initialize(I, dres_det, labels, opt);
@@ -157,7 +157,7 @@ else
     tracker.w_active = svmtrain(tracker.lactive, tracker.factive, '-c 1 -q');
 end
 
-% for each training sequence
+%% for each training sequence
 t = 0;
 iter = 0;
 reward = 0;
@@ -339,14 +339,14 @@ while 1 % for multiple passes
             % is known to be completely uncovered in the ground truth
             [tracker, ~, f] = MDP_value(tracker, fr, dres_image, dres, index_det);
             
-            if is_show
-                figure(1);
-                subplot(2, 3, 3);
-                show_dres(fr, dres_image.I{fr}, 'Potential Associations', sub(dres, index_det));
-                hold on;
-                plot(ctrack(1), ctrack(2), 'ro', 'LineWidth', 2);
-                hold off;
-            end           
+            % if is_show
+            %     figure(1);
+            %     subplot(2, 3, 3);
+            %     show_dres(fr, dres_image.I{fr}, 'Potential Associations', sub(dres, index_det));
+            %     hold on;
+            %     plot(ctrack(1), ctrack(2), 'ro', 'LineWidth', 2);
+            %     hold off;
+            % end
           
             if isempty(index_det) == 0
                 % compute reward

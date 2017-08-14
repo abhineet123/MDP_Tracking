@@ -65,7 +65,7 @@ for i = 1:num_track
             sup = i;
         else
             % If the number of tracked frames are equal then we consider
-            % the maximum overlap of these bonding boxes with all of the
+            % the maximum overlap of these bounding boxes with all of the
             % detections to measure the reliability
             
             % max overlap between the current tracked bounding box and all
