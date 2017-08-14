@@ -17,7 +17,7 @@ is_save = 1;
 is_text = 0;
 is_pause = 0;
 save_images = 0;
-check_next_frame = 0;
+check_next_frame = 1;
 
 opt = globals();
 opt.is_text = is_text;
