@@ -13,6 +13,13 @@ end
 if nargin < 2
     record_diary = 1;
 end
+
+n_seq_idx = numel(seq_idx_list);
+start_idx_list = zeros(n_seq_idx, 1);
+end_idx_list = zeros(n_seq_idx, 1);
+
+opt = globals();
+
 if record_diary
     if ~exist('datetime')
         log_fname = sprintf('%s/log_eval.txt', opt.results_gram);
@@ -23,12 +30,6 @@ if record_diary
     fprintf('Recording output to: %s\n', log_fname);
     diary(log_fname);
 end
-
-n_seq_idx = numel(seq_idx_list);
-start_idx_list = zeros(n_seq_idx, 1);
-end_idx_list = zeros(n_seq_idx, 1);
-
-opt = globals();
 
 id = 1;
 for seq_idx = seq_idx_list
