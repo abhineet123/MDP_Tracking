@@ -216,28 +216,30 @@ hold off;
 for plot_id=1:numel(tracked_frac_list)    
     seq_name = char(allSeq{plot_id});
     
-    tracked_frac = tracked_frac_list{plot_id};
-    plotFile = fullfile(resDir, sprintf('tracked_frac_hist_%s.png', seq_name));    
-    % figure('Visible','off');
-    histogram(tracked_frac, hist_edges);
-    xlabel('Correctly Tracked Fraction (CTF)'), ylabel('No. of Trajectories');
-    title('Correctly Tracked Fraction Distribution');
-    saveas(gcf, plotFile);  
-    
-    tracked_total = tracked_total_list{plot_id};
-    plotFile = fullfile(resDir, sprintf('tracked_total_hist_%s.png', seq_name));    
-    % figure('Visible','off');
-    histogram(tracked_total);
-    xlabel('No. of Frames'), ylabel('No. of Trajectories');
-    title('Tracked Trajectory Size Distribution');
-    saveas(gcf, plotFile);
-    
-    gt_total = gt_total_list{plot_id};
-    plotFile = fullfile(resDir, sprintf('gt_total_hist_%s.png', seq_name));    
-    histogram(gt_total);
-    xlabel('No. of Frames'), ylabel('No. of Trajectories');
-    title('Ground Truth Trajectory Size Distribution');
-    saveas(gcf, plotFile);
+    if exist('histogram')
+        tracked_frac = tracked_frac_list{plot_id};
+        plotFile = fullfile(resDir, sprintf('tracked_frac_hist_%s.png', seq_name));    
+        % figure('Visible','off');
+        histogram(tracked_frac, hist_edges);
+        xlabel('Correctly Tracked Fraction (CTF)'), ylabel('No. of Trajectories');
+        title('Correctly Tracked Fraction Distribution');
+        saveas(gcf, plotFile);  
+        
+        tracked_total = tracked_total_list{plot_id};
+        plotFile = fullfile(resDir, sprintf('tracked_total_hist_%s.png', seq_name));    
+        % figure('Visible','off');
+        histogram(tracked_total);
+        xlabel('No. of Frames'), ylabel('No. of Trajectories');
+        title('Tracked Trajectory Size Distribution');
+        saveas(gcf, plotFile);
+
+        gt_total = gt_total_list{plot_id};
+        plotFile = fullfile(resDir, sprintf('gt_total_hist_%s.png', seq_name));    
+        histogram(gt_total);
+        xlabel('No. of Frames'), ylabel('No. of Trajectories');
+        title('Ground Truth Trajectory Size Distribution');
+        saveas(gcf, plotFile);
+    end   
 end
 
 stInfo.frameNums=1:size(stInfo.Xi,1);
@@ -248,24 +250,25 @@ if eval2D
     fprintf(' ********************* Your Benchmark Results (2D) ***********************\n');
 
     [m2d, MT_list, tracked_frac, tracked_total, gt_total]=CLEAR_MOT_HUN(gtInfo,stInfo);
-    
-    plotFile = fullfile(resDir, sprintf('tracked_frac_hist_all.png'));    
-    histogram(tracked_frac, hist_edges);
-    xlabel('Correctly Tracked Fraction (CTF)'), ylabel('No. of Trajectories');
-    title('Correctly Tracked Fraction Distribution');
-    saveas(gcf, plotFile);  
-    
-    plotFile = fullfile(resDir, sprintf('tracked_total_hist_all.png'));    
-    histogram(tracked_total);
-    xlabel('No. of Frames'), ylabel('No. of Trajectories');
-    title('Tracked Trajectory Size Distribution');
-    saveas(gcf, plotFile);
-    
-    plotFile = fullfile(resDir, sprintf('gt_total_hist_all.png'));    
-    histogram(gt_total);
-    xlabel('No. of Frames'), ylabel('No. of Trajectories');
-    title('Ground Truth Trajectory Size Distribution');
-    saveas(gcf, plotFile);
+    if exist('histogram')
+        plotFile = fullfile(resDir, sprintf('tracked_frac_hist_all.png'));    
+        histogram(tracked_frac, hist_edges);
+        xlabel('Correctly Tracked Fraction (CTF)'), ylabel('No. of Trajectories');
+        title('Correctly Tracked Fraction Distribution');
+        saveas(gcf, plotFile);  
+
+        plotFile = fullfile(resDir, sprintf('tracked_total_hist_all.png'));    
+        histogram(tracked_total);
+        xlabel('No. of Frames'), ylabel('No. of Trajectories');
+        title('Tracked Trajectory Size Distribution');
+        saveas(gcf, plotFile);
+
+        plotFile = fullfile(resDir, sprintf('gt_total_hist_all.png'));    
+        histogram(gt_total);
+        xlabel('No. of Frames'), ylabel('No. of Trajectories');
+        title('Ground Truth Trajectory Size Distribution');
+        saveas(gcf, plotFile);
+    end
     
     allMets.bmark2d=m2d;
     

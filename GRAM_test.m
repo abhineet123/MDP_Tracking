@@ -20,8 +20,8 @@ if nargin<3
     % seq_idx_train = {[1, 2], [3]};
     % seq_idx_test = {[1, 2], [3]};
     
-    seq_idx_train = {66:71};
-    seq_idx_test = {[71]};
+    seq_idx_train = {[3]};
+    seq_idx_test = {[1], [2], [3]};
 end
 if nargin<4
     continue_from_seq = 0;
@@ -50,10 +50,10 @@ end
 % for each training-testing pair
 for i = 1:N
     % training
-    if len(seq_idx_train)<i
+    if numel(seq_idx_train)<i
         idx_train = seq_idx_train{end};
         fprintf('Insufficient training indices %d provioded for testing idx %d\n',...
-            len(seq_idx_train), i);
+            numel(seq_idx_train), i);
         fprintf('Using the last index instead:\n');
         disp(idx_train);
     else
@@ -92,10 +92,10 @@ for i = 1:N
     end
     
     % testing
-    if len(seq_idx_test)<i
+    if numel(seq_idx_test)<i
         idx_test = seq_idx_test{end};
         fprintf('Insufficient testing indices %d provioded for training idx %d\n',...
-            len(seq_idx_test), i);
+            numel(seq_idx_test), i);
         fprintf('Using the last index instead:\n');
         disp(idx_test);
     else
