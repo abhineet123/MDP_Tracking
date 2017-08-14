@@ -20,6 +20,7 @@ if record_diary
         log_fname = sprintf('%s/log_eval_%s.txt', opt.results_gram,...
             char(datetime('now', 'Format','yyMMdd_HHmm')));
     end
+    fprintf('Recording output to: %s\n', log_fname);
     diary(log_fname);
 end
 
