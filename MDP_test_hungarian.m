@@ -17,6 +17,7 @@ is_save = 1;
 is_text = 0;
 is_pause = 0;
 save_images = 0;
+check_next_frame = 0;
 
 opt = globals();
 opt.is_text = is_text;
@@ -51,9 +52,9 @@ if db_type == 0
     else
         dres_image = read_dres_image(opt, seq_set, seq_name, seq_num);
         fprintf('read images done\n');
-		if save_images
-			save(filename, 'dres_image', '-v7.3');
-		end
+        if save_images
+            save(filename, 'dres_image', '-v7.3');
+        end
     end
     
     % read detections
@@ -84,9 +85,9 @@ elseif db_type == 1
     else
         dres_image = read_dres_image_kitti(opt, seq_set, seq_name, seq_num);
         fprintf('read images done\n');
-		if save_images
-			save(filename, 'dres_image', '-v7.3');
-		end
+        if save_images
+            save(filename, 'dres_image', '-v7.3');
+        end
     end
     
     % read detections
@@ -188,7 +189,7 @@ for fr = 1:seq_num
     index = find(dres_det.fr == fr);
     dres = sub(dres_det, index);
     
-    % nms
+    % nms - non maximum suppression
     if db_type==1
         boxes = [dres.x dres.y dres.x+dres.w dres.y+dres.h dres.r];
         index = nms_new(boxes, 0.6);
@@ -217,6 +218,25 @@ for fr = 1:seq_num
     % end
     
     % separate trackers into the first and the second class
+    
+    % trackers that have been tracking successfully for more than
+    % 10 frames are placed first and among these the trackers that
+    % are currently in the tracked state are placed first followed by
+    % the trackers in the occluded state
+    % this is followed by trackers that have been tracking for less
+    % than 10 frames which are again arranged in the same way
+    % within themselves
+    
+    % This ensures that trackers that are currently in the tracked state
+    % and have been tracked for more frames are processed first followed
+    % by trackers that are either currently in occluded state or have been
+    % tracked for fewer frames
+    % this seems to be some attempt to process more reliable trackers first
+    % followed by the less reliable ones
+    % for some reason, the trackers within each of the two categories
+    % are actually not sorted by the number of tracked frames rather
+    % simply by whether they are currently in the tracked
+    % state or in the occluded state
     [index1, index2] = sort_trackers_hgn(trackers);
     
     for k = 1:2
@@ -240,6 +260,7 @@ for fr = 1:seq_num
                 trackers{ind} = track(fr, dres_image, dres, trackers{ind}, opt);
                 % connect target
                 if trackers{ind}.state == 3
+                    % all trackers processed thus far
                     if k == 1
                         index_tmp = index_track(1:i-1);
                     else
@@ -247,9 +268,10 @@ for fr = 1:seq_num
                     end
                     [dres_tmp, index] = generate_initial_index(trackers(index_tmp), dres);
                     dres_associate = sub(dres_tmp, index);
-                    trackers{ind} = associate_hungarian(fr, dres_image,  dres_associate, trackers{ind}, opt);
+                    trackers{ind} = associate(fr, dres_image,...
+                        dres_associate, trackers{ind}, opt, check_next_frame);
                 end
-                
+                % trackers in tracked or inactive states
                 if trackers{ind}.state == 2 || trackers{ind}.state == 0
                     flags(i) = 1;
                 end
@@ -257,23 +279,36 @@ for fr = 1:seq_num
         end
         
         % process lost targets
+        
         if k == 1
+            % All trackers processed thus far that were either tracked or lost
             index_tmp = index_track(flags == 1);
         else
+            % Same as in the last case except that all of the trackers of
+            % the previous index, that is, all trackers with the number of
+            % tracked frames exceeding 10 are also included
             index_tmp = [index_track(flags == 1); index1];
         end
+        % Remove detections corresponding to currently tracked or inactive targets
         [dres_tmp, index] = generate_initial_index(trackers(index_tmp), dres);
         dres_associate = sub(dres_tmp, index);
         num_det = numel(index);
         
         % compute distance matrix
+        
+        % Consider only those trackers in the current index
+        % that were neither in the tracked state
+        % nor in the inactive state, i.e. the occluded and active ones
+        % where one may assume that there aren't any trackers in the active 
+        % state because as soon as a tracker is initialized, it is
+        % moved to the tracked state
         index_track = index_track(flags == 0);
         num_track = numel(index_track);
         dist = zeros(num_track, num_det);
         for i = 1:num_track
             % lost target
             ind = index_track(i);
-            dist(i,:) = compute_distance_hungarian(fr, dres_image, dres_associate, trackers{ind});
+            dist(i,:) = compute_distance(fr, dres_image, dres_associate, trackers{ind});
         end
         
         % Hungarian algorithm
@@ -347,11 +382,11 @@ for fr = 1:seq_num
         tracker.state = 1;
         id = id + 1;
         
-        trackers{end+1} = initialize_hungarian(fr, dres_image, id, dres, index(i), tracker);
+        trackers{end+1} = initialize(fr, dres_image, id, dres, index(i), tracker);
     end
     
-    % resolve_hungarian tracker conflict
-    trackers = resolve_hungarian(trackers, dres, opt);
+    % resolve tracker conflict
+    trackers = resolve(trackers, dres, opt);
     
     dres_track = generate_results(trackers);
     % if is_show

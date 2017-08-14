@@ -190,6 +190,9 @@ end
 
 % intialize tracker
 I = dres_image.I{1};
+% Reset that trained tracker fields corresponding to the input images and 
+% the detections such as the size of the input image and the maximum size
+% and score of the detections
 tracker = MDP_initialize_test(tracker, size(I,2), size(I,1), dres_det, is_show);
 
 % for each frame
@@ -244,6 +247,25 @@ for fr = 1:seq_num
     % end
 
     % sort trackers by no. of tracked frames
+    
+    % trackers that have been tracking successfully for more than
+    % 10 frames are placed first and among these the trackers that
+    % are currently in the tracked state are placed first followed by
+    % the trackers in the occluded state
+    % this is followed by trackers that have been tracking for less
+    % than 10 frames which are again arranged in the same way
+    % within themselves
+    
+    % This ensures that trackers that are currently in the tracked state
+    % and have been tracked for more frames are processed first followed
+    % by trackers that are either currently in occluded state or have been
+    % tracked for fewer frames
+    % this seems to be some attempt to process more reliable trackers first
+    % followed by the less reliable ones
+    % for some reason, the trackers within each of the two categories
+    % are actually not sorted by the number of tracked frames rather
+    % simply by whether they are currently in the tracked
+    % state or in the occluded state
     if db_type == 1
         index_track = sort_trackers_kitti(fr, trackers, dres, opt);        
     else
@@ -258,16 +280,31 @@ for fr = 1:seq_num
             % track target
             trackers{ind} = track(fr, dres_image, dres, trackers{ind}, opt);
             % connect target
+            % Check if the tracking failure can be fixed by using the detections
             if trackers{ind}.state == 3
+                % Remove detections corresponding to tracker bounding boxes that
+                % have already been tracked
                 [dres_tmp, index] = generate_initial_index(trackers(index_track(1:i-1)), dres);
                 dres_associate = sub(dres_tmp, index);
-                trackers{ind} = associate(fr, dres_image,  dres_associate, trackers{ind}, opt);
+                % Of the remaining detections, find those that are close to
+                % the predicted location of this object based on its last
+                % known location and its velocity in all of the frames that
+                % it has been tracked in so far
+                % next, we check if trying to track this object from this last
+                % known location to this the any of these matched detections can work
+                trackers{ind} = associate(fr, dres_image,  dres_associate, trackers{ind}, opt, 1);
             end
         elseif trackers{ind}.state == 3
             % associate target
+            
+            % Repeat the same steps as were performed when the tracker was first
+            % found to be in the occluded state except that now they are
+            % performed in the new frame when we failed to associate the lost
+            % tracker with one of the detections in the frame
+            % where it was first found to be occluded
             [dres_tmp, index] = generate_initial_index(trackers(index_track(1:i-1)), dres);
             dres_associate = sub(dres_tmp, index);    
-            trackers{ind} = associate(fr, dres_image, dres_associate, trackers{ind}, opt);
+            trackers{ind} = associate(fr, dres_image, dres_associate, trackers{ind}, opt, 1);
         end
     end
     
@@ -278,6 +315,7 @@ for fr = 1:seq_num
         dres_one = sub(dres, index(i));
         f = MDP_feature_active(tracker, dres_one);
         % prediction
+        % Check if this detection is a true positive for a false positive
         label = svmpredict(1, f, tracker.w_active, '-q');
         % make a decision
         if label < 0
@@ -293,8 +331,21 @@ for fr = 1:seq_num
     end
     
     % resolve tracker conflict
-    trackers = resolve(trackers, dres, opt);    
     
+    % Check for multiple trackers tracking the same object or
+    % the objects tracked by different trackers being present
+    % in roughly the same location within the scene so that
+    % one of them is occluded by the other
+    % if that is the case, then we use some heuristics based on
+    % the number of frames for which these objects have been
+    % tracked as well as the maximum overlap of these objects
+    % with the detections to decide which one of the two
+    % will be suppressed
+    % by suppressed to be mean that it is marked as occluded
+    trackers = resolve(trackers, dres, opt);    
+    % Concatenates the bonding boxes of all of the trackers to
+    % gather in the same structure for writing out to the
+    % output file
     dres_track = generate_results(trackers);
     % if is_show
     %     figure(1);

@@ -13,14 +13,14 @@ function [dres_det, index_det, ctrack] = generate_association_index(tracker,...
 % also augments the input structure containing all of the detections with 
 % their distances and ratios from this last known location
 
-% In other words it first obtains the predicted location of for this object
-% in the current frame based on its last known location and the average velocity 
+% In other words it first obtains the predicted location of this object in
+% the current frame based on its last known location and the average velocity 
 % computed from all of the successfully tracked frames in which this object
 % has been present
-% this predicted location of the bonding box is then compared with all of 
-% the candidates detections that are passed to this function and the 
+% this predicted location of the bounding box is then compared with all of 
+% the candidate detections that are passed to this function and the 
 % indices all those that are similar to this predicted bounding box in size 
-% and height, and optionally also the widths, are returned
+% and height, and optionally also the widths, are returned;
 % at the same time, the height ratio and the distances of all of these
 % candidates bonding boxes from the predicted bonding box 
 % are also computed and added on to the structure containing all of these

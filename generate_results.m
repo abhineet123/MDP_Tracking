@@ -5,7 +5,6 @@
 % Written by Yu Xiang
 % --------------------------------------------------------
 %
-% find detections for initialization
 function dres_all = generate_results(trackers)
 
 % collect dres from trackers

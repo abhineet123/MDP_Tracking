@@ -17,8 +17,11 @@ end
 dres_track = [];
 for i = 1:numel(trackers)
     tracker = trackers{i};
+    % Extract the last bounding box within the tracker which is simply
+    % the last known location of the tracked object
     dres = sub(tracker.dres, numel(tracker.dres.fr));
-    
+    % Add it to the list of bounding boxes from all the trackers only if
+    % this tracker is in the tracked state
     if tracker.state == 2
         if isempty(dres_track)
             dres_track = dres;
@@ -41,6 +44,8 @@ else
     num_track = numel(dres_track.fr);
 end
 if num_track
+    % find detections that do not have any significant overlap with any of
+    % the existing tracked bounding boxes
     o1 = zeros(num_det, 1);
     o2 = zeros(num_det, 1);
     o3 = zeros(num_det, 1);

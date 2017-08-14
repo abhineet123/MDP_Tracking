@@ -9,7 +9,7 @@
 function [feature, flag] = MDP_feature_occluded(frame_id, dres_image, dres, tracker)
 
 f = zeros(1, tracker.fnum_occluded);
-% Number of candidate bonding boxes with respect to which these occluded 
+% Number of candidate bounding boxes with respect to which these occluded 
 % features have to be computed
 % the lengths of dres.fr does not mean that we have multiple frames, it only 
 % means that we have multiple objects - all of which might actually be present
