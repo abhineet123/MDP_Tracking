@@ -30,6 +30,10 @@ if db_type == 1
     tracker.threshold_dis = opt.threshold_dis;
 end
 
+if check_next_frame
+    fprintf('Checking the predicted locations of occluded objects while performing associations\n');    
+end
+
 % if is_show
 % %     close all;
 % end
