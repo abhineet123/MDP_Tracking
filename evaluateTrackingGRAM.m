@@ -247,7 +247,7 @@ stInfo.frameNums=1:size(stInfo.Xi,1);
 
 if eval2D
     fprintf('\n');
-    fprintf(' ********************* Your Benchmark Results (2D) ***********************\n');
+    fprintf(' ********************* Combined Results ***********************\n');
 
     [m2d, MT_list, tracked_frac, tracked_total, gt_total]=CLEAR_MOT_HUN(gtInfo,stInfo);
     if exist('histogram')
