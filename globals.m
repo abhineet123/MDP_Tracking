@@ -8,13 +8,13 @@ function opt = globals()
 
 %% Important settings
 
-gram_train_ratio = 1;
+gram_train_ratio = 0.1;
 gram_split_train_ratio = 0.6;
 idot_train_ratio = -0.4;
 lost_train_ratio = 0.6;
 isl_train_ratio = 0.6;
 
-gram_test_ratio = 0.001;
+gram_test_ratio = -0.1;
 gram_split_test_ratio = 1;
 idot_test_ratio = 1;
 lost_test_ratio = 1;
