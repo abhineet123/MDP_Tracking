@@ -134,7 +134,7 @@ if max(overlap) > opt.overlap_pos % 0.5
             
             % This is the only case where the tracker is even given a chance
             % to associate since, in the other case, the potential detections
-            % are discarded before calling MDP_value
+            % are discarded before calling MDP_associate
             
             % find if any of the stored templates were tracked
             % successfully in this frame

@@ -5,7 +5,7 @@ function tracker = track(fr, dres_image, dres, tracker, opt)
 if tracker.state == 2
     tracker.streak_occluded = 0;
     tracker.streak_tracked = tracker.streak_tracked + 1;
-    tracker = MDP_value(tracker, fr, dres_image, dres, []);
+    tracker = MDP_track(tracker, fr, dres_image, dres);
 
     % check if target outside image
     [~, ov] = calc_overlap(tracker.dres, numel(tracker.dres.fr), dres_image, fr);

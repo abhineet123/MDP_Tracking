@@ -17,7 +17,8 @@ if tracker.state == 3
     % find a set of detections for association
     [dres_associate, index_det] = generate_association_index(tracker,...
         fr, dres_associate);
-    tracker = MDP_value(tracker, fr, dres_image, dres_associate, index_det);
+    tracker = MDP_associate(tracker, fr, dres_image,...
+	dres_associate, index_det);
     if tracker.state == 2
         tracker.streak_occluded = 0;
         if opt.is_text

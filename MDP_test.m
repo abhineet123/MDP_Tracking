@@ -193,7 +193,8 @@ I = dres_image.I{1};
 % Reset that trained tracker fields corresponding to the input images and 
 % the detections such as the size of the input image and the maximum size
 % and score of the detections
-tracker = MDP_initialize_test(tracker, size(I,2), size(I,1), dres_det, is_show);
+tracker = MDP_initialize_test(tracker, size(I,2), size(I,1),...
+    dres_det, is_show);
 
 % for each frame
 trackers = [];
@@ -284,7 +285,8 @@ for fr = 1:seq_num
             if trackers{ind}.state == 3
                 % Remove detections corresponding to tracker bounding boxes that
                 % have already been tracked
-                [dres_tmp, index] = generate_initial_index(trackers(index_track(1:i-1)), dres);
+                [dres_tmp, index] = generate_initial_index(trackers(index_track(1:i-1)),...
+                    dres);
                 dres_associate = sub(dres_tmp, index);
                 % Of the remaining detections, find those that are close to
                 % the predicted location of this object based on its last
@@ -292,7 +294,8 @@ for fr = 1:seq_num
                 % it has been tracked in so far
                 % next, we check if trying to track this object from this last
                 % known location to this the any of these matched detections can work
-                trackers{ind} = associate(fr, dres_image,  dres_associate, trackers{ind}, opt, 1);
+                trackers{ind} = associate(fr, dres_image,  dres_associate,...
+                    trackers{ind}, opt, 1);
             end
         elseif trackers{ind}.state == 3
             % associate target

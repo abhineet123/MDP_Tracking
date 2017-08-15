@@ -285,7 +285,7 @@ while 1 % for multiple passes
         elseif tracker.state == 2
             tracker.streak_occluded = 0;
             % ignoring the features
-            tracker = MDP_value(tracker, fr, dres_image, dres, []);
+            tracker = MDP_track(tracker, fr, dres_image, dres);
             
             % occluded
         elseif tracker.state == 3
@@ -312,7 +312,7 @@ while 1 % for multiple passes
             % The first bounding box of this target in the current frame
             % should be such that it is completely uncovered
             % for the set of nearby/associated detections to be passed 
-            % to MDP_value;
+            % to MDP_associate;
             % Since a particular target can only occur once in any given frame 
             % it is not quite clear why we need just the first matching object
             % for this frame;
@@ -336,7 +336,7 @@ while 1 % for multiple passes
             % the detections and thus condemn the tracker to fail to associate
             % in other words, the tracker will only associate if this object
             % is known to be completely uncovered in the ground truth
-            [tracker, ~, f] = MDP_value(tracker, fr, dres_image, dres, index_det);
+            [tracker, ~, f] = MDP_associate(tracker, fr, dres_image, dres, index_det);
             
             % if is_show
             %     figure(1);

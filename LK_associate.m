@@ -22,7 +22,7 @@ function tracker = LK_associate(frame_id, dres_image, dres_det, tracker)
 % present in this frame at all or at least visible in this frame at all
 
 % It turns out that only the best matching detection is passed to this 
-% function from MDP_value in the first place so the '1' is rather superficial
+% function from MDP_associate in the first place so the '1' is rather superficial
 % This also explains why there is no attempt to find the detection with the
 % maximum overlap - we just find the overlap with the single detection and that 
 % itself becomes the feature
