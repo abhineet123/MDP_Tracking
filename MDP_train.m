@@ -278,8 +278,8 @@ while 1 % for multiple passes
             % contains only the maximum overlap detection
             dres_one = sub(dres, ind);
             tracker.dres = dres_one;
-            tracker.dres.id = tracker.targe_id;
-            tracker.dres.state = trackert.state;
+            tracker.dres.id = tracker.target_id;
+            tracker.dres.state = tracker.state;
             
             % tracked
         elseif tracker.state == 2
