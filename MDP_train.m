@@ -238,16 +238,16 @@ while 1 % for multiple passes
         num_det = numel(dres.fr);
         
         % show results
-        if is_show
-            figure(1);
-            % show ground truth
-            subplot(2, 3, 1);
-            show_dres(fr, dres_image.I{fr}, 'GT', dres_gt);
-            
-            % show detections
-            subplot(2, 3, 2);
-            show_dres(fr, dres_image.I{fr}, 'Detections', dres_det);
-        end
+        % if is_show
+        %     figure(1);
+        %     % show ground truth
+        %     subplot(2, 3, 1);
+        %     show_dres(fr, dres_image.I{fr}, 'GT', dres_gt);
+        %
+        %     % show detections
+        %     subplot(2, 3, 2);
+        %     show_dres(fr, dres_image.I{fr}, 'Detections', dres_det);
+        % end
         
         % inactive
         if tracker.state == 0
@@ -258,18 +258,17 @@ while 1 % for multiple passes
             break;
             
             % active
-        elseif tracker.state == 1
-            
-            % compute overlap
+        elseif tracker.state == 1           
+            % Find the overlap between the first entry in the ground truth
+            % for this frame and all of the detections
+            % and then use the detection with the maximum overlap
             overlap = calc_overlap(dres_gt, 1, dres, 1:num_det);
             [ov, ind] = max(overlap); % detection with the maximum overlap
             if is_text
                 fprintf('Start: first frame overlap %.2f\n', ov);
-            end
-            
-            % initialize the LK tracker
-            % initialize with the detection that has the maximum overlap
-            % with the GT box
+            end            
+            % initialize the LK tracker with the detection that has the
+            %  maximum overlap with the GT box
             tracker = LK_initialize(tracker, fr, id, dres, ind, dres_image);
             % send it to the tracked state
             tracker.state = 2;
@@ -464,30 +463,30 @@ while 1 % for multiple passes
         end
         
         % show results
-        if is_show
-            figure(1);
-            
-            % show tracking results
-            subplot(2, 3, 4);
-            show_dres(fr, dres_image.I{fr}, 'Tracking', tracker.dres, 2);
-            
-            % show lost targets
-            subplot(2, 3, 5);
-            show_dres(fr, dres_image.I{fr}, 'Lost', tracker.dres, 3);
-            
-            subplot(2, 3, 6);
-            show_templates(tracker, dres_image);
-            
-            fprintf('frame %d, state %d\n', fr, tracker.state);
-            if is_pause
-                pause();
-            else
-                pause(0.01);
-            end
-            
-            % filename = sprintf('results/%s_%06d.png', seq_name, fr);
-            % hgexport(h, filename, hgexport('factorystyle'), 'Format', 'png');
-        end
+        % if is_show
+        %     figure(1);
+        %
+        %     % show tracking results
+        %     subplot(2, 3, 4);
+        %     show_dres(fr, dres_image.I{fr}, 'Tracking', tracker.dres, 2);
+        %
+        %     % show lost targets
+        %     subplot(2, 3, 5);
+        %     show_dres(fr, dres_image.I{fr}, 'Lost', tracker.dres, 3);
+        %
+        %     subplot(2, 3, 6);
+        %     show_templates(tracker, dres_image);
+        %
+        %     fprintf('frame %d, state %d\n', fr, tracker.state);
+        %     if is_pause
+        %         pause();
+        %     else
+        %         pause(0.01);
+        %     end
+        %
+        %     % filename = sprintf('results/%s_%06d.png', seq_name, fr);
+        %     % hgexport(h, filename, hgexport('factorystyle'), 'Format', 'png');
+        % end
         
         % try to connect recently lost target
         if ~(tracker.state == 3 && tracker.prev_state == 2)

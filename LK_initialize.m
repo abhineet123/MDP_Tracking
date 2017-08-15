@@ -18,7 +18,7 @@ num = tracker.num;
 tracker.target_id = target_id;
 tracker.bb = zeros(4,1);
 
-% initialize all the templates
+% initialize all the stored templates
 % copy the main BB to all locations
 bb = repmat([x1; y1; x2; y2], [1 num]);
 % modify BB 2-5 to be shifted versions of the main BB - no idea why

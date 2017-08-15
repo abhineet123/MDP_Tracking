@@ -30,9 +30,8 @@ dres_det = read_gram2dres(filename, train_start_idx, train_end_idx);
 filename = fullfile(db_path, 'Annotations', [seq_name '.txt']);
 fprintf('reading gt from: %s\n', filename);
 dres_gt = read_gram2dres(filename, train_start_idx, train_end_idx);
-y_gt = dres_gt.y + dres_gt.h; % max y of all objects in the gt
-
-
+ % max y of all objects in the gt
+y_gt = dres_gt.y + dres_gt.h;
 
 % collect true positives and false alarms from detections
 num = numel(dres_det.fr); %  no. of detections

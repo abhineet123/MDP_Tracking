@@ -157,6 +157,7 @@ for i = 1:tracker.num
 end
 
 % combine tracking and detection results
+
 % Choose the stored template with the minimum median of forward backward 
 % errors during optical flow
 [~, ind] = min(tracker.medFBs);
@@ -181,74 +182,74 @@ else
     tracker.nccs = zeros(tracker.num, 1);
 end
 
-if tracker.is_show
-    fprintf('LK association, target %d detection %.2f, medFBs ', ...
-        tracker.target_id, dres_det.r);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.medFBs(i));
-    end
-    fprintf('\n');
-
-    fprintf('LK association, target %d detection %.2f, medFBs left ', ...
-        tracker.target_id, dres_det.r);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.medFBs_left(i));
-    end
-    fprintf('\n');
-
-    fprintf('LK association, target %d detection %.2f, medFBs right ', ...
-        tracker.target_id, dres_det.r);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.medFBs_right(i));
-    end
-    fprintf('\n');
-    
-    fprintf('LK association, target %d detection %.2f, medFBs up ', ...
-        tracker.target_id, dres_det.r);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.medFBs_up(i));
-    end
-    fprintf('\n');
-
-    fprintf('LK association, target %d detection %.2f, medFBs down ', ...
-        tracker.target_id, dres_det.r);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.medFBs_down(i));
-    end
-    fprintf('\n');    
-
-    fprintf('LK association, target %d detection %.2f, nccs ', ...
-        tracker.target_id, dres_det.r);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.nccs(i));
-    end
-    fprintf('\n');
-
-    fprintf('LK association, target %d detection %.2f, overlaps ', ...
-        tracker.target_id, dres_det.r);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.overlaps(i));
-    end
-    fprintf('\n');
-
-    fprintf('LK association, target %d detection %.2f, scores ', ...
-        tracker.target_id, dres_det.r);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.scores(i));
-    end
-    fprintf('\n');
-
-    fprintf('LK association, target %d detection %.2f, angles ', ...
-        tracker.target_id, dres_det.r);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.angles(i));
-    end
-    fprintf('\n');
-    
-    fprintf('LK association, target %d detection %.2f, ratios ', ...
-        tracker.target_id, dres_det.r);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.ratios(i));
-    end
-    fprintf('\n');    
-end
+% if tracker.is_show
+%     fprintf('LK association, target %d detection %.2f, medFBs ', ...
+%         tracker.target_id, dres_det.r);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.medFBs(i));
+%     end
+%     fprintf('\n');
+% 
+%     fprintf('LK association, target %d detection %.2f, medFBs left ', ...
+%         tracker.target_id, dres_det.r);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.medFBs_left(i));
+%     end
+%     fprintf('\n');
+% 
+%     fprintf('LK association, target %d detection %.2f, medFBs right ', ...
+%         tracker.target_id, dres_det.r);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.medFBs_right(i));
+%     end
+%     fprintf('\n');
+%     
+%     fprintf('LK association, target %d detection %.2f, medFBs up ', ...
+%         tracker.target_id, dres_det.r);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.medFBs_up(i));
+%     end
+%     fprintf('\n');
+% 
+%     fprintf('LK association, target %d detection %.2f, medFBs down ', ...
+%         tracker.target_id, dres_det.r);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.medFBs_down(i));
+%     end
+%     fprintf('\n');    
+% 
+%     fprintf('LK association, target %d detection %.2f, nccs ', ...
+%         tracker.target_id, dres_det.r);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.nccs(i));
+%     end
+%     fprintf('\n');
+% 
+%     fprintf('LK association, target %d detection %.2f, overlaps ', ...
+%         tracker.target_id, dres_det.r);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.overlaps(i));
+%     end
+%     fprintf('\n');
+% 
+%     fprintf('LK association, target %d detection %.2f, scores ', ...
+%         tracker.target_id, dres_det.r);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.scores(i));
+%     end
+%     fprintf('\n');
+% 
+%     fprintf('LK association, target %d detection %.2f, angles ', ...
+%         tracker.target_id, dres_det.r);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.angles(i));
+%     end
+%     fprintf('\n');
+%     
+%     fprintf('LK association, target %d detection %.2f, ratios ', ...
+%         tracker.target_id, dres_det.r);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.ratios(i));
+%     end
+%     fprintf('\n');    
+% end

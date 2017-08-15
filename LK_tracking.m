@@ -148,83 +148,83 @@ if bb_isdef(tracker.bb)
 else
     tracker.nccs = zeros(tracker.num, 1);
 end    
-
-if tracker.is_show
-    fprintf('\ntarget %d: frame ids ', tracker.target_id);
-    for i = 1:tracker.num
-        fprintf('%d ', tracker.frame_ids(i))
-    end
-    fprintf('\n');    
-    fprintf('target %d: medFB ', tracker.target_id);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.medFBs(i))
-    end
-    fprintf('\n');
-    
-    fprintf('target %d: medFB left ', tracker.target_id);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.medFBs_left(i))
-    end
-    fprintf('\n');
-    
-    fprintf('target %d: medFB right ', tracker.target_id);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.medFBs_right(i))
-    end
-    fprintf('\n');
-    
-    fprintf('target %d: medFB up ', tracker.target_id);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.medFBs_up(i))
-    end
-    fprintf('\n');
-    
-    fprintf('target %d: medFB down ', tracker.target_id);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.medFBs_down(i))
-    end
-    fprintf('\n');       
-    
-    fprintf('target %d: medNCC ', tracker.target_id);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.medNCCs(i))
-    end
-    fprintf('\n');
-    
-    fprintf('target %d: overlap ', tracker.target_id);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.overlaps(i))
-    end
-    fprintf('\n');
-    fprintf('target %d: detection score ', tracker.target_id);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.scores(i))
-    end
-    fprintf('\n');
-    fprintf('target %d: flag ', tracker.target_id);
-    for i = 1:tracker.num
-        fprintf('%d ', tracker.flags(i))
-    end
-    fprintf('\n');
-    fprintf('target %d: angle ', tracker.target_id);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.angles(i))
-    end
-    fprintf('\n');
-    fprintf('target %d: ncc ', tracker.target_id);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.nccs(i))
-    end
-    fprintf('\n\n');
-    fprintf('target %d: bb overlaps ', tracker.target_id);
-    for i = 1:tracker.num
-        fprintf('%.2f ', tracker.bb_overlaps(i))
-    end
-    fprintf('\n\n');
-
-    if tracker.flags(ind) == 2
-        fprintf('target %d: bounding box out of image\n', tracker.target_id);
-    elseif tracker.flags(ind) == 3
-        fprintf('target %d: too unstable predictions\n', tracker.target_id);
-    end
-end
+% 
+% if tracker.is_show
+%     fprintf('\ntarget %d: frame ids ', tracker.target_id);
+%     for i = 1:tracker.num
+%         fprintf('%d ', tracker.frame_ids(i))
+%     end
+%     fprintf('\n');    
+%     fprintf('target %d: medFB ', tracker.target_id);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.medFBs(i))
+%     end
+%     fprintf('\n');
+%     
+%     fprintf('target %d: medFB left ', tracker.target_id);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.medFBs_left(i))
+%     end
+%     fprintf('\n');
+%     
+%     fprintf('target %d: medFB right ', tracker.target_id);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.medFBs_right(i))
+%     end
+%     fprintf('\n');
+%     
+%     fprintf('target %d: medFB up ', tracker.target_id);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.medFBs_up(i))
+%     end
+%     fprintf('\n');
+%     
+%     fprintf('target %d: medFB down ', tracker.target_id);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.medFBs_down(i))
+%     end
+%     fprintf('\n');       
+%     
+%     fprintf('target %d: medNCC ', tracker.target_id);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.medNCCs(i))
+%     end
+%     fprintf('\n');
+%     
+%     fprintf('target %d: overlap ', tracker.target_id);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.overlaps(i))
+%     end
+%     fprintf('\n');
+%     fprintf('target %d: detection score ', tracker.target_id);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.scores(i))
+%     end
+%     fprintf('\n');
+%     fprintf('target %d: flag ', tracker.target_id);
+%     for i = 1:tracker.num
+%         fprintf('%d ', tracker.flags(i))
+%     end
+%     fprintf('\n');
+%     fprintf('target %d: angle ', tracker.target_id);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.angles(i))
+%     end
+%     fprintf('\n');
+%     fprintf('target %d: ncc ', tracker.target_id);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.nccs(i))
+%     end
+%     fprintf('\n\n');
+%     fprintf('target %d: bb overlaps ', tracker.target_id);
+%     for i = 1:tracker.num
+%         fprintf('%.2f ', tracker.bb_overlaps(i))
+%     end
+%     fprintf('\n\n');
+% 
+%     if tracker.flags(ind) == 2
+%         fprintf('target %d: bounding box out of image\n', tracker.target_id);
+%     elseif tracker.flags(ind) == 3
+%         fprintf('target %d: too unstable predictions\n', tracker.target_id);
+%     end
+% end
