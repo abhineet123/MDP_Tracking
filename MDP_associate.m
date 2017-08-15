@@ -6,7 +6,8 @@
 % --------------------------------------------------------
 %
 % MDP value function
-function [tracker, qscore, f] = MDP_associate(tracker, frame_id, dres_image, dres_det, index_det)
+function [tracker, qscore, f] = MDP_associate(tracker, frame_id, dres_image,...
+    dres_det, index_det)
 if tracker.state ~= 3
 	error('Association can only be performed in the occluded state');
 end
