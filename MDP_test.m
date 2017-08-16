@@ -350,7 +350,7 @@ for fr = 1:seq_num
                 fig_ids_track, colors_rgb);
             if show_cropped_figs && save_video
                 if i > numel(aviobjs)
-                    file_video = sprintf('%s/%s_%d_%d_%d_templates.mp4',...
+                    file_video = sprintf('%s/%s_%d_%d_%d_templates.avi',...
                         video_dir, seq_name, test_start_idx, test_end_idx, i);
                     aviobj = VideoWriter(file_video);
                     aviobj.FrameRate = 10;
