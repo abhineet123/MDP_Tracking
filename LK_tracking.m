@@ -100,17 +100,17 @@ if show_figs
     %     'NumberTitle','off');
 
 end
-for i = 1:tracker.num
-    if show_figs
-        sbp_h = subplot(prows,pcols,i + 1);
-        sbp_p = get(sbp_h, 'pos');
-        sbp_p(1) = sbp_p(1) - 0.1;
-        sbp_p(2) = sbp_p(2) - 0.1;
-        sbp_p(3) = sbp_p(3) + 0.1;
-        sbp_p(4) = sbp_p(4) + 0.1;
-        set(sbp_h, 'pos', sbp_p); 
-    end
-end
+% for i = 1:tracker.num
+%     if show_figs
+%         sbp_h = subplot(prows,pcols,i + 1);
+%         sbp_p = get(sbp_h, 'pos');
+%         sbp_p(1) = sbp_p(1) - 0.1;
+%         sbp_p(2) = sbp_p(2) - 0.1;
+%         sbp_p(3) = sbp_p(3) + 0.1;
+%         sbp_p(4) = sbp_p(4) + 0.1;
+%         set(sbp_h, 'pos', sbp_p); 
+%     end
+% end
 
 % track each of the stored templates or frame/BB combo in the latest image
 % also extract and store tracking features for each
