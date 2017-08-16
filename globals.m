@@ -14,9 +14,9 @@ idot_train_ratio = -0.4;
 lost_train_ratio = 0.6;
 isl_train_ratio = 0.6;
 
-gram_test_ratio = 0.01;
+gram_test_ratio = 0.001;
 gram_split_test_ratio = 1;
-idot_test_ratio = 0.01;
+idot_test_ratio = 0.1;
 lost_test_ratio = 1;
 isl_test_ratio = 1;
 
@@ -106,10 +106,10 @@ opt.threshold_ratio = 0.6;    % aspect ratio threshold in target association
 opt.threshold_dis = 3;        % distance threshold in target association, multiple of the width of target
 opt.threshold_box = 0.8;      % bounding box overlap threshold in tracked state
 
-% opt.std_box = [30 60];        % [width height] of the stanford (?? probably standard) box in computing flow
-% opt.enlarge_box = [5, 3];     % enlarge the box before computing flow
-opt.std_box = [60 60];        % [width height] of the stanford (?? probably standard) box in computing flow
-opt.enlarge_box = [3, 3];     % enlarge the box before computing flow
+opt.std_box = [30 60];        % [width height] of the stanford (?? probably standard) box in computing flow
+opt.enlarge_box = [5, 3];     % enlarge the box before computing flow
+% opt.std_box = [60 60];        % [width height] of the stanford (?? probably standard) box in computing flow
+% opt.enlarge_box = [3, 3];     % enlarge the box before computing flow
 
 opt.margin_box = [5, 2];      % [width height] of the margin in computing flow
 opt.level_track = 1;          % LK level in association

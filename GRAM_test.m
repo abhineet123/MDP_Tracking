@@ -7,7 +7,7 @@
 %
 % cross_validation on the KITTI benchmark
 function GRAM_test(is_train, seq_idx_train, seq_idx_test,...
-    continue_from_seq, use_hungarian, show_cropped_figs)
+    continue_from_seq, use_hungarian, show_cropped_figs, save_video)
 
 % set is_train to 0 if testing trained trackers only
 if nargin<1
@@ -32,7 +32,9 @@ end
 if nargin<6
     show_cropped_figs = 0;
 end
-
+if nargin<7
+    save_video = 0;
+end
     
 db_type = 2;
 opt = globals();
@@ -114,7 +116,7 @@ for i = 1:N
             MDP_test_hungarian(idx_test(j), seq_set_test, tracker, db_type);
         else
             MDP_test(idx_test(j), seq_set_test, tracker, db_type,...
-                show_cropped_figs);
+                show_cropped_figs, save_video);
         end
     end
     GRAM_evaluation_only(idx_test, 0);

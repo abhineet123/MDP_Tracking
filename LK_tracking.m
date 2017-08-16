@@ -65,16 +65,16 @@ if show_figs
     ch = tracker.dres.h(end);
     rectangle('Position', [cx cy cw ch], 'EdgeColor', colors_rgb{1},...
         'LineWidth', line_width, 'LineStyle', line_style);      
-    text(cx, cy-size(J,1)*0.01, sprintf('c'),...
-        'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);
+    % text(cx, cy-size(J,1)*0.01, sprintf('c'),...
+    %     'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);
     px = BB3(1);
     py = BB3(2);
     pw = BB3(3) - px;
     ph = BB3(4) - py;
     rectangle('Position', [px py pw ph], 'EdgeColor', colors_rgb{2},...
         'LineWidth', line_width, 'LineStyle', line_style);      
-    text(px, py-size(J,1)*0.01, sprintf('p'),...
-        'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);      
+    % text(px, py-size(J,1)*0.01, sprintf('p'),...
+    %     'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);
     hold off; 
     
     figure(figure_ids(2));
@@ -99,6 +99,17 @@ if show_figs
     % set(figure_ids(3),'Name', sprintf('Stored templates'),...
     %     'NumberTitle','off');
 
+end
+for i = 1:tracker.num
+    if show_figs
+        sbp_h = subplot(prows,pcols,i + 1);
+        sbp_p = get(sbp_h, 'pos');
+        sbp_p(1) = sbp_p(1) - 0.1;
+        sbp_p(2) = sbp_p(2) - 0.1;
+        sbp_p(3) = sbp_p(3) + 0.1;
+        sbp_p(4) = sbp_p(4) + 0.1;
+        set(sbp_h, 'pos', sbp_p); 
+    end
 end
 
 % track each of the stored templates or frame/BB combo in the latest image

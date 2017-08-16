@@ -7,16 +7,19 @@
 %
 % testing MDP
 function metrics = MDP_test(seq_idx, seq_set, tracker, db_type,...
-    show_cropped_figs)
+    show_cropped_figs, save_video)
 global pause_exec
 
-pause_exec = 1;
+pause_exec = 0;
 
 if nargin < 4
     db_type = 0;
 end
 if nargin < 5
     show_cropped_figs = 0;
+end
+if nargin < 6
+    save_video = 0;
 end
 is_show = 0;   % set is_show to 1 to show tracking results in testing
 is_save = 1;   % set is_save to 1 to save tracking result
@@ -60,6 +63,21 @@ if show_cropped_figs
     for i = 1:n_cols
         colors_rgb{i} = col_rgb{strcmp(col_names,colors{i})};
     end
+    
+    aviobjs = {};
+    if save_video
+        video_dir = sprintf('Tracked/Analysis');
+        if ~exist(video_dir, 'dir')
+            mkdir(video_dir);
+        end
+        set(fig_ids_track(2), 'Position', get(0, 'Screensize'));
+        % set(fig_ids(1), 'Visible','off');
+        % set(fig_ids(2), 'Visible','off');
+        % set(fig_ids_track(1), 'Visible','off');
+        % set(fig_ids_track(2), 'Visible','off');
+    end
+else
+    save_video = 0;
 end
 
 opt = globals();
@@ -318,6 +336,10 @@ for fr = 1:seq_num
         index_track = sort_trackers(trackers);
     end
     
+    if save_video
+     
+    end
+    
     % process trackers
     for i = 1:numel(index_track)
         ind = index_track(i);
@@ -326,6 +348,18 @@ for fr = 1:seq_num
             % track target
             trackers{ind} = track(fr, dres_image, dres, trackers{ind}, opt,...
                 fig_ids_track, colors_rgb);
+            if show_cropped_figs && save_video
+                if i > numel(aviobjs)
+                    file_video = sprintf('%s/%s_%d_%d_%d_templates.mp4',...
+                        video_dir, seq_name, test_start_idx, test_end_idx, i);
+                    aviobj = VideoWriter(file_video);
+                    aviobj.FrameRate = 10;
+                    open(aviobj);
+                    aviobjs{i} = aviobj;
+                    fprintf('saving video for tracker %d to %s\n', i, file_video); 
+                end                
+                writeVideo(aviobjs{i}, getframe(fig_ids_track(2)));
+            end
             % connect target
             % Check if the tracking failure can be fixed by using the detections
             if trackers{ind}.state == 3
@@ -426,6 +460,11 @@ fprintf('\nTotal time taken: %.2f secs.\nAverage FPS: %.2f\n',...
     elapsed_time, double(seq_num)/double(elapsed_time));
 
 %% write tracking results
+ if save_video
+    for i = 1:numel(aviobjs)       
+        close(aviobjs{i});
+    end
+end
 
 if db_type == 0
     filename = sprintf('%s/%s.txt', opt.results, seq_name);
