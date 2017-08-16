@@ -23,6 +23,13 @@ m = numel(dres.fr);
 % feature which is 12
 feature = zeros(m, tracker.fnum_occluded);
 flag = zeros(m, 1);
+
+for i = 1:tracker.num
+    BB1 = [tracker.x1(i); tracker.y1(i); tracker.x2(i); tracker.y2(i)];
+    I_crop = tracker.Is{i};
+    BB1_crop = tracker.BBs{i};
+    
+end
 for i = 1:m
     % The features for each of the potentially associated detections
     % are obtained by first trying to track each one of the stored

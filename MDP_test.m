@@ -6,17 +6,61 @@
 % --------------------------------------------------------
 %
 % testing MDP
-function metrics = MDP_test(seq_idx, seq_set, tracker, db_type)
+function metrics = MDP_test(seq_idx, seq_set, tracker, db_type,...
+    show_cropped_figs)
+global pause_exec
+
+pause_exec = 1;
 
 if nargin < 4
     db_type = 0;
 end
-
+if nargin < 5
+    show_cropped_figs = 0;
+end
 is_show = 0;   % set is_show to 1 to show tracking results in testing
 is_save = 1;   % set is_save to 1 to save tracking result
 is_text = 0;   % set is_text to 1 to display detailed info
 is_pause = 0;  % set is_pause to 1 to debug
 save_images = 0;
+
+fig_ids = [];
+fig_ids_track = [];
+colors_rgb = {};
+if show_cropped_figs
+    fig_ids(1) = figure;
+    fig_ids(2) = figure;
+    set(fig_ids(1),'WindowButtonDownFcn',@ButtonDown);
+    set(fig_ids(2),'WindowButtonDownFcn',@ButtonDown);
+    
+    fig_ids_track(1) = figure;
+    fig_ids_track(2) = figure;  
+    % fig_ids_track(3) = figure;   
+    set(fig_ids_track(1),'WindowButtonDownFcn',@ButtonDown);
+    set(fig_ids_track(2),'WindowButtonDownFcn',@ButtonDown);
+    
+    colRGBDefs;
+    colors={
+        'blue',...%1
+        'red',...%2
+        'green',...%3
+        'cyan',...%4
+        'magenta',...%5
+        'yellow',...%6
+        'forest_green',...%7
+        'slate_gray',...%8
+        'peach_puff_3',...%9
+        'maroon',...%10
+        'purple',...%11
+        'orange',...%12
+        'gold'...%13
+        };
+    n_cols = length(colors);
+    colors_rgb = cell(n_cols, 1);
+    for i = 1:n_cols
+        colors_rgb{i} = col_rgb{strcmp(col_names,colors{i})};
+    end
+end
 
 opt = globals();
 opt.is_text = is_text;
@@ -231,7 +275,8 @@ for fr = 1:seq_num
     % location of the tracked object to all of these patches
     % to see which one is easiest to track and therefore
     % most likely to correspond to the tracked object    
-    dres = MDP_crop_image_box(dres, dres_image.Igray{fr}, tracker);
+    dres = MDP_crop_image_box(dres, dres_image.Igray{fr}, tracker,...
+        fig_ids, colors_rgb);
     
     % if is_show
     %     figure(1);
@@ -279,7 +324,8 @@ for fr = 1:seq_num
         
         if trackers{ind}.state == 2
             % track target
-            trackers{ind} = track(fr, dres_image, dres, trackers{ind}, opt);
+            trackers{ind} = track(fr, dres_image, dres, trackers{ind}, opt,...
+                fig_ids_track, colors_rgb);
             % connect target
             % Check if the tracking failure can be fixed by using the detections
             if trackers{ind}.state == 3
@@ -293,7 +339,7 @@ for fr = 1:seq_num
                 % known location and its velocity in all of the frames that
                 % it has been tracked in so far
                 % next, we check if trying to track this object from this last
-                % known location to this the any of these matched detections can work
+                % known location to any of these matched detections can work
                 trackers{ind} = associate(fr, dres_image,  dres_associate,...
                     trackers{ind}, opt, 1);
             end
@@ -302,12 +348,19 @@ for fr = 1:seq_num
             
             % Repeat the same steps as were performed when the tracker was first
             % found to be in the occluded state except that now they are
-            % performed in the new frame when we failed to associate the lost
-            % tracker with one of the detections in the frame
+            % performed in the new frame after we failed to associate the lost
+            % tracker with any of the detections in the frame
             % where it was first found to be occluded
             [dres_tmp, index] = generate_initial_index(trackers(index_track(1:i-1)), dres);
             dres_associate = sub(dres_tmp, index);    
             trackers{ind} = associate(fr, dres_image, dres_associate, trackers{ind}, opt, 1);
+        end
+        if show_cropped_figs
+            if pause_exec
+                k = waitforbuttonpress;
+            else
+                pause(0.0001);
+            end          
         end
     end
     
@@ -424,4 +477,10 @@ else
             seq_name, test_start_idx, test_end_idx);
         save(filename, 'dres_track');
     end 
+end
+end
+
+function ButtonDown(hObject, eventdata)
+    global pause_exec
+    pause_exec = 1 - pause_exec;
 end

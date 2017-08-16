@@ -6,10 +6,18 @@
 % --------------------------------------------------------
 %
 % extract features for tracked state
-function [tracker, f] = MDP_feature_tracked(frame_id, dres_image, dres_det, tracker)
+function [tracker, f] = MDP_feature_tracked(frame_id, dres_image, dres_det,...
+    tracker, fig_ids, colors_rgb)
 
+if nargin<4
+    fig_ids = [];
+end
+if nargin<5
+    colors_rgb = {};
+end
 % LK tracking
-tracker = LK_tracking(frame_id, dres_image, dres_det, tracker);
+tracker = LK_tracking(frame_id, dres_image, dres_det, tracker,...
+    fig_ids, colors_rgb);
 
 % extract features
 f = zeros(1, tracker.fnum_tracked);

@@ -6,12 +6,20 @@
 % --------------------------------------------------------
 %
 % MDP value function
-function [tracker, qscore, f] = MDP_track(tracker, frame_id, dres_image, dres_det)
+function [tracker, qscore, f] = MDP_track(tracker, frame_id, dres_image,...
+    dres_det, fig_ids, colors_rgb)
 if tracker.state ~= 2
 	error('Tracking can only be performed in the tracked state');
 end
+if nargin<5
+    fig_ids = [];
+end
+if nargin<6
+    colors_rgb = {};
+end
 % extract features with LK tracking
-[tracker, f] = MDP_feature_tracked(frame_id, dres_image, dres_det, tracker);
+[tracker, f] = MDP_feature_tracked(frame_id, dres_image, dres_det,...
+    tracker, fig_ids, colors_rgb);
 
 % build the dres structure
 if bb_isdef(tracker.bb)

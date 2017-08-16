@@ -17,11 +17,27 @@
 
 % modified by Yu Xiang
 
-function tracker = LK_tracking(frame_id, dres_image, dres_det, tracker)
+function tracker = LK_tracking(frame_id, dres_image, dres_det, tracker,...
+    figure_ids, colors_rgb)
 
 % tracker.flag = 1; % success
 % tracker.flag = 2; % complete failure
 % tracker.flag = 3; % unstable/unreliable tracking
+
+show_figs = 0;
+line_width = 1;
+line_style = '-';
+obj_id_font_size = 6;
+
+if nargin<4
+    figure_ids = [];
+end
+if nargin<5
+    colors_rgb = {};
+end
+if ~isempty(figure_ids) && ~isempty(colors_rgb)
+    show_figs = 1;
+end
 
 % current frame + motion
 J = dres_image.Igray{frame_id};
@@ -35,6 +51,56 @@ BB3 = [ctrack(1)-w/2; ctrack(2)-h/2; ctrack(1)+w/2; ctrack(2)+h/2];
 
 num_det = numel(dres_det.x);
 
+if show_figs
+    n_cols = numel(colors_rgb);
+    figure(figure_ids(1));
+    set(figure_ids(1),...
+        'Name', sprintf('Current Image with current and predicted boxes'),...
+        'NumberTitle','off');
+    imshow(J);
+    hold on;
+    cx = tracker.dres.x(end);
+    cy = tracker.dres.y(end);
+    cw = tracker.dres.w(end);
+    ch = tracker.dres.h(end);
+    rectangle('Position', [cx cy cw ch], 'EdgeColor', colors_rgb{1},...
+        'LineWidth', line_width, 'LineStyle', line_style);      
+    text(cx, cy-size(J,1)*0.01, sprintf('c'),...
+        'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);
+    px = BB3(1);
+    py = BB3(2);
+    pw = BB3(3) - px;
+    ph = BB3(4) - py;
+    rectangle('Position', [px py pw ph], 'EdgeColor', colors_rgb{2},...
+        'LineWidth', line_width, 'LineStyle', line_style);      
+    text(px, py-size(J,1)*0.01, sprintf('p'),...
+        'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);      
+    hold off; 
+    
+    figure(figure_ids(2));
+    set(figure_ids(2),'Name', sprintf('Predicted image and stored templates'),...
+        'NumberTitle','off');    
+    pcols = ceil(sqrt(tracker.num + 1));
+    prows = ceil(double(tracker.num + 1) / double(pcols));
+    subplot(prows,pcols,1);
+    imshow(J_crop);
+    hold on;
+    px = BB3_crop(1);
+    py = BB3_crop(2);
+    pw = BB3_crop(3) - px;
+    ph = BB3_crop(4) - py;
+    rectangle('Position', [px py pw ph], 'EdgeColor', [0, 0, 0],...
+        'LineWidth', line_width, 'LineStyle', line_style);      
+    text(px, py-size(J_crop,1)*0.01, sprintf('p'),...
+        'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);      
+    hold off; 
+    
+    % figure(figure_ids(3));
+    % set(figure_ids(3),'Name', sprintf('Stored templates'),...
+    %     'NumberTitle','off');
+
+end
+
 % track each of the stored templates or frame/BB combo in the latest image
 % also extract and store tracking features for each
 for i = 1:tracker.num
@@ -42,16 +108,33 @@ for i = 1:tracker.num
     I_crop = tracker.Is{i};
     BB1_crop = tracker.BBs{i};
     
+    if show_figs
+        subplot(prows,pcols,i + 1);
+        imshow(I_crop);
+        hold on;
+        sx = BB1_crop(1);
+        sy = BB1_crop(2);
+        sw = BB1_crop(3) - sx;
+        sh = BB1_crop(4) - sy;
+        col_id = mod(i - 1, n_cols) + 1;
+        line_col = colors_rgb{col_id};
+        rectangle('Position', [sx sy sw sh], 'EdgeColor', line_col,...
+            'LineWidth', line_width, 'LineStyle', line_style);  
+        % text(sx, sy-size(I_crop,1)*0.01, sprintf('%d', i),...
+        %     'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);
+        hold off;
+    end
+    
     % LK tracking - wrapper over the mex LK tracker
     % also returns a bunch of appearance and optical flow features
-    [BB2, xFJ, flag, medFB, medNCC, medFB_left, medFB_right, medFB_up, medFB_down] = LK(I_crop, J_crop, ...
-        BB1_crop, BB3_crop, tracker.margin_box, tracker.level_track);
+    [BB2, xFJ, flag, medFB, medNCC, medFB_left, medFB_right,...
+        medFB_up, medFB_down] = LK(I_crop, J_crop, ...
+        BB1_crop, BB3_crop, tracker.margin_box, tracker.level_track);  
     
     % change the coordinate system of  BB2 from the cropped resized image
     % to the original image
     BB2 = bb_shift_absolute(BB2, [bb_crop(1) bb_crop(2)]);
-    BB2 = [BB2(1)/s(1); BB2(2)/s(2); BB2(3)/s(1); BB2(4)/s(2)];
-    
+    BB2 = [BB2(1)/s(1); BB2(2)/s(2); BB2(3)/s(1); BB2(4)/s(2)];   
 
     % ratio of the heights of the new and old BB
     ratio = (BB2(4)-BB2(2)) / (BB1(4)-BB1(2));

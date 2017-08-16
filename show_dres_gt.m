@@ -37,15 +37,18 @@ for i = 1:numel(index)
         c = [0, 0, 0];
         str = '';
     end
-    rectangle('Position', [x y w h], 'EdgeColor', c, 'LineWidth', box_line_width, 'LineStyle', s);
+    rectangle('Position', [x y w h], 'EdgeColor', c,...
+        'LineWidth', box_line_width, 'LineStyle', s);
     if ~isempty(str)
-        text(x, y-size(I,1)*0.01, str, 'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);
+        text(x, y-size(I,1)*0.01, str, 'BackgroundColor', [.7 .9 .7],...
+            'FontSize', obj_id_font_size);
     end
     if isfield(dres, 'id') && dres.id(ind) > 0
         % show the previous path
         ind = find(dres.id == id & dres.fr <= frame_id);
         centers = [dres.x(ind)+dres.w(ind)/2, dres.y(ind)+dres.h(ind)];
-        patchline(centers(:,1), centers(:,2), 'LineWidth', traj_line_width, 'edgecolor', c, 'edgealpha', 0.3);
+        patchline(centers(:,1), centers(:,2), 'LineWidth',...
+            traj_line_width, 'edgecolor', c, 'edgealpha', 0.3);
     end
 end
 hold off;
