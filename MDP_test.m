@@ -30,6 +30,9 @@ is_text = 0;   % set is_text to 1 to display detailed info
 is_pause = 0;  % set is_pause to 1 to debug
 save_images = 0;
 
+opt = globals();
+opt.is_text = is_text;
+
 fig_ids = [];
 fig_ids_track = [];
 colors_rgb = {};
@@ -82,9 +85,6 @@ if show_cropped_figs
 else
     save_video = 0;
 end
-
-opt = globals();
-opt.is_text = is_text;
 
 if db_type == 1
     opt.exit_threshold = 0.5;
