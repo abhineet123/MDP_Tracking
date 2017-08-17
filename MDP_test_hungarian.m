@@ -7,17 +7,20 @@
 %
 % testing MDP
 function dres_track = MDP_test_hungarian(seq_idx, seq_set, tracker,...
-    db_type, write_results)
+    db_type, start_offset, write_results)
 
 if nargin < 4
     db_type = 0;
 end
 if nargin < 5
+    start_offset = 0;
+end
+if nargin < 6
     write_results = 1;
 end
 
 is_show = 0;
-is_save = 1;
+is_save = 0;
 is_text = 0;
 is_pause = 0;
 save_images = 0;
@@ -129,11 +132,11 @@ else
     if test_ratio(seq_idx)<=0
         seq_train_ratio = train_ratio(seq_idx);
         [ test_start_idx, test_end_idx ] = getInvSubSeqIdx(seq_train_ratio,...
-            seq_n_frames, opt.test_start_offset);
+            seq_n_frames, start_offset);
     else
         seq_test_ratio = test_ratio(seq_idx);
         [ test_start_idx, test_end_idx ] = getSubSeqIdx(seq_test_ratio,...
-            seq_n_frames, opt.test_start_offset);
+            seq_n_frames, start_offset);
     end
     seq_num = test_end_idx - test_start_idx + 1;
     

@@ -7,7 +7,7 @@
 %
 % testing MDP
 function dres_track = MDP_test(seq_idx, seq_set, tracker, db_type,...
-    write_results, show_cropped_figs, save_video)
+    start_offset, write_results, show_cropped_figs, save_video)
 global pause_exec
 
 pause_exec = 0;
@@ -16,12 +16,15 @@ if nargin < 4
     db_type = 0;
 end
 if nargin < 5
-    write_results = 1;
+    start_offset = 0;
 end
 if nargin < 6
-    show_cropped_figs = 0;
+    write_results = 1;
 end
 if nargin < 7
+    show_cropped_figs = 0;
+end
+if nargin < 8
     save_video = 0;
 end
 is_show = 0;   % set is_show to 1 to show tracking results in testing
@@ -206,11 +209,11 @@ else
     if test_ratio(seq_idx)<=0
         seq_train_ratio = train_ratio(seq_idx);
         [ test_start_idx, test_end_idx ] = getInvSubSeqIdx(seq_train_ratio,...
-            seq_n_frames, opt.test_start_offset);
+            seq_n_frames, start_offset);
     else
         seq_test_ratio = test_ratio(seq_idx);
         [ test_start_idx, test_end_idx ] = getSubSeqIdx(seq_test_ratio,...
-            seq_n_frames, opt.test_start_offset);
+            seq_n_frames, start_offset);
     end
     seq_num = test_end_idx - test_start_idx + 1;
     
