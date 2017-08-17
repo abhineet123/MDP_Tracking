@@ -11,8 +11,8 @@ save_input_images = 0;
 start_idx = 68;
 end_idx = 1;
 seq_idx_list = [81];
-start_frame_idx = 1;
-n_frames = 1000;
+start_frame_idx = 9001;
+n_frames = 2000;
 
 if ~exist('seq_idx_list', 'var')
     if end_idx<start_idx
@@ -102,8 +102,15 @@ for seq_idx = seq_idx_list
             seq_num = n_frames;           
         end
     end
-    
+
+    if start_frame_idx < start_idx
+        start_frame_idx = start_idx;
+    end
     end_frame_idx = start_frame_idx + seq_num - 1;
+    if end_frame_idx>end_idx
+        end_frame_idx = end_idx;
+        seq_num = end_frame_idx - start_frame_idx + 1;
+    end
     
     % build the dres structure for images
     if exist(filename, 'file') ~= 0
@@ -144,8 +151,8 @@ for seq_idx = seq_idx_list
         if ~exist(video_dir, 'dir')
             mkdir(video_dir);
         end
-        file_video = sprintf('%s/%s_%d_%d_%d.mp4', video_dir, seq_name,...
-            start_idx, end_idx, seq_num);
+        file_video = sprintf('%s/%s_%d_%d.mp4', video_dir, seq_name,...
+            start_frame_idx, end_frame_idx);
         
         dres_track = read_gram2dres(filename);
     end
