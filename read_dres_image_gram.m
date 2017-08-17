@@ -5,18 +5,23 @@
 % Written by Yu Xiang
 % --------------------------------------------------------
 function dres_image = read_dres_image_gram(db_path, seq_name,...
-    start_idx, end_idx, store_rgb, store_gs)
-if nargin<5
-    store_rgb = 1;
+    start_idx, end_idx, store_rgb, store_gs, verbose)
+if nargin < 5
+    store_rgb = 0;
 end
-if nargin<6
+if nargin < 6
     store_gs = 1;
+end
+if nargin < 7
+    verbose = 1;
 end
 n_frames = end_idx - start_idx + 1;
 seq_path = fullfile(db_path, 'Images', seq_name);
-fprintf('Reading images from %s\n', seq_path);
-fprintf('start_idx: %d end_idx: %d n_frames: %d\n',...
-    start_idx, end_idx, n_frames);
+if verbose
+    fprintf('Reading images from %s\n', seq_path);
+    fprintf('start_idx: %d end_idx: %d n_frames: %d\n',...
+        start_idx, end_idx, n_frames);
+end
 
 dres_image.x = zeros(n_frames, 1);
 dres_image.y = zeros(n_frames, 1);
@@ -25,15 +30,18 @@ dres_image.h = zeros(n_frames, 1);
 if store_gs
     dres_image.Igray = cell(n_frames, 1);
 else
-    fprintf('Not computing the grayscale images\n');
+    if verbose
+        fprintf('Not computing the grayscale images\n');
+    end
 end
 
 if store_rgb
     dres_image.I = cell(n_frames, 1);
 else
-    fprintf('Discarding the RGB images\n');
+    if verbose
+        fprintf('Discarding the RGB images\n');
+    end
 end
-
 for frame_id = start_idx:end_idx
     filename = fullfile(seq_path, sprintf('image%06d.jpg', frame_id));
     I = imread(filename);

@@ -8,7 +8,7 @@
 % cross_validation on the KITTI benchmark
 function GRAM_test(is_train, seq_idx_train, seq_idx_test,...
     continue_from_seq, use_hungarian, start_offset,...
-    enable_eval, show_cropped_figs, save_video, batch_size)
+    enable_eval, show_cropped_figs, save_video)
 
 % set is_train to 0 if testing trained trackers only
 if nargin<1
@@ -41,9 +41,6 @@ if nargin<8
 end
 if nargin<9
     save_video = 0;
-end
-if nargin<10
-    batch_size = 0;
 end
 
 db_type = 2;

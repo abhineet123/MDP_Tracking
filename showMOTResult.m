@@ -1,29 +1,31 @@
-function showMOTResult(test_start_offset, vid_start_offset, n_frames)
+function status = showMOTResult(seq_idx_list, test_start_offset,...
+    vid_start_offset, n_frames)
 
 % addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
 opt = globals();
-
-if nargin < 1
-    test_start_offset = 0;
+if nargin < 2
+    seq_idx_list = [81];
 end
 if nargin < 2
-    vid_start_offset = 2000;
+    test_start_offset = 0;
 end
 if nargin < 3
-    n_frames = 10;
+    vid_start_offset = 0;
 end
-
+if nargin < 4
+    n_frames = 0;
+end
+read_images_in_batch = 0;
 save_video = 1;
-save_as_img_seq = 1;
+save_as_img_seq = 0;
 db_type = 2;
 results_dir = 'results';
 save_input_images = 0;
 start_idx = 68;
 end_idx = 1;
-seq_idx_list = [81];
 
-
-
+global exit_flag
+exit_flag = 0;
 
 if ~exist('seq_idx_list', 'var')
     if end_idx<start_idx
@@ -36,6 +38,8 @@ end
 traj_line_width = 2;
 box_line_width = 2;
 obj_id_font_size = 6;
+
+status = 0;
 
 colRGBDefs;
 colors={
@@ -82,8 +86,10 @@ for i = 1:n_cols
     colors_rgb{i} = col_rgb{strcmp(col_names,colors{i})};
 end
 
+hf = figure(1);
+set(hf,'WindowButtonDownFcn',@ButtonDown);
+
 for seq_idx = seq_idx_list
-    hf = figure(1);
     if db_type == 0
         seq_name = opt.mot2d_test_seqs{seq_idx};
         seq_num = opt.mot2d_test_nums(seq_idx);
@@ -110,38 +116,42 @@ for seq_idx = seq_idx_list
             opt.results, seq_name, start_idx, end_idx);
         seq_num = end_idx - start_idx + 1;
         if n_frames > 0 && n_frames < seq_num
-            seq_num = n_frames;           
+            seq_num = n_frames;
         end
     end
     
     start_frame_idx = vid_start_offset + start_idx;
+    if start_frame_idx > end_idx
+        return
+    end
     end_frame_idx = start_frame_idx + seq_num - 1;
-    if end_frame_idx>end_idx
+    if end_frame_idx > end_idx
         end_frame_idx = end_idx;
         seq_num = end_frame_idx - start_frame_idx + 1;
     end
-    
-    % build the dres structure for images
-    if exist(filename, 'file') ~= 0
-        fprintf('loading images from file %s...', filename);
-        object = load(filename);
-        dres_image = object.dres_image;
-        fprintf('done\n');
-    else
-        fprintf('reading images...\n');
-        if db_type == 0
-            dres_image = read_dres_image(opt, seq_set, seq_name, seq_num);
-        elseif db_type == 1
-            dres_image = read_dres_image_kitti(opt, seq_set, seq_name, seq_num);
-        else
-            dres_image = read_dres_image_gram(db_path, seq_name,...
-                start_frame_idx, end_frame_idx, 1, 0);
-        end
-        fprintf('done\n');
-        if save_input_images
-            fprintf('saving images to file %s...', filename);
-            save(filename, 'dres_image', '-v7.3');
+    if read_images_in_batch
+        % build the dres structure for images
+        if exist(filename, 'file') ~= 0
+            fprintf('loading images from file %s...', filename);
+            object = load(filename);
+            dres_image = object.dres_image;
             fprintf('done\n');
+        else
+            fprintf('reading images...\n');
+            if db_type == 0
+                dres_image = read_dres_image(opt, seq_set, seq_name, seq_num);
+            elseif db_type == 1
+                dres_image = read_dres_image_kitti(opt, seq_set, seq_name, seq_num);
+            else
+                dres_image = read_dres_image_gram(db_path, seq_name,...
+                    start_frame_idx, end_frame_idx, 1, 0);
+            end
+            fprintf('done\n');
+            if save_input_images
+                fprintf('saving images to file %s...', filename);
+                save(filename, 'dres_image', '-v7.3');
+                fprintf('done\n');
+            end
         end
     end
     
@@ -167,7 +177,7 @@ for seq_idx = seq_idx_list
         end
         if save_as_img_seq
             img_seq_dir = fullfile(video_dir, sprintf('%s_%d_%d', seq_name,...
-                start_frame_idx, end_frame_idx));
+                start_idx, end_idx));
             fprintf('saving image sequence to %s\n', img_seq_dir);
             if ~exist(img_seq_dir, 'dir')
                 mkdir(img_seq_dir);
@@ -182,21 +192,40 @@ for seq_idx = seq_idx_list
         end
     end
     for fr = start_frame_idx:end_frame_idx
-        show_dres_gt(fr, dres_image.I{fr - start_frame_idx + 1}, dres_track, colors_rgb,...
-            box_line_width, traj_line_width, obj_id_font_size);
+        if read_images_in_batch
+            show_dres_gt(fr, dres_image.I{fr - start_frame_idx + 1}, dres_track, colors_rgb,...
+                box_line_width, traj_line_width, obj_id_font_size);
+        else
+            dres_image = read_dres_image_gram(db_path, seq_name,...
+                fr, fr, 1, 0, 0);
+            show_dres_gt(fr, dres_image.I{1}, dres_track, colors_rgb,...
+                box_line_width, traj_line_width, obj_id_font_size);
+        end
         if save_video
             if save_as_img_seq
-                img_file = fullfile(img_seq_dir, sprintf('frame%06d.png', fr));    
-                saveas(hf, img_file); 
-            else                
+                img_file = fullfile(img_seq_dir, sprintf('frame%06d.png', fr));
+                saveas(hf, img_file);
+            else
                 writeVideo(aviobj, getframe(hf));
             end
-        else
-            pause(0.001);
+        end
+        pause(0.001);
+        if mod(fr - start_frame_idx + 1, 100) == 0
+            fprintf('Done %d frames\n', fr - start_frame_idx + 1);
+        end
+        if exit_flag
+            fprintf('exiting...\n');
+            break;
         end
     end
     
     if save_video && ~save_as_img_seq
         close(aviobj);
     end
+end
+status = 1;
+end
+function ButtonDown(hObject, eventdata)
+global exit_flag
+exit_flag = 1;
 end
