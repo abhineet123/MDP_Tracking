@@ -10,7 +10,7 @@ function opt = globals()
 
 gram_train_ratio = 1;
 gram_split_train_ratio = 0.6;
-idot_train_ratio = -0.4;
+idot_train_ratio = 1;
 lost_train_ratio = 0.6;
 isl_train_ratio = 0.6;
 

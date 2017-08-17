@@ -10,9 +10,9 @@ results_dir = 'results';
 save_input_images = 0;
 start_idx = 68;
 end_idx = 1;
+seq_idx_list = [81];
+start_frame_idx = 1;
 n_frames = 1000;
-seq_idx_list = [1:2, 66:78];
-
 
 if ~exist('seq_idx_list', 'var')
     if end_idx<start_idx
@@ -20,6 +20,7 @@ if ~exist('seq_idx_list', 'var')
     end
     seq_idx_list = start_idx:end_idx;
 end
+
 
 traj_line_width = 2;
 box_line_width = 2;
@@ -102,6 +103,8 @@ for seq_idx = seq_idx_list
         end
     end
     
+    end_frame_idx = start_frame_idx + seq_num - 1;
+    
     % build the dres structure for images
     if exist(filename, 'file') ~= 0
         fprintf('loading images from file %s...', filename);
@@ -116,7 +119,7 @@ for seq_idx = seq_idx_list
             dres_image = read_dres_image_kitti(opt, seq_set, seq_name, seq_num);
         else
             dres_image = read_dres_image_gram(db_path, seq_name,...
-                start_idx, start_idx + seq_num - 1);
+                start_frame_idx, end_frame_idx, 1, 0);
         end
         fprintf('done\n');
         if save_input_images
@@ -153,10 +156,9 @@ for seq_idx = seq_idx_list
         aviobj.FrameRate = 30;
         open(aviobj);
         fprintf('saving video to %s\n', file_video);
-    end
-    
-    for fr = 1:seq_num
-        show_dres_gt(fr, dres_image.I{fr}, dres_track, colors_rgb,...
+    end    
+    for fr = start_frame_idx:end_frame_idx
+        show_dres_gt(fr, dres_image.I{fr - start_frame_idx + 1}, dres_track, colors_rgb,...
             box_line_width, traj_line_width, obj_id_font_size);
         if save_video
             writeVideo(aviobj, getframe(hf));
