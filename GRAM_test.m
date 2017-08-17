@@ -118,10 +118,10 @@ for i = 1:N
         fprintf('Testing on sequence: %s\n', opt.gram_seqs{idx_test(j)});
         if use_hungarian
             dres_track = MDP_test_hungarian(idx_test(j), seq_set_test,...
-                tracker, db_type, 0);
+                tracker, db_type, 1);
         else
             dres_track = MDP_test(idx_test(j), seq_set_test, tracker, db_type,...
-                0, show_cropped_figs, save_video);
+                1, show_cropped_figs, save_video);
         end
     end
     filename = sprintf('%s/%s_%d_%d.txt', opt.results_gram, seq_name,...
