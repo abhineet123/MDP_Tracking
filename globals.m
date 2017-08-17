@@ -15,7 +15,7 @@ idot_train_ratio = 1;
 lost_train_ratio = 0.6;
 isl_train_ratio = 0.6;
 
-opt.test_start_offset = 1000;
+opt.test_start_offset = 1016;
 gram_test_ratio = 0.001;
 gram_split_test_ratio = 1;
 idot_test_ratio = 0.01;
