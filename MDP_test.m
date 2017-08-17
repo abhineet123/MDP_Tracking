@@ -10,7 +10,7 @@ function dres_track = MDP_test(seq_idx, seq_set, tracker, db_type,...
     start_offset, write_results, show_cropped_figs, save_video)
 global pause_exec
 
-pause_exec = 0;
+pause_exec = 1;
 
 if nargin < 4
     db_type = 0;
@@ -42,14 +42,14 @@ colors_rgb = {};
 if show_cropped_figs
     fig_ids(1) = figure;
     fig_ids(2) = figure;
-    set(fig_ids(1),'WindowButtonDownFcn',@ButtonDown);
-    set(fig_ids(2),'WindowButtonDownFcn',@ButtonDown);
+%     set(fig_ids(1),'WindowButtonDownFcn',@ButtonDown);
+%     set(fig_ids(2),'WindowButtonDownFcn',@ButtonDown);
     
     fig_ids_track(1) = figure;
     fig_ids_track(2) = figure;
     % fig_ids_track(3) = figure;
-    set(fig_ids_track(1),'WindowButtonDownFcn',@ButtonDown);
-    set(fig_ids_track(2),'WindowButtonDownFcn',@ButtonDown);
+%     set(fig_ids_track(1),'WindowButtonDownFcn',@ButtonDown);
+%     set(fig_ids_track(2),'WindowButtonDownFcn',@ButtonDown);
     
     colRGBDefs;
     colors={

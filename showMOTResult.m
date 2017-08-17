@@ -1,8 +1,17 @@
-close all;
-% clear all;
+function showMOTResult(test_start_offset, vid_start_offset, n_frames)
 
-addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
+% addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
 opt = globals();
+
+if nargin < 1
+    test_start_offset = 0;
+end
+if nargin < 2
+    vid_start_offset = 2000;
+end
+if nargin < 3
+    n_frames = 10;
+end
 
 save_video = 1;
 save_as_img_seq = 1;
@@ -12,8 +21,9 @@ save_input_images = 0;
 start_idx = 68;
 end_idx = 1;
 seq_idx_list = [81];
-start_frame_idx = 9001;
-n_frames = 2000;
+
+
+
 
 if ~exist('seq_idx_list', 'var')
     if end_idx<start_idx
@@ -90,11 +100,11 @@ for seq_idx = seq_idx_list
         if test_ratio(seq_idx)<=0
             seq_train_ratio = train_ratio(seq_idx);
             [ start_idx, end_idx ] = getInvSubSeqIdx(seq_train_ratio,...
-                seq_n_frames);
+                seq_n_frames, test_start_offset);
         else
             seq_test_ratio = test_ratio(seq_idx);
             [ start_idx, end_idx ] = getSubSeqIdx(seq_test_ratio,...
-                seq_n_frames);
+                seq_n_frames, test_start_offset);
         end
         filename = sprintf('%s/%s_%d_%d_dres_image.mat',...
             opt.results, seq_name, start_idx, end_idx);
@@ -103,10 +113,8 @@ for seq_idx = seq_idx_list
             seq_num = n_frames;           
         end
     end
-
-    if start_frame_idx < start_idx
-        start_frame_idx = start_idx;
-    end
+    
+    start_frame_idx = vid_start_offset + start_idx;
     end_frame_idx = start_frame_idx + seq_num - 1;
     if end_frame_idx>end_idx
         end_frame_idx = end_idx;
@@ -148,19 +156,22 @@ for seq_idx = seq_idx_list
     else
         filename = sprintf('%s/%s_%d_%d.txt', res_path, seq_name,...
             start_idx, end_idx);
-        video_dir = sprintf('Tracked/%s', db_name);
-        if ~exist(video_dir, 'dir')
-            mkdir(video_dir);
-        end
         dres_track = read_gram2dres(filename);
     end
     fprintf('reading tracking results from %s\n', filename);
     
     if save_video
+        video_dir = sprintf('Tracked/%s', db_name);
+        if ~exist(video_dir, 'dir')
+            mkdir(video_dir);
+        end
         if save_as_img_seq
-            img_seq_dir = sprintf('%s/%s_%d_%d', video_dir, seq_name,...
-                start_frame_idx, end_frame_idx);
+            img_seq_dir = fullfile(video_dir, sprintf('%s_%d_%d', seq_name,...
+                start_frame_idx, end_frame_idx));
             fprintf('saving image sequence to %s\n', img_seq_dir);
+            if ~exist(img_seq_dir, 'dir')
+                mkdir(img_seq_dir);
+            end
         else
             file_video = sprintf('%s/%s_%d_%d.mp4', video_dir, seq_name,...
                 start_frame_idx, end_frame_idx);
@@ -175,8 +186,7 @@ for seq_idx = seq_idx_list
             box_line_width, traj_line_width, obj_id_font_size);
         if save_video
             if save_as_img_seq
-                img_file = fullfile(img_seq_dir, sprintf('frame%06d.png',...
-                    fr - start_frame_idx + 1));    
+                img_file = fullfile(img_seq_dir, sprintf('frame%06d.png', fr));    
                 saveas(hf, img_file); 
             else                
                 writeVideo(aviobj, getframe(hf));
@@ -186,7 +196,7 @@ for seq_idx = seq_idx_list
         end
     end
     
-    if save_video
+    if save_video && ~save_as_img_seq
         close(aviobj);
     end
 end
