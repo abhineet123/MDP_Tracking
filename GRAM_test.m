@@ -118,22 +118,15 @@ for i = 1:N
         fprintf('Testing on sequence: %s\n', opt.gram_seqs{idx_test(j)});
         if use_hungarian
             dres_track = MDP_test_hungarian(idx_test(j), seq_set_test,...
-                tracker, db_type, 1);
+                tracker, db_type, 0);
         else
             dres_track = MDP_test(idx_test(j), seq_set_test, tracker, db_type,...
-                1, show_cropped_figs, save_video);
+                0, show_cropped_figs, save_video);
         end
     end
     filename = sprintf('%s/%s_%d_%d.txt', opt.results_gram, seq_name,...
         test_start_idx, test_end_idx);
     fprintf('writing results to: %s\n', filename);
     write_tracking_results(filename, dres_track, opt.tracked);
-
-    % save results
-    if is_save
-        filename = sprintf('%s/%s_%d_%d_results.mat', opt.results,...
-            seq_name, test_start_idx, test_end_idx);
-        save(filename, 'dres_track');
-    end
     GRAM_evaluation_only(idx_test, 0);
 end
