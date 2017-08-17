@@ -36,9 +36,10 @@ end
 if nargin<7
     save_video = 0;
 end
-if nargin<7
-    save_video = 0;
+if nargin<8
+    batch_size = 0;
 end
+
 db_type = 2;
 opt = globals();
 seq_set_test = 'testing';
