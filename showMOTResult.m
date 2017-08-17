@@ -5,6 +5,7 @@ addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
 opt = globals();
 
 save_video = 1;
+save_as_img_seq = 1;
 db_type = 2;
 results_dir = 'results';
 save_input_images = 0;
@@ -151,24 +152,35 @@ for seq_idx = seq_idx_list
         if ~exist(video_dir, 'dir')
             mkdir(video_dir);
         end
-        file_video = sprintf('%s/%s_%d_%d.mp4', video_dir, seq_name,...
-            start_frame_idx, end_frame_idx);
-        
         dres_track = read_gram2dres(filename);
     end
     fprintf('reading tracking results from %s\n', filename);
     
     if save_video
-        aviobj = VideoWriter(file_video, 'MPEG-4');
-        aviobj.FrameRate = 30;
-        open(aviobj);
-        fprintf('saving video to %s\n', file_video);
-    end    
+        if save_as_img_seq
+            img_seq_dir = sprintf('%s/%s_%d_%d', video_dir, seq_name,...
+                start_frame_idx, end_frame_idx);
+            fprintf('saving image sequence to %s\n', img_seq_dir);
+        else
+            file_video = sprintf('%s/%s_%d_%d.mp4', video_dir, seq_name,...
+                start_frame_idx, end_frame_idx);
+            aviobj = VideoWriter(file_video, 'MPEG-4');
+            aviobj.FrameRate = 30;
+            open(aviobj);
+            fprintf('saving video to %s\n', file_video);
+        end
+    end
     for fr = start_frame_idx:end_frame_idx
         show_dres_gt(fr, dres_image.I{fr - start_frame_idx + 1}, dres_track, colors_rgb,...
             box_line_width, traj_line_width, obj_id_font_size);
         if save_video
-            writeVideo(aviobj, getframe(hf));
+            if save_as_img_seq
+                img_file = fullfile(img_seq_dir, sprintf('frame%06d.png',...
+                    fr - start_frame_idx + 1));    
+                saveas(hf, img_file); 
+            else                
+                writeVideo(aviobj, getframe(hf));
+            end
         else
             pause(0.001);
         end

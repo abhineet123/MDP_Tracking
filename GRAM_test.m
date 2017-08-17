@@ -7,7 +7,8 @@
 %
 % cross_validation on the KITTI benchmark
 function GRAM_test(is_train, seq_idx_train, seq_idx_test,...
-    continue_from_seq, use_hungarian, show_cropped_figs, save_video)
+    continue_from_seq, use_hungarian, show_cropped_figs,...
+    save_video, batch_size)
 
 % set is_train to 0 if testing trained trackers only
 if nargin<1
@@ -35,11 +36,13 @@ end
 if nargin<7
     save_video = 0;
 end
-    
+if nargin<7
+    save_video = 0;
+end
 db_type = 2;
 opt = globals();
 seq_set_test = 'testing';
-N = numel(seq_idx_train);
+N = max([numel(seq_idx_train),numel(seq_idx_test)]);
 
 if ~exist('datetime')
     log_fname = sprintf('%s/log.txt', opt.results_gram);
@@ -113,11 +116,23 @@ for i = 1:N
     for j = 1:num
         fprintf('Testing on sequence: %s\n', opt.gram_seqs{idx_test(j)});
         if use_hungarian
-            MDP_test_hungarian(idx_test(j), seq_set_test, tracker, db_type);
+            dres_track = MDP_test_hungarian(idx_test(j), seq_set_test,...
+                tracker, db_type, 0);
         else
-            MDP_test(idx_test(j), seq_set_test, tracker, db_type,...
-                show_cropped_figs, save_video);
+            dres_track = MDP_test(idx_test(j), seq_set_test, tracker, db_type,...
+                0, show_cropped_figs, save_video);
         end
+    end
+    filename = sprintf('%s/%s_%d_%d.txt', opt.results_gram, seq_name,...
+        test_start_idx, test_end_idx);
+    fprintf('writing results to: %s\n', filename);
+    write_tracking_results(filename, dres_track, opt.tracked);
+
+    % save results
+    if is_save
+        filename = sprintf('%s/%s_%d_%d_results.mat', opt.results,...
+            seq_name, test_start_idx, test_end_idx);
+        save(filename, 'dres_track');
     end
     GRAM_evaluation_only(idx_test, 0);
 end

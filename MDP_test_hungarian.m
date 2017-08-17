@@ -6,10 +6,14 @@
 % --------------------------------------------------------
 %
 % testing MDP
-function metrics = MDP_test_hungarian(seq_idx, seq_set, tracker, db_type)
+function dres_track = MDP_test_hungarian(seq_idx, seq_set, tracker,...
+    db_type, write_results)
 
 if nargin < 4
     db_type = 0;
+end
+if nargin < 5
+    write_results = 1;
 end
 
 is_show = 0;
@@ -125,11 +129,11 @@ else
     if test_ratio(seq_idx)<=0
         seq_train_ratio = train_ratio(seq_idx);
         [ test_start_idx, test_end_idx ] = getInvSubSeqIdx(seq_train_ratio,...
-            seq_n_frames);
+            seq_n_frames, opt.test_start_offset);
     else
         seq_test_ratio = test_ratio(seq_idx);
         [ test_start_idx, test_end_idx ] = getSubSeqIdx(seq_test_ratio,...
-            seq_n_frames);
+            seq_n_frames, opt.test_start_offset);
     end
     seq_num = test_end_idx - test_start_idx + 1;
     
@@ -411,8 +415,8 @@ for fr = 1:seq_num
     % resolve tracker conflict
     trackers = resolve(trackers, dres, opt);
     
-    dres_track = generate_results(trackers);
     % if is_show
+    %     dres_track = generate_results(trackers);
     %     figure(2);
     %
     %     % show tracking results
@@ -431,60 +435,64 @@ for fr = 1:seq_num
     %     end
     % end
 end
+
 elapsed_time  = toc(start_t);
 fprintf('\nTotal time taken: %.2f secs.\nAverage FPS: %.2f\n',...
     elapsed_time, double(seq_num)/double(elapsed_time));
 
+dres_track = generate_results(trackers);
 %% write tracking results
 
-if db_type == 0
-    filename = sprintf('%s/%s.txt', opt.results, seq_name);
-    fprintf('write results: %s\n', filename);
-    write_tracking_results(filename, dres_track, opt.tracked);
-    
-    % evaluation
-    if strcmp(seq_set, 'train') == 1
-        benchmark_dir = fullfile(opt.mot, opt.mot2d, seq_set, filesep);
-        metrics = evaluateTracking({seq_name}, opt.results, benchmark_dir);
+if write_results
+    if db_type == 0
+        filename = sprintf('%s/%s.txt', opt.results, seq_name);
+        fprintf('write results: %s\n', filename);
+        write_tracking_results(filename, dres_track, opt.tracked);
+
+        % evaluation
+        if strcmp(seq_set, 'train') == 1
+            benchmark_dir = fullfile(opt.mot, opt.mot2d, seq_set, filesep);
+            metrics = evaluateTracking({seq_name}, opt.results, benchmark_dir);
+        else
+            metrics = [];
+        end
+
+        % save results
+        if is_save
+            filename = sprintf('%s/%s_results.mat', opt.results, seq_name);
+            save(filename, 'dres_track', 'metrics');
+        end
+    elseif db_type == 1
+        filename = sprintf('%s/%s.txt', opt.results_kitti, seq_name);
+        fprintf('write results: %s\n', filename);
+        write_tracking_results_kitti(filename, dres_track, opt.tracked);
+
+        % evaluation
+        if strcmp(seq_set, 'training') == 1
+            % write a temporal seqmap file
+            filename = sprintf('%s/evaluate_tracking.seqmap', opt.results_kitti);
+            fid = fopen(filename, 'w');
+            fprintf(fid, '%s empty %06d %06d\n', seq_name, 0, seq_num);
+            fclose(fid);
+            system('python evaluate_tracking_kitti.py results_kitti');
+        end
+
+        % save results
+        if is_save
+            filename = sprintf('%s/kitti_%s_%s_results.mat', opt.results_kitti, seq_set, seq_name);
+            save(filename, 'dres_track');
+        end
     else
-        metrics = [];
-    end
-    
-    % save results
-    if is_save
-        filename = sprintf('%s/%s_results.mat', opt.results, seq_name);
-        save(filename, 'dres_track', 'metrics');
-    end
-elseif db_type == 1
-    filename = sprintf('%s/%s.txt', opt.results_kitti, seq_name);
-    fprintf('write results: %s\n', filename);
-    write_tracking_results_kitti(filename, dres_track, opt.tracked);
-    
-    % evaluation
-    if strcmp(seq_set, 'training') == 1
-        % write a temporal seqmap file
-        filename = sprintf('%s/evaluate_tracking.seqmap', opt.results_kitti);
-        fid = fopen(filename, 'w');
-        fprintf(fid, '%s empty %06d %06d\n', seq_name, 0, seq_num);
-        fclose(fid);
-        system('python evaluate_tracking_kitti.py results_kitti');
-    end
-    
-    % save results
-    if is_save
-        filename = sprintf('%s/kitti_%s_%s_results.mat', opt.results_kitti, seq_set, seq_name);
-        save(filename, 'dres_track');
-    end
-else
-    filename = sprintf('%s/%s_%d_%d.txt', opt.results_gram, seq_name,...
-        test_start_idx, test_end_idx);
-    fprintf('writing results to: %s\n', filename);
-    write_tracking_results(filename, dres_track, opt.tracked);
-    
-    % save results
-    if is_save
-        filename = sprintf('%s/%s_%d_%d_results.mat', opt.results,...
-            seq_name, test_start_idx, test_end_idx);
-        save(filename, 'dres_track');
+        filename = sprintf('%s/%s_%d_%d.txt', opt.results_gram, seq_name,...
+            test_start_idx, test_end_idx);
+        fprintf('writing results to: %s\n', filename);
+        write_tracking_results(filename, dres_track, opt.tracked);
+
+        % save results
+        if is_save
+            filename = sprintf('%s/%s_%d_%d_results.mat', opt.results,...
+                seq_name, test_start_idx, test_end_idx);
+            save(filename, 'dres_track');
+        end
     end
 end

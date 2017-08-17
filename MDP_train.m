@@ -102,7 +102,7 @@ else
     seq_n_frames = train_nums(seq_idx);
     seq_train_ratio = train_ratio(seq_idx);
     [train_start_idx, train_end_idx] = getSubSeqIdx(seq_train_ratio,...
-        seq_n_frames);
+        seq_n_frames, opt.train_start_offset);
     seq_num = train_end_idx - train_start_idx + 1;
     
     fprintf('Training on sequence %s from frame %d to %d\n',...

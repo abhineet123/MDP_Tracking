@@ -6,8 +6,8 @@
 % --------------------------------------------------------
 %
 % testing MDP
-function metrics = MDP_test(seq_idx, seq_set, tracker, db_type,...
-    show_cropped_figs, save_video)
+function dres_track = MDP_test(seq_idx, seq_set, tracker, db_type,...
+    write_results, show_cropped_figs, save_video)
 global pause_exec
 
 pause_exec = 0;
@@ -16,9 +16,12 @@ if nargin < 4
     db_type = 0;
 end
 if nargin < 5
-    show_cropped_figs = 0;
+    write_results = 1;
 end
 if nargin < 6
+    show_cropped_figs = 0;
+end
+if nargin < 7
     save_video = 0;
 end
 is_show = 0;   % set is_show to 1 to show tracking results in testing
@@ -37,8 +40,8 @@ if show_cropped_figs
     set(fig_ids(2),'WindowButtonDownFcn',@ButtonDown);
     
     fig_ids_track(1) = figure;
-    fig_ids_track(2) = figure;  
-    % fig_ids_track(3) = figure;   
+    fig_ids_track(2) = figure;
+    % fig_ids_track(3) = figure;
     set(fig_ids_track(1),'WindowButtonDownFcn',@ButtonDown);
     set(fig_ids_track(2),'WindowButtonDownFcn',@ButtonDown);
     
@@ -101,7 +104,7 @@ if db_type == 0
         test_seqs = opt.mot2d_test_seqs{seq_idx};
         test_nums = opt.mot2d_test_nums(seq_idx);
     end
-elseif db_type == 1    
+elseif db_type == 1
     db_path = opt.kitti;
     res_path = opt.results_gram;
     if strcmp(seq_set, 'training') == 1
@@ -117,7 +120,7 @@ elseif db_type == 2
     test_seqs = opt.gram_seqs;
     test_nums = opt.gram_nums;
     train_ratio = opt.gram_train_ratio;
-    test_ratio = opt.gram_test_ratio;    
+    test_ratio = opt.gram_test_ratio;
 else
     db_path = opt.idot;
     res_path = opt.results_idot;
@@ -139,7 +142,7 @@ if db_type == 0
         seq_name = opt.mot2d_test_seqs{seq_idx};
         seq_num = opt.mot2d_test_nums(seq_idx);
     end
-
+    
     % build the dres structure for images
     filename = sprintf('%s/%s_dres_image.mat', opt.results, seq_name);
     if exist(filename, 'file') ~= 0
@@ -149,15 +152,15 @@ if db_type == 0
     else
         dres_image = read_dres_image(opt, seq_set, seq_name, seq_num);
         fprintf('read images done\n');
-		if save_images
-			save(filename, 'dres_image', '-v7.3');
-		end
+        if save_images
+            save(filename, 'dres_image', '-v7.3');
+        end
     end
-
+    
     % read detections
     filename = fullfile(opt.mot, opt.mot2d, seq_set, seq_name, 'det', 'det.txt');
     dres_det = read_mot2dres(filename);
-
+    
     if strcmp(seq_set, 'train') == 1
         % read ground truth
         filename = fullfile(opt.mot, opt.mot2d, seq_set, seq_name, 'gt', 'gt.txt');
@@ -172,7 +175,7 @@ elseif db_type == 1
         seq_name = opt.kitti_test_seqs{seq_idx};
         seq_num = opt.kitti_test_nums(seq_idx);
     end
-
+    
     % build the dres structure for images
     filename = sprintf('%s/kitti_%s_%s_dres_image.mat', opt.results_kitti, seq_set, seq_name);
     if exist(filename, 'file') ~= 0
@@ -182,15 +185,15 @@ elseif db_type == 1
     else
         dres_image = read_dres_image_kitti(opt, seq_set, seq_name, seq_num);
         fprintf('read images done\n');
-		if save_images
-			save(filename, 'dres_image', '-v7.3');
-		end
+        if save_images
+            save(filename, 'dres_image', '-v7.3');
+        end
     end
-
+    
     % read detections
     filename = fullfile(opt.kitti, seq_set, 'det_02', [seq_name '.txt']);
-    dres_det = read_kitti2dres(filename);    
-
+    dres_det = read_kitti2dres(filename);
+    
     if strcmp(seq_set, 'training') == 1
         % read ground truth
         filename = fullfile(opt.kitti, seq_set, 'label_02', [seq_name '.txt']);
@@ -200,17 +203,17 @@ else
     % GRAM and IDOT
     seq_name = test_seqs{seq_idx};
     seq_n_frames = test_nums(seq_idx);
-	if test_ratio(seq_idx)<=0
-		seq_train_ratio = train_ratio(seq_idx);
+    if test_ratio(seq_idx)<=0
+        seq_train_ratio = train_ratio(seq_idx);
         [ test_start_idx, test_end_idx ] = getInvSubSeqIdx(seq_train_ratio,...
-            seq_n_frames);	
-	else
-		seq_test_ratio = test_ratio(seq_idx);
+            seq_n_frames, opt.test_start_offset);
+    else
+        seq_test_ratio = test_ratio(seq_idx);
         [ test_start_idx, test_end_idx ] = getSubSeqIdx(seq_test_ratio,...
-            seq_n_frames);
-	end
+            seq_n_frames, opt.test_start_offset);
+    end
     seq_num = test_end_idx - test_start_idx + 1;
-
+    
     fprintf('Testing sequence %s from frame %d to %d\n',...
         seq_name, test_start_idx, test_end_idx);
     % build the dres structure for images
@@ -225,15 +228,15 @@ else
         dres_image = read_dres_image_gram(db_path, seq_name,...
             test_start_idx, test_end_idx);
         fprintf('done\n');
-		if save_images
-			save(filename, 'dres_image', '-v7.3');
-		end
+        if save_images
+            save(filename, 'dres_image', '-v7.3');
+        end
     end
-
+    
     % read detections
     filename = fullfile(db_path, 'Detections', [seq_name '.txt']);
-    dres_det = read_gram2dres(filename, test_start_idx, test_end_idx);    
-
+    dres_det = read_gram2dres(filename, test_start_idx, test_end_idx);
+    
     if strcmp(seq_set, 'training') == 1
         % read ground truth
         filename = fullfile(db_path, 'Annotations', [seq_name '.txt']);
@@ -252,7 +255,7 @@ end
 
 % intialize tracker
 I = dres_image.I{1};
-% Reset that trained tracker fields corresponding to the input images and 
+% Reset that trained tracker fields corresponding to the input images and
 % the detections such as the size of the input image and the maximum size
 % and score of the detections
 tracker = MDP_initialize_test(tracker, size(I,2), size(I,1),...
@@ -269,10 +272,10 @@ for fr = 1:seq_num
         fprintf('.');
         if mod(fr, 100) == 0
             fprintf('\n');
-        end        
+        end
     end
     
-    % get all the detections in this frame    
+    % get all the detections in this frame
     index = find(dres_det.fr == fr);
     dres = sub(dres_det, index);
     
@@ -285,14 +288,14 @@ for fr = 1:seq_num
         % only keep cars and pedestrians
         ind = strcmp('Car', dres.type) | strcmp('Pedestrian', dres.type);
         index = find(ind == 1);
-        dres = sub(dres, index);        
+        dres = sub(dres, index);
     end
     
     % Extract an image patch around each of the detections so that
     % the optical flow might be carried out from the last known
     % location of the tracked object to all of these patches
     % to see which one is easiest to track and therefore
-    % most likely to correspond to the tracked object    
+    % most likely to correspond to the tracked object
     dres = MDP_crop_image_box(dres, dres_image.Igray{fr}, tracker,...
         fig_ids, colors_rgb);
     
@@ -309,7 +312,7 @@ for fr = 1:seq_num
     %     subplot(2, 2, 2);
     %     show_dres(fr, dres_image.I{fr}, 'Detections', dres);
     % end
-
+    
     % sort trackers by no. of tracked frames
     
     % trackers that have been tracking successfully for more than
@@ -331,13 +334,13 @@ for fr = 1:seq_num
     % simply by whether they are currently in the tracked
     % state or in the occluded state
     if db_type == 1
-        index_track = sort_trackers_kitti(fr, trackers, dres, opt);        
+        index_track = sort_trackers_kitti(fr, trackers, dres, opt);
     else
         index_track = sort_trackers(trackers);
     end
     
     if save_video
-     
+        
     end
     
     % process trackers
@@ -356,8 +359,8 @@ for fr = 1:seq_num
                     aviobj.FrameRate = 10;
                     open(aviobj);
                     aviobjs{i} = aviobj;
-                    fprintf('saving video for tracker %d to %s\n', i, file_video); 
-                end                
+                    fprintf('saving video for tracker %d to %s\n', i, file_video);
+                end
                 writeVideo(aviobjs{i}, getframe(fig_ids_track(2)));
             end
             % connect target
@@ -386,7 +389,7 @@ for fr = 1:seq_num
             % tracker with any of the detections in the frame
             % where it was first found to be occluded
             [dres_tmp, index] = generate_initial_index(trackers(index_track(1:i-1)), dres);
-            dres_associate = sub(dres_tmp, index);    
+            dres_associate = sub(dres_tmp, index);
             trackers{ind} = associate(fr, dres_image, dres_associate, trackers{ind}, opt, 1);
         end
         if show_cropped_figs
@@ -394,7 +397,7 @@ for fr = 1:seq_num
                 k = waitforbuttonpress;
             else
                 pause(0.0001);
-            end          
+            end
         end
     end
     
@@ -414,7 +417,7 @@ for fr = 1:seq_num
         
         % reset tracker
         tracker.prev_state = 1;
-        tracker.state = 1;            
+        tracker.state = 1;
         id = id + 1;
         
         trackers{end+1} = initialize(fr, dres_image, id, dres, index(i), tracker);
@@ -432,14 +435,14 @@ for fr = 1:seq_num
     % with the detections to decide which one of the two
     % will be suppressed
     % by suppressed to be mean that it is marked as occluded
-    trackers = resolve(trackers, dres, opt);    
+    trackers = resolve(trackers, dres, opt);
     % Concatenates the bounding boxes of all of the trackers to
     % gather in the same structure for writing out to the
     % output file
-    dres_track = generate_results(trackers);
+    
     % if is_show
     %     figure(1);
-    %
+    %     dres_track = generate_results(trackers);
     %     % show tracking results
     %     subplot(2, 2, 3);
     %     show_dres(fr, dres_image.I{fr}, 'Tracking', dres_track, 2);
@@ -459,67 +462,71 @@ elapsed_time  = toc(start_t);
 fprintf('\nTotal time taken: %.2f secs.\nAverage FPS: %.2f\n',...
     elapsed_time, double(seq_num)/double(elapsed_time));
 
-%% write tracking results
- if save_video
-    for i = 1:numel(aviobjs)       
+dres_track = generate_results(trackers);
+
+if save_video
+    for i = 1:numel(aviobjs)
         close(aviobjs{i});
     end
 end
+%% write tracking results
 
-if db_type == 0
-    filename = sprintf('%s/%s.txt', opt.results, seq_name);
-    fprintf('write results: %s\n', filename);
-    write_tracking_results(filename, dres_track, opt.tracked);
+if write_results
+    if db_type == 0
+        filename = sprintf('%s/%s.txt', opt.results, seq_name);
+        fprintf('write results: %s\n', filename);
+        write_tracking_results(filename, dres_track, opt.tracked);
 
-    % evaluation
-    if strcmp(seq_set, 'train') == 1
-        benchmark_dir = fullfile(opt.mot, opt.mot2d, seq_set, filesep);
-        metrics = evaluateTracking({seq_name}, opt.results, benchmark_dir);
+        % evaluation
+        if strcmp(seq_set, 'train') == 1
+            benchmark_dir = fullfile(opt.mot, opt.mot2d, seq_set, filesep);
+            metrics = evaluateTracking({seq_name}, opt.results, benchmark_dir);
+        else
+            metrics = [];
+        end
+
+        % save results
+        if is_save
+            filename = sprintf('%s/%s_results.mat', opt.results, seq_name);
+            save(filename, 'dres_track', 'metrics');
+        end
+    elseif db_type == 1
+        filename = sprintf('%s/%s.txt', opt.results_kitti, seq_name);
+        fprintf('write results: %s\n', filename);
+        write_tracking_results_kitti(filename, dres_track, opt.tracked);
+
+        % evaluation
+        if strcmp(seq_set, 'training') == 1
+            % write a temporal seqmap file
+            filename = sprintf('%s/evaluate_tracking.seqmap', opt.results_kitti);
+            fid = fopen(filename, 'w');
+            fprintf(fid, '%s empty %06d %06d\n', seq_name, 0, seq_num);
+            fclose(fid);
+            system('python evaluate_tracking_kitti.py results_kitti');
+        end
+
+        % save results
+        if is_save
+            filename = sprintf('%s/kitti_%s_%s_results.mat', opt.results_kitti, seq_set, seq_name);
+            save(filename, 'dres_track');
+        end
     else
-        metrics = [];
-    end
+        filename = sprintf('%s/%s_%d_%d.txt', opt.results_gram, seq_name,...
+            test_start_idx, test_end_idx);
+        fprintf('writing results to: %s\n', filename);
+        write_tracking_results(filename, dres_track, opt.tracked);
 
-    % save results
-    if is_save
-        filename = sprintf('%s/%s_results.mat', opt.results, seq_name);
-        save(filename, 'dres_track', 'metrics');
+        % save results
+        if is_save
+            filename = sprintf('%s/%s_%d_%d_results.mat', opt.results,...
+                seq_name, test_start_idx, test_end_idx);
+            save(filename, 'dres_track');
+        end
     end
-elseif db_type == 1
-    filename = sprintf('%s/%s.txt', opt.results_kitti, seq_name);
-    fprintf('write results: %s\n', filename);
-    write_tracking_results_kitti(filename, dres_track, opt.tracked);
-    
-    % evaluation
-    if strcmp(seq_set, 'training') == 1
-        % write a temporal seqmap file
-        filename = sprintf('%s/evaluate_tracking.seqmap', opt.results_kitti);
-        fid = fopen(filename, 'w');
-        fprintf(fid, '%s empty %06d %06d\n', seq_name, 0, seq_num);
-        fclose(fid);
-        system('python evaluate_tracking_kitti.py results_kitti');
-    end
-    
-    % save results
-    if is_save
-        filename = sprintf('%s/kitti_%s_%s_results.mat', opt.results_kitti, seq_set, seq_name);
-        save(filename, 'dres_track');
-    end   
-else
-    filename = sprintf('%s/%s_%d_%d.txt', opt.results_gram, seq_name,...
-        test_start_idx, test_end_idx);
-    fprintf('writing results to: %s\n', filename);
-    write_tracking_results(filename, dres_track, opt.tracked);
-
-    % save results
-    if is_save
-        filename = sprintf('%s/%s_%d_%d_results.mat', opt.results,...
-            seq_name, test_start_idx, test_end_idx);
-        save(filename, 'dres_track');
-    end 
 end
 end
 
 function ButtonDown(hObject, eventdata)
-    global pause_exec
-    pause_exec = 1 - pause_exec;
+global pause_exec
+pause_exec = 1 - pause_exec;
 end
