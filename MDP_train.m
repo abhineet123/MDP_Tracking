@@ -191,7 +191,7 @@ while 1 % for multiple passes
         end
     end
     if iter > max_iter
-        fprintf('max iteration exceeds\n');
+        fprintf('%s :: max iteration exceeds\n', seq_name);
         break;
     end
     if isempty(find(is_good == 0, 1)) == 1 % all sequwences are good
@@ -200,7 +200,7 @@ while 1 % for multiple passes
             break;
         else
             count = count + 1;
-            fprintf('***pass %d finished***\n', count);
+            fprintf('%s :: pass %d finished\n', seq_name, count);
             is_good = zeros(num_train, 1);
             is_good(is_difficult == 1) = 1;
             counter = zeros(num_train, 1);
@@ -273,7 +273,7 @@ while 1 % for multiple passes
         if tracker.state == 0
             if reward == 1
                 is_good(t) = 1;
-                fprintf('sequence %d is good\n', t);
+                fprintf('%s :: trajectory %d is good\n', seq_name, t);
             end
             break;
             
@@ -532,7 +532,7 @@ while 1 % for multiple passes
     
     if fr > seq_num
         is_good(t) = 1;
-        fprintf('sequence %d is good\n', t);
+        fprintf('%s :: trajectory %d is good\n', seq_name, t);
     end
     counter(t) = counter(t) + 1;
     if counter(t) > max_count
@@ -541,10 +541,10 @@ while 1 % for multiple passes
         % it has been discarded as being too difficult to train on
         is_good(t) = 1;
         is_difficult(t) = 1;
-        fprintf('sequence %d max iteration\n', t);
+        fprintf('%s :: trajectory %d max iteration\n', seq_name, t);
     end
 end
-fprintf('Finish training %s\n', seq_name);
+fprintf('%s :: Finish training\n', seq_name);
 
 % save model
 if is_save
