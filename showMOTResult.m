@@ -80,6 +80,10 @@ else
     test_ratio = opt.idot_test_ratio;
 end
 
+if db_type < 2
+    read_images_in_batch = 0;
+end
+
 n_cols = length(colors);
 colors_rgb = cell(n_cols, 1);
 for i = 1:n_cols
@@ -197,7 +201,7 @@ for seq_idx = seq_idx_list
                 box_line_width, traj_line_width, obj_id_font_size);
         else
             dres_image = read_dres_image_gram(db_path, seq_name,...
-                fr, fr, 1, 0, 0);
+                fr, fr, 0, 1, 0, 0);
             show_dres_gt(fr, dres_image.I{1}, dres_track, colors_rgb,...
                 box_line_width, traj_line_width, obj_id_font_size);
         end

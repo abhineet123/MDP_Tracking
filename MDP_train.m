@@ -6,7 +6,8 @@
 % --------------------------------------------------------
 %
 % training MDP
-function tracker = MDP_train(seq_idx, tracker, db_type)
+function tracker = MDP_train(seq_idx, tracker, db_type,...
+    read_images_in_batch)
 
 if nargin < 3    
     error('db_type must be provided\n');
@@ -21,6 +22,10 @@ save_images = 0;
 
 opt = globals();
 opt.is_show = is_show;
+
+if db_type < 2
+    read_images_in_batch = 0;
+end
 
 if db_type == 0
     db_path = opt.mot;
@@ -111,24 +116,31 @@ else
     filename = sprintf('%s/%s_dres_image_%d_%d.mat', res_path,...
         seq_name, train_start_idx, train_end_idx);
     fprintf('db_path: %s\n', db_path);    
-    if exist(filename, 'file') ~= 0
-        fprintf('loading images from file %s...', filename);
-        object = load(filename);
-        dres_image = object.dres_image;
-        fprintf('done\n');
-    else
-        fprintf('reading images....\n');
-        dres_image = read_dres_image_gram(db_path, seq_name,...
-            train_start_idx, train_end_idx);
-        fprintf('done\n');
-        if save_images
-            fprintf('saving images to file %s...', filename);
-            save(filename, 'dres_image', '-v7.3');
+    if ~read_images_in_batch
+        if exist(filename, 'file') ~= 0
+            fprintf('loading images from file %s...', filename);
+            object = load(filename);
+            dres_image = object.dres_image;
             fprintf('done\n');
+        else
+            fprintf('reading images....\n');
+            dres_image = read_dres_image_gram(db_path, seq_name,...
+                train_start_idx, train_end_idx);
+            fprintf('done\n');
+            if save_images
+                fprintf('saving images to file %s...', filename);
+                save(filename, 'dres_image', '-v7.3');
+                fprintf('done\n');
+            end
         end
-    end    
+    else
+        % read first image
+        dres_image = read_dres_image_gram(db_path, seq_name,...
+            train_start_idx, train_start_idx, 0, 0, 1, 0);
+    end
     % generate training data
     I = dres_image.Igray{1}; % first image to get its size
+    
     [dres_train, dres_det, labels] = generate_training_data_gram(db_path, seq_name,...
         dres_image, opt, train_start_idx, train_end_idx);
 end
@@ -230,6 +242,14 @@ while 1 % for multiple passes
     while fr <= seq_num  % for the current sequence 
         if is_text
             fprintf('\nframe %d, state %d\n', fr, tracker.state);
+        end
+        if ~read_images_in_batch
+            % read this image - this unfortunately leads to the same image
+            % being read multiple times as the GT is pocessed object wise
+            % rather than frame-wise
+            img_idx = train_start_idx + fr - 1;
+            dres_image = read_dres_image_gram(db_path, seq_name,...
+                img_idx, img_idx, fr - 1, 0, 1, 0);
         end
         
         % extract detections in this frame

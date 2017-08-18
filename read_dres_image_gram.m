@@ -5,16 +5,21 @@
 % Written by Yu Xiang
 % --------------------------------------------------------
 function dres_image = read_dres_image_gram(db_path, seq_name,...
-    start_idx, end_idx, store_rgb, store_gs, verbose)
+    start_idx, end_idx, storage_offset, store_rgb, store_gs, verbose)
+
 if nargin < 5
-    store_rgb = 0;
+    storage_offset = 0;
 end
 if nargin < 6
-    store_gs = 1;
+    store_rgb = 0;
 end
 if nargin < 7
+    store_gs = 1;
+end
+if nargin < 8
     verbose = 1;
 end
+
 n_frames = end_idx - start_idx + 1;
 seq_path = fullfile(db_path, 'Images', seq_name);
 if verbose
@@ -46,7 +51,7 @@ for frame_id = start_idx:end_idx
     filename = fullfile(seq_path, sprintf('image%06d.jpg', frame_id));
     I = imread(filename);
     
-    id = frame_id - start_idx + 1;
+    id = frame_id - start_idx + 1 + storage_offset;
 
     dres_image.x(id) = 1;
     dres_image.y(id) = 1;
@@ -59,7 +64,7 @@ for frame_id = start_idx:end_idx
         dres_image.I{id} = I;
     end
     
-    if mod(id, 500) == 0
-        fprintf('Done %d frames\n', id);
+    if mod(id - storage_offset, 500) == 0
+        fprintf('Done %d frames\n', id - storage_offset);
     end
 end

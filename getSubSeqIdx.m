@@ -10,5 +10,11 @@ else
     start_idx = int32(start_offset + 1);
     end_idx = int32(n_frames * sub_seq_ratio) + start_offset;
 end
+if start_idx < 1
+    start_idx = 1;
+end
+if end_idx>n_frames
+    end_idx = n_frames;
+end
 end
 

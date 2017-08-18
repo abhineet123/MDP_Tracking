@@ -8,39 +8,63 @@
 % cross_validation on the KITTI benchmark
 function GRAM_test(is_train, seq_idx_train, seq_idx_test,...
     continue_from_seq, use_hungarian, start_offset,...
-    enable_eval, show_cropped_figs, save_video)
+    read_images_in_batch, enable_eval, show_cropped_figs, save_video)
+
+def.is_train = 1;
+% def.seq_idx_train = {[1:9, 16:24], [31:50]};
+% def.seq_idx_test = {[10:15, 25:30], [51:60]};
+% def.seq_idx_train = {[1, 2], [3]};
+% def.seq_idx_test = {[1, 2], [3]};
+def.seq_idx_train = {[3]};
+def.seq_idx_test = {[1]};
+def.continue_from_seq = 0;
+def.use_hungarian = 0;
+def.start_offset = 0;
+def.read_images_in_batch = [1, 0];
+def.enable_eval = 1;
+def.show_cropped_figs = 0;
+def.save_video = 0;
 
 % set is_train to 0 if testing trained trackers only
-if nargin<1
-    is_train = 1;
+arg_id = 1;
+if nargin < arg_id
+    is_train = def.is_train;
 end
-if nargin<3
-    % seq_idx_train = {[1:9, 16:24], [31:50]};
-    % seq_idx_test = {[10:15, 25:30], [51:60]};
-    
-    % seq_idx_train = {[1, 2], [3]};
-    % seq_idx_test = {[1, 2], [3]};
-    
-    seq_idx_train = {[3]};
-    seq_idx_test = {[1]};
+arg_id = arg_id + 1;
+if nargin < arg_id
+    seq_idx_train = def.seq_idx_train;
 end
-if nargin<4
-    continue_from_seq = 0;
+arg_id = arg_id + 1;
+if nargin < arg_id
+    seq_idx_test = def.seq_idx_test;
 end
-if nargin<5
-    use_hungarian = 0;
+arg_id = arg_id + 1;
+if nargin<arg_id
+    continue_from_seq = def.continue_from_seq;
 end
-if nargin<6
-    start_offset = 0;
+arg_id = arg_id + 1;
+if nargin<arg_id
+    use_hungarian = def.use_hungarian;
 end
-if nargin<7
-    enable_eval = 1;
+arg_id = arg_id + 1;
+if nargin<arg_id
+    start_offset = def.start_offset;
 end
-if nargin<8
-    show_cropped_figs = 0;
+arg_id = arg_id + 1;
+if nargin<arg_id
+    read_images_in_batch = def.read_images_in_batch;
 end
-if nargin<9
-    save_video = 0;
+arg_id = arg_id + 1;
+if nargin<arg_id
+    enable_eval = def.enable_eval;
+end
+arg_id = arg_id + 1;
+if nargin<arg_id
+    show_cropped_figs = def.show_cropped_figs;
+end
+arg_id = arg_id + 1;
+if nargin<arg_id
+    save_video = def.save_video;
 end
 
 db_type = 2;
@@ -100,7 +124,8 @@ for i = 1:N
         % online training
         for j = 1:num
             fprintf('Online training on sequence: %s\n', opt.gram_seqs{idx_train(j)});
-            tracker = MDP_train(idx_train(j), tracker, db_type);
+            tracker = MDP_train(idx_train(j), tracker, db_type,...
+                read_images_in_batch(1));
         end
         fprintf('%d training examples after online training\n', size(tracker.f_occluded, 1));
     end
@@ -124,7 +149,7 @@ for i = 1:N
                 tracker, db_type, start_offset, 1);
         else
             dres_track = MDP_test(idx_test(j), seq_set_test, tracker, db_type,...
-                start_offset, 1, show_cropped_figs, save_video);
+                start_offset, read_images_in_batch(2), 1, show_cropped_figs, save_video);
         end
     end
     % filename = sprintf('%s/%s_%d_%d.txt', opt.results_gram, seq_name,...

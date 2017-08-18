@@ -1,17 +1,25 @@
-function GRAM_evaluation_only(seq_idx_list, record_diary)
-if nargin < 1
-    % start_idx = 51;
-    % end_idx = 60;
-    seq_idx_list = [66:73];
-%     seq_idx_list = [74, 78];
-%     seq_idx_list = [6:35];
-    % seq_idx_list = [25:30];
-    % seq_idx_list = [51:60];
-    % seq_idx_list = [10:15, 25:30];
-    % seq_idx_list = [10:15, 25:30, 51:60];
+function GRAM_evaluation_only(seq_idx_list, start_offset, record_diary)
+% def.seq_idx_list = [74, 78];
+% def.seq_idx_list = [6:35];
+% def.seq_idx_list = [25:30];
+% def.seq_idx_list = [51:60];
+% def.seq_idx_list = [10:15, 25:30];
+% def.seq_idx_list = [10:15, 25:30, 51:60];
+def.seq_idx_list = [66:73];
+def.start_offset = 0;
+def.record_diary = 1;
+
+arg_id = 1;
+if nargin < arg_id
+    seq_idx_list = def.seq_idx_list;
 end
-if nargin < 2
-    record_diary = 1;
+arg_id = arg_id + 1;
+if nargin < arg_id
+    start_offset = def.start_offset;
+end
+arg_id = arg_id + 1;
+if nargin < arg_id
+    record_diary = def.record_diary;
 end
 
 n_seq_idx = numel(seq_idx_list);
@@ -37,11 +45,11 @@ for seq_idx = seq_idx_list
 	if opt.gram_test_ratio(seq_idx) <= 0
 		seq_train_ratio = opt.gram_train_ratio(seq_idx);
         [start_idx, end_idx] = getInvSubSeqIdx(seq_train_ratio,...
-            seq_n_frames);	
+            seq_n_frames, start_offset);	
 	else
 		seq_test_ratio = opt.gram_test_ratio(seq_idx);
         [start_idx, end_idx] = getSubSeqIdx(seq_test_ratio,...
-            seq_n_frames);
+            seq_n_frames, start_offset);
 	end
     start_idx_list(id) = start_idx;
     end_idx_list(id) = end_idx;

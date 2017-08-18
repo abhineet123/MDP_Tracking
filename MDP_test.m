@@ -7,26 +7,12 @@
 %
 % testing MDP
 function dres_track = MDP_test(seq_idx, seq_set, tracker, db_type,...
-    start_offset, write_results, show_cropped_figs, save_video)
+    start_offset, read_images_in_batch,...
+    write_results, show_cropped_figs, save_video)
 global pause_exec
 
 pause_exec = 1;
 
-if nargin < 4
-    db_type = 0;
-end
-if nargin < 5
-    start_offset = 0;
-end
-if nargin < 6
-    write_results = 1;
-end
-if nargin < 7
-    show_cropped_figs = 0;
-end
-if nargin < 8
-    save_video = 0;
-end
 is_show = 0;   % set is_show to 1 to show tracking results in testing
 is_save = 1;   % set is_save to 1 to save tracking result
 is_text = 0;   % set is_text to 1 to display detailed info
@@ -87,6 +73,10 @@ if show_cropped_figs
     end
 else
     save_video = 0;
+end
+
+if db_type < 2
+    read_images_in_batch = 0;
 end
 
 if db_type == 1
@@ -180,7 +170,8 @@ elseif db_type == 1
     end
     
     % build the dres structure for images
-    filename = sprintf('%s/kitti_%s_%s_dres_image.mat', opt.results_kitti, seq_set, seq_name);
+    filename = sprintf('%s/kitti_%s_%s_dres_image.mat',...
+        opt.results_kitti, seq_set, seq_name);
     if exist(filename, 'file') ~= 0
         object = load(filename);
         dres_image = object.dres_image;
@@ -222,20 +213,21 @@ else
     % build the dres structure for images
     filename = sprintf('%s/gram_%s_%d_%d_dres_image.mat',...
         res_path, seq_name, test_start_idx, test_end_idx);
-    if exist(filename, 'file') ~= 0
-        object = load(filename);
-        dres_image = object.dres_image;
-        fprintf('load images from file %s done\n', filename);
-    else
-        fprintf('reading images....\n');
-        dres_image = read_dres_image_gram(db_path, seq_name,...
-            test_start_idx, test_end_idx);
-        fprintf('done\n');
-        if save_images
-            save(filename, 'dres_image', '-v7.3');
+    if read_images_in_batch
+        if exist(filename, 'file') ~= 0
+            object = load(filename);
+            dres_image = object.dres_image;
+            fprintf('load images from file %s done\n', filename);
+        else
+            fprintf('reading images....\n');
+            dres_image = read_dres_image_gram(db_path, seq_name,...
+                test_start_idx, test_end_idx);
+            fprintf('done\n');
+            if save_images
+                save(filename, 'dres_image', '-v7.3');
+            end
         end
-    end
-    
+    end    
     % read detections
     filename = fullfile(db_path, 'Detections', [seq_name '.txt']);
     dres_det = read_gram2dres(filename, test_start_idx, test_end_idx);
@@ -256,8 +248,13 @@ end
 
 %% perform tracking
 
+if ~read_images_in_batch
+    % read first image
+    dres_image = read_dres_image_gram(db_path, seq_name,...
+        test_start_idx, test_start_idx, 0, 0, 1, 0);
+end
 % intialize tracker
-I = dres_image.I{1};
+I = dres_image.Igray{1};
 % Reset that trained tracker fields corresponding to the input images and
 % the detections such as the size of the input image and the maximum size
 % and score of the detections
@@ -274,13 +271,20 @@ for fr = 1:seq_num
     else
         fprintf('.');
         if mod(fr, 100) == 0
-            fprintf('\n');
+            fprintf('Done %d frames\n', fr);
         end
+    end 
+    
+    if ~read_images_in_batch
+        % read next image
+        img_idx = test_start_idx + fr - 1;
+        dres_image = read_dres_image_gram(db_path, seq_name,...
+            img_idx, img_idx, fr - 1, 0, 1, 0);
     end
     
     % get all the detections in this frame
     index = find(dres_det.fr == fr);
-    dres = sub(dres_det, index);
+    dres = sub(dres_det, index);  
     
     % nms
     if db_type == 1
@@ -292,7 +296,7 @@ for fr = 1:seq_num
         ind = strcmp('Car', dres.type) | strcmp('Pedestrian', dres.type);
         index = find(ind == 1);
         dres = sub(dres, index);
-    end
+    end  
     
     % Extract an image patch around each of the detections so that
     % the optical flow might be carried out from the last known
@@ -438,11 +442,8 @@ for fr = 1:seq_num
     % with the detections to decide which one of the two
     % will be suppressed
     % by suppressed to be mean that it is marked as occluded
-    trackers = resolve(trackers, dres, opt);
-    % Concatenates the bounding boxes of all of the trackers to
-    % gather in the same structure for writing out to the
-    % output file
-    
+    trackers = resolve(trackers, dres, opt); 
+   
     % if is_show
     %     figure(1);
     %     dres_track = generate_results(trackers);
@@ -460,11 +461,15 @@ for fr = 1:seq_num
     %         pause(0.01);
     %     end
     % end
+    
 end
 elapsed_time  = toc(start_t);
 fprintf('\nTotal time taken: %.2f secs.\nAverage FPS: %.2f\n',...
     elapsed_time, double(seq_num)/double(elapsed_time));
 
+% Concatenates the bounding boxes of all of the trackers to
+% gather in the same structure for writing out to the
+% output file       
 dres_track = generate_results(trackers);
 
 if save_video

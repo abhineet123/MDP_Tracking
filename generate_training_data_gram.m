@@ -113,7 +113,7 @@ for i = 1:numel(ids)
             dres.r(j) = dres_det.r(index(ind));
             
             % area inside image of the max overlap detection
-            [~, overlap] = calc_overlap(dres_det, index(ind), dres_image, fr);
+            [~, overlap] = calc_overlap(dres_det, index(ind), dres_image, 1);
             dres.area_inside(j) = overlap;
         end
     end
@@ -132,16 +132,16 @@ for i = 1:numel(ids)
         dres_train{count} = sub(dres, index_start:num);
         
         % show gt
-         if is_show
-            disp(count);
-            for j = 1:numel(dres_train{count}.fr)
-                fr = dres_train{count}.fr(j);
-                I = dres_image.I{fr};
-                figure(1);
-                show_dres(fr, I, 'GT', dres_train{count});
-                pause;
-            end
-         end 
+        % if is_show
+        % disp(count);
+        % for j = 1:numel(dres_train{count}.fr)
+        %     fr = dres_train{count}.fr(j);
+        %     I = dres_image.I{fr};
+        %     figure(1);
+        %     show_dres(fr, I, 'GT', dres_train{count});
+        %     pause;
+        % end
+        % end
     end
 end
 
