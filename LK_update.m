@@ -40,7 +40,7 @@ tracker.patterns(:,index) = generate_pattern(img, tracker.bb, tracker.patchsize)
 % update images and boxes
 BB = [tracker.x1(index); tracker.y1(index); tracker.x2(index); tracker.y2(index)];
 [I_crop, BB_crop] = LK_crop_image_box(img, BB, tracker);
-tracker.Is{index} = I_crop;
+tracker.Is{index} = I_crop; 
 tracker.BBs{index} = BB_crop;
 
 % compute overlap

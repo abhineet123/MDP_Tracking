@@ -16,21 +16,15 @@ f = zeros(1, tracker.fnum_occluded);
 % in the same frame so that dres.fr actually contains all of the same values
 % but this is still an array because there must be one value for each object
 % since each object is associated with a particular frame
-m = numel(dres.fr);
+n_detections = numel(dres.fr);
 % Features are computed with respect to each candidate bounding box so that the
 % feature array has number of rows equal to the number of candidate bounding boxes
 % and the number of columns is equal to the dimensionality of the of occlusion 
 % feature which is 12
-feature = zeros(m, tracker.fnum_occluded);
-flag = zeros(m, 1);
+feature = zeros(n_detections, tracker.fnum_occluded);
+flag = zeros(n_detections, 1);
 
-for i = 1:tracker.num
-    BB1 = [tracker.x1(i); tracker.y1(i); tracker.x2(i); tracker.y2(i)];
-    I_crop = tracker.Is{i};
-    BB1_crop = tracker.BBs{i};
-    
-end
-for i = 1:m
+for i = 1:n_detections
     % The features for each of the potentially associated detections
     % are obtained by first trying to track each one of the stored
     % templates into the region of interest around that detection and then
@@ -77,6 +71,8 @@ for i = 1:m
     
     feature(i,:) = f;
     
+     % not clear why this is repeated here when its result has already been
+     % computed into index 
     if isempty(find(tracker.flags ~= 2, 1)) == 1
         % Indicates which of the occluded features are valid 
         % and which are just zeros due to the corresponding patches having 

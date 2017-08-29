@@ -12,7 +12,9 @@ if isempty(BB1) || ~bb_isdef(BB1)
 end
 
 % estimate BB3
-xFI  = bb_points(BB1, 10, 10, [margin(1); margin(2)]); % generate 10x10 grid of points within BB1
+
+% generate 10x10 grid of points within BB1
+xFI  = bb_points(BB1, 10, 10, [margin(1); margin(2)]);
 if isempty(BB2) || ~bb_isdef(BB2)
     xFII = xFI;
 else
@@ -28,10 +30,15 @@ xFJ = lk(2, I, J, xFI, xFII, level);
 % row 1: x coordinates, row 2: y coordinates, 
 % row 3: FB error, row 4: NCC
 
-medFB  = median2(xFJ(3,:)); % get median of Forward-Backward error
-medNCC = median2(xFJ(4,:)); % get median for NCC
-idxF = xFJ(3,:) <= medFB & xFJ(4,:)>= medNCC; % get indexes of reliable points
-BB3    = bb_predict(BB1, xFI(:,idxF), xFJ(1:2,idxF)); % estimate BB3 using the reliable points only
+% get median of Forward-Backward error
+medFB  = median2(xFJ(3,:));
+% get median for NCC
+medNCC = median2(xFJ(4,:));
+% get indices of reliable points
+idxF = xFJ(3,:) <= medFB & xFJ(4,:)>= medNCC;
+% estimate BB3 using the reliable points only
+BB3    = bb_predict(BB1, xFI(:,idxF), xFJ(1:2,idxF));
+
 
 % OF points that are to the left of the BB center
 index = xFI(1,:) < (BB1(1)+BB1(3)) / 2;
@@ -61,7 +68,7 @@ xFJ = xFJ(:, idxF);
 
 flag = 1; % success
 % detect failures
-% bounding box out of image
+% bounding box undefined or out of image
 if ~bb_isdef(BB3) || bb_isout(BB3, size(J))
     flag = 2; % complete failure
     return;

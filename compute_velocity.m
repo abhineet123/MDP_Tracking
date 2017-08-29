@@ -28,7 +28,9 @@ for i = 1:num
     end    
     if numel(index)
         % mean center for all  bounding boxes in this frame
-        % not quite clear why there would be multiple BBs in one frame
+        % since the mean is being taken over the stored templates, it is
+        % possible especially near the beginning of the tracking process to
+        % have multiple objects in the same frame
         centers(i,:) = centers(i,:) / numel(index);
     end
 end

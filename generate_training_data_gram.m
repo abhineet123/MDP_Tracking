@@ -66,12 +66,14 @@ ids = unique(dres_gt.id);
 dres_train = [];
 count = 0;
 % one object/target in the GT at a time
-for i = 1:numel(ids)
-    index = find(dres_gt.id == ids(i));
-    dres = sub(dres_gt, index); % set of frames with this object
-    
+for i = 1:numel(ids)    
     % check if the target is occluded or not
-    num = numel(dres.fr);  % no. of frames with this object
+    
+     % set of frames with this object
+    index = find(dres_gt.id == ids(i)); 
+    dres = sub(dres_gt, index); 
+    % no. of frames with this object
+    num = numel(dres.fr);
     dres.occluded = zeros(num, 1);
     dres.covered = zeros(num, 1); % with GT boxes    
     dres.overlap = zeros(num, 1); % with detections

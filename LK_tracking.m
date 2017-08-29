@@ -151,8 +151,9 @@ for i = 1:tracker.num
     ratio = (BB2(4)-BB2(2)) / (BB1(4)-BB1(2));
     ratio = min(ratio, 1/ratio);
     
-    if isnan(medFB) || isnan(medFB_left) || isnan(medFB_right) || isnan(medFB_up) || isnan(medFB_down) ...
-            || isnan(medNCC) || ~bb_isdef(BB2) || ratio < tracker.max_ratio
+    if isnan(medFB) || isnan(medFB_left) || isnan(medFB_right) || isnan(medFB_up)...
+        || isnan(medFB_down)  || isnan(medNCC) || ~bb_isdef(BB2)...
+        || ratio < tracker.max_ratio
         % tracking failed
         medFB = inf;
         medFB_left = inf;
@@ -172,7 +173,7 @@ for i = 1:tracker.num
         dres.y = BB2(2);
         dres.w = BB2(3) - BB2(1);
         dres.h = BB2(4) - BB2(2);
-        if isempty(dres_det.fr) == 0
+        if isempty(dres_det.fr) == 0 % why not just check if num_det is 0 ?
             overlap = calc_overlap(dres, 1, dres_det, 1:num_det);
             [o, ind] = max(overlap);
             score = dres_det.r(ind);
@@ -183,10 +184,10 @@ for i = 1:tracker.num
         end
         
         % compute angle between the current velociy and the mean velocities
-        % over all stored frames
+        % over all stored templates
+        v = compute_velocity(tracker);
         centerI = [(BB1(1)+BB1(3))/2 (BB1(2)+BB1(4))/2];
         centerJ = [(BB2(1)+BB2(3))/2 (BB2(2)+BB2(4))/2];
-        v = compute_velocity(tracker);
         v_new = [centerJ(1)-centerI(1), centerJ(2)-centerI(2)] / double(frame_id - tracker.frame_ids(i));
         if norm(v) > tracker.min_vnorm && norm(v_new) > tracker.min_vnorm
             angle = dot(v, v_new) / (norm(v) * norm(v_new));
@@ -196,13 +197,11 @@ for i = 1:tracker.num
     end
     
     tracker.bbs{i} = BB2; % new estimated BB using reliable OF points
-    tracker.points{i} = xFJ; % coordinates, FB and NCC for all OF points
-    
+    tracker.points{i} = xFJ; % coordinates, FB and NCC for all OF points    
     tracker.flags(i) = flag; % indicates success/reliability of OF
     % 1: successful
     % 2: unsuccessful - NaNs or out of image
-    % 3: unreliable - median FB > 10
-    
+    % 3: unreliable - median FB > 10    
     tracker.medFBs(i) = medFB; % median of FB over all OF points 
     tracker.medFBs_left(i) = medFB_left; % median of FB over OF points left of center
     tracker.medFBs_right(i) = medFB_right; % median of FB over OF points right of center

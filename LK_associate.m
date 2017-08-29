@@ -48,7 +48,7 @@ for i = 1:tracker.num
     BB3 = bb_shift_absolute(BB3, [bb_crop_J(1) bb_crop_J(2)]);
     BB3 = [BB3(1)/s_J(1); BB3(2)/s_J(2); BB3(3)/s_J(1); BB3(4)/s_J(2)];
     
-    % Compute aspect ratio as the height upon width
+    % Compute ratio of the heights of new and old boxes
     ratio = (BB3(4)-BB3(2)) / (BB1(4)-BB1(2));
     ratio = min(ratio, 1/ratio);    
     
@@ -161,6 +161,8 @@ end
 % Choose the stored template with the minimum median of forward backward 
 % errors during optical flow
 [~, ind] = min(tracker.medFBs);
+% seems rather pointless as there is only one detection so index will
+% always be 1
 index = tracker.indexes(ind);
 bb_det = [dres_det.x(index); dres_det.y(index); ...
     dres_det.x(index)+dres_det.w(index); dres_det.y(index)+dres_det.h(index)];

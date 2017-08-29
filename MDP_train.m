@@ -164,6 +164,8 @@ else
     % update weights of active state
     factive = MDP_feature_active(tracker, dres_det);
     index = labels ~= 0;
+    % Concatenate new features and labels with the existing ones and 
+    % retrain the SVM;
     tracker.factive = [tracker.factive; factive(index,:)];
     tracker.lactive = [tracker.lactive; labels(index)];
     tracker.w_active = svmtrain(tracker.lactive, tracker.factive, '-c 1 -q');
@@ -367,6 +369,7 @@ while 1 % for multiple passes
             %     hold off;
             % end
           
+            % only done if the GT is uncovered
             if isempty(index_det) == 0
                 % compute reward
                 
