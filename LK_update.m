@@ -5,7 +5,8 @@
 % Written by Yu Xiang
 % --------------------------------------------------------
 %
-function tracker = LK_update(frame_id, tracker, img, dres_det, is_change_anchor)
+function tracker = LK_update(frame_id, tracker, img, dres_det,...
+    is_change_anchor)
 % update the LK tracker
 
 % mostly about adding the data from the latest tracked frame to the

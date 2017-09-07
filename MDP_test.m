@@ -9,8 +9,9 @@
 function dres_track = MDP_test(seq_idx, seq_set, tracker, db_type,...
     start_offset, read_images_in_batch,...
     write_results, show_cropped_figs, save_video)
-global pause_exec
+%% initialization
 
+global pause_exec
 pause_exec = 1;
 
 is_show = 0;   % set is_show to 1 to show tracking results in testing
@@ -126,6 +127,8 @@ end
 if is_show
     close all;
 end
+
+%% read input data
 
 if db_type == 0
     if strcmp(seq_set, 'train') == 1
@@ -397,7 +400,8 @@ for fr = 1:seq_num
             % where it was first found to be occluded
             [dres_tmp, index] = generate_initial_index(trackers(index_track(1:i-1)), dres);
             dres_associate = sub(dres_tmp, index);
-            trackers{ind} = associate(fr, dres_image, dres_associate, trackers{ind}, opt, 1);
+            trackers{ind} = associate(fr, dres_image, dres_associate,...
+                trackers{ind}, opt, 1);
         end
         if show_cropped_figs
             if pause_exec

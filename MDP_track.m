@@ -70,7 +70,8 @@ if label > 0
 	% but potentially if a particular object remains there forever then this restructure will grow out of bounds very quickly indeed
 	tracker.dres = concatenate_dres(tracker.dres, dres_one);
 	% update LK tracker
-	tracker = LK_update(frame_id, tracker, dres_image.Igray{frame_id}, dres_det, 0);
+	tracker = LK_update(frame_id, tracker, dres_image.Igray{frame_id},...
+        dres_det, 0);
 else
 	% transfer to occluded
 	tracker.state = 3;

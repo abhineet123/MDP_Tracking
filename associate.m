@@ -39,6 +39,8 @@ if tracker.streak_occluded > opt.max_occlusion
 end
 
 % check if target outside image
+% should be done only if the current state is tracked since the location is
+% not updated in the lost state anyway
 [~, ov] = calc_overlap(tracker.dres, numel(tracker.dres.fr), dres_image, fr);
 
 if check_next_frame    

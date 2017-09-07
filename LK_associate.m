@@ -34,13 +34,13 @@ s_J = dres_det.scale{1};
 
 % for each stored template in history
 for i = 1:tracker.num
-    BB1 = [tracker.x1(i); tracker.y1(i); tracker.x2(i); tracker.y2(i)];
     I_crop = tracker.Is{i};
     BB1_crop = tracker.BBs{i};
     % LK tracking
     % try to track the current template from its own frame to the cropped image
     % corresponding to the first potentially associated detection
-    [BB3, xFJ, flag, medFB, medNCC, medFB_left, medFB_right, medFB_up, medFB_down] = LK(I_crop, ...
+    [BB3, xFJ, flag, medFB, medNCC, medFB_left,...
+        medFB_right, medFB_up, medFB_down] = LK(I_crop, ...
         J_crop, BB1_crop, BB2_crop, tracker.margin_box, tracker.level);
     
     % convert the point locations from the frame of reference of the cropped 
@@ -49,6 +49,7 @@ for i = 1:tracker.num
     BB3 = [BB3(1)/s_J(1); BB3(2)/s_J(2); BB3(3)/s_J(1); BB3(4)/s_J(2)];
     
     % Compute ratio of the heights of new and old boxes
+    BB1 = [tracker.x1(i); tracker.y1(i); tracker.x2(i); tracker.y2(i)];
     ratio = (BB3(4)-BB3(2)) / (BB1(4)-BB1(2));
     ratio = min(ratio, 1/ratio);    
     

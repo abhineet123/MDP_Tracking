@@ -107,15 +107,17 @@ else
 	% Extract the last bounding box that is present in the history
 	% of tracked bounding boxes within the tracker and modify
 	% frame ID to be the current frame ID and also its target ID
-	% to be the current one and its state to be 3 or occluded
+	% to be the current one and its state to be occluded
+    % note, however, that its location is not modified so we are still
+    % assuming the object to be in its erstwhile location
 	dres_one = sub(tracker.dres, numel(tracker.dres.fr));
 	dres_one.fr = frame_id;
 	dres_one.id = tracker.target_id;
 	dres_one.state = 3;
-	% if the history of tracked objects within the tracker
-	% already contains a bounding box whose frame ID is equal to that
-	% of the current one, then this particular bounding box is
-	% removed from this history
+	% if the last entry in history of tracked objects has a frame ID 
+    % equal to that
+	% of the current one, then this is removed from this history before
+	% adding the new one
 	if tracker.dres.fr(end) == frame_id
 		dres = tracker.dres;
 		index = 1:numel(dres.fr)-1;

@@ -18,9 +18,9 @@ bb_crop = bb_rescale_relative(bb_scale, tracker.enlarge_box);
 I_crop = im_crop(I_scale, bb_crop);
 BB_crop = bb_shift_absolute(bb_scale, [-bb_crop(1) -bb_crop(2)]);
 
-BB_crop
+% BB_crop
 % bb_crop
-bb_scale_size = bb_scale(3:4) - bb_scale(1:2)
+% bb_scale_size = bb_scale(3:4) - bb_scale(1:2)
 
 % bb_scale: location of BB in the resized image
 

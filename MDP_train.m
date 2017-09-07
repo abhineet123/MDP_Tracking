@@ -358,7 +358,8 @@ while 1 % for multiple passes
             % the detections and thus condemn the tracker to fail to associate
             % in other words, the tracker will only associate if this object
             % is known to be completely uncovered in the ground truth
-            [tracker, ~, f] = MDP_associate(tracker, fr, dres_image, dres, index_det);
+            [tracker, ~, f] = MDP_associate(tracker, fr, dres_image, dres,...
+                index_det);
             
             % if is_show
             %     figure(1);

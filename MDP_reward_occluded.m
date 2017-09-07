@@ -78,6 +78,7 @@ index = find(dres_gt.fr == fr);
 if isempty(index) == 1
     overlap = 0;
 else
+    % if dres_gt.occluded is 1
     if dres_gt.covered(index) > opt.overlap_occ
         % If the ground truth bounding box itself is covered by another object's ground
         % truth box in this particular frame, then its overlap from the detection
@@ -90,6 +91,7 @@ end
 if is_text
     fprintf('max overlap in association %.2f\n', max(overlap));
 end
+% if the detection label is 1
 if max(overlap) > opt.overlap_pos % 0.5
     % This means that the detector was able to detect the current object in the
     % current frame since its overlap with the ground truth location of
