@@ -11,9 +11,9 @@ addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
 save_video = 1;
 show_detections = 1;
 db_type = 2;
-start_idx = 73;
+start_idx = 81;
 end_idx = 73;
-seq_idx_list = [1:3, 66:78];
+% seq_idx_list = [1:3, 66:78];
 
 seq_start_offset_ratio = 0;
 seq_ratio = 0.1;

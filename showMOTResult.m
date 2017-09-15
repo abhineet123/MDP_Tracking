@@ -21,7 +21,7 @@ save_as_img_seq = 0;
 db_type = 2;
 results_dir = 'results';
 save_input_images = 0;
-start_idx = 68;
+start_idx = 81;
 end_idx = 1;
 
 global exit_flag

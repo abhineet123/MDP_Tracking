@@ -6,7 +6,7 @@
 % --------------------------------------------------------
 %
 % use LK trackers for association
-function tracker = LK_associate(frame_id, dres_image, dres_det, tracker)
+function tracker = LK_associate(frame_id, dres_image, dres_one, tracker)
 
 % the cropped image associated with this detection is supposed to act like
 % a proxy for the predicted location ROI of the bounding box for all 
@@ -27,10 +27,10 @@ function tracker = LK_associate(frame_id, dres_image, dres_det, tracker)
 % maximum overlap - we just find the overlap with the single detection and that 
 % itself becomes the feature
 
-J_crop = dres_det.I_crop{1};
-BB2_crop = dres_det.BB_crop{1};
-bb_crop_J = dres_det.bb_crop{1};
-s_J = dres_det.scale{1}; 
+J_crop = dres_one.I_crop{1};
+BB2_crop = dres_one.BB_crop{1};
+bb_crop_J = dres_one.bb_crop{1};
+s_J = dres_one.scale{1}; 
 
 % for each stored template in history
 for i = 1:tracker.num
@@ -39,7 +39,7 @@ for i = 1:tracker.num
     % LK tracking
     % try to track the current template from its own frame to the cropped image
     % corresponding to the first potentially associated detection
-    [BB3, xFJ, flag, medFB, medNCC, medFB_left,...
+    [BB3, xFJ, xFI, flag, medFB, medNCC, medFB_left,...
         medFB_right, medFB_up, medFB_down] = LK(I_crop, ...
         J_crop, BB1_crop, BB2_crop, tracker.margin_box, tracker.level);
     
@@ -122,11 +122,11 @@ for i = 1:tracker.num
         % indicates that the object is not present in this new frame
         % at all or at least it is not visible
         
-        o = calc_overlap(dres, 1, dres_det, 1);
+        o = calc_overlap(dres, 1, dres_one, 1);
         
         % indexes into the detections
         ind = 1;
-        score = dres_det.r(1);
+        score = dres_one.r(1);
         
         % compute angle
         centerI = [(BB1(1)+BB1(3))/2 (BB1(2)+BB1(4))/2];
@@ -142,6 +142,7 @@ for i = 1:tracker.num
     
     tracker.bbs{i} = BB3;
     tracker.points{i} = xFJ;
+    tracker.std_points{i} = xFI';
     tracker.flags(i) = flag;
     tracker.medFBs(i) = medFB;
     tracker.medFBs_left(i) = medFB_left;
@@ -165,8 +166,8 @@ end
 % seems rather pointless as there is only one detection so index will
 % always be 1
 index = tracker.indexes(ind);
-bb_det = [dres_det.x(index); dres_det.y(index); ...
-    dres_det.x(index)+dres_det.w(index); dres_det.y(index)+dres_det.h(index)];
+bb_det = [dres_one.x(index); dres_one.y(index); ...
+    dres_one.x(index)+dres_one.w(index); dres_one.y(index)+dres_one.h(index)];
 if tracker.overlaps(ind) > tracker.overlap_box
     % weighted average of tracked box and detection box
     tracker.bb = mean([repmat(tracker.bbs{ind}, 1, tracker.weight_association) bb_det], 2);
@@ -187,70 +188,70 @@ end
 
 % if tracker.is_show
 %     fprintf('LK association, target %d detection %.2f, medFBs ', ...
-%         tracker.target_id, dres_det.r);
+%         tracker.target_id, dres_one.r);
 %     for i = 1:tracker.num
 %         fprintf('%.2f ', tracker.medFBs(i));
 %     end
 %     fprintf('\n');
 % 
 %     fprintf('LK association, target %d detection %.2f, medFBs left ', ...
-%         tracker.target_id, dres_det.r);
+%         tracker.target_id, dres_one.r);
 %     for i = 1:tracker.num
 %         fprintf('%.2f ', tracker.medFBs_left(i));
 %     end
 %     fprintf('\n');
 % 
 %     fprintf('LK association, target %d detection %.2f, medFBs right ', ...
-%         tracker.target_id, dres_det.r);
+%         tracker.target_id, dres_one.r);
 %     for i = 1:tracker.num
 %         fprintf('%.2f ', tracker.medFBs_right(i));
 %     end
 %     fprintf('\n');
 %     
 %     fprintf('LK association, target %d detection %.2f, medFBs up ', ...
-%         tracker.target_id, dres_det.r);
+%         tracker.target_id, dres_one.r);
 %     for i = 1:tracker.num
 %         fprintf('%.2f ', tracker.medFBs_up(i));
 %     end
 %     fprintf('\n');
 % 
 %     fprintf('LK association, target %d detection %.2f, medFBs down ', ...
-%         tracker.target_id, dres_det.r);
+%         tracker.target_id, dres_one.r);
 %     for i = 1:tracker.num
 %         fprintf('%.2f ', tracker.medFBs_down(i));
 %     end
 %     fprintf('\n');    
 % 
 %     fprintf('LK association, target %d detection %.2f, nccs ', ...
-%         tracker.target_id, dres_det.r);
+%         tracker.target_id, dres_one.r);
 %     for i = 1:tracker.num
 %         fprintf('%.2f ', tracker.nccs(i));
 %     end
 %     fprintf('\n');
 % 
 %     fprintf('LK association, target %d detection %.2f, overlaps ', ...
-%         tracker.target_id, dres_det.r);
+%         tracker.target_id, dres_one.r);
 %     for i = 1:tracker.num
 %         fprintf('%.2f ', tracker.overlaps(i));
 %     end
 %     fprintf('\n');
 % 
 %     fprintf('LK association, target %d detection %.2f, scores ', ...
-%         tracker.target_id, dres_det.r);
+%         tracker.target_id, dres_one.r);
 %     for i = 1:tracker.num
 %         fprintf('%.2f ', tracker.scores(i));
 %     end
 %     fprintf('\n');
 % 
 %     fprintf('LK association, target %d detection %.2f, angles ', ...
-%         tracker.target_id, dres_det.r);
+%         tracker.target_id, dres_one.r);
 %     for i = 1:tracker.num
 %         fprintf('%.2f ', tracker.angles(i));
 %     end
 %     fprintf('\n');
 %     
 %     fprintf('LK association, target %d detection %.2f, ratios ', ...
-%         tracker.target_id, dres_det.r);
+%         tracker.target_id, dres_one.r);
 %     for i = 1:tracker.num
 %         fprintf('%.2f ', tracker.ratios(i));
 %     end

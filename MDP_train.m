@@ -295,6 +295,7 @@ while 1 % for multiple passes
             % send it to the tracked state
             tracker.state = 2;
             tracker.streak_occluded = 0;
+            % showTemplates(tracker.Is, tracker.BBs);
             
             % build the dres structure
             % contains only the maximum overlap detection

@@ -138,13 +138,13 @@ for i = 1:tracker.num
     
     % LK tracking - wrapper over the mex LK tracker
     % also returns a bunch of appearance and optical flow features
-    [BB2, xFJ, flag, medFB, medNCC, medFB_left, medFB_right,...
+    [BB2_orig, xFJ, xFI, flag, medFB, medNCC, medFB_left, medFB_right,...
         medFB_up, medFB_down] = LK(I_crop, J_crop, ...
-        BB1_crop, BB3_crop, tracker.margin_box, tracker.level_track);  
+        BB1_crop, BB3_crop, tracker.margin_box, tracker.level_track);      
     
     % change the coordinate system of  BB2 from the cropped resized image
     % to the original image
-    BB2 = bb_shift_absolute(BB2, [bb_crop(1) bb_crop(2)]);
+    BB2 = bb_shift_absolute(BB2_orig, [bb_crop(1) bb_crop(2)]);
     BB2 = [BB2(1)/s(1); BB2(2)/s(2); BB2(3)/s(1); BB2(4)/s(2)];   
 
     % ratio of the heights of the new and old BB
@@ -196,8 +196,10 @@ for i = 1:tracker.num
         end        
     end
     
+    tracker.bbs_orig{i} = BB2_orig; 
     tracker.bbs{i} = BB2; % new estimated BB using reliable OF points
-    tracker.points{i} = xFJ; % coordinates, FB and NCC for all OF points    
+    tracker.points{i} = xFJ; % coordinates, FB and NCC for all OF points  
+    tracker.std_points{i} = xFI'; % coordinates, FB and NCC for all OF points      
     tracker.flags(i) = flag; % indicates success/reliability of OF
     % 1: successful
     % 2: unsuccessful - NaNs or out of image

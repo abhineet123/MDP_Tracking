@@ -10,8 +10,8 @@ function tracker = LK_initialize(tracker, frame_id, target_id, dres, ind, dres_i
 
 x1 = dres.x(ind);
 y1 = dres.y(ind);
-x2 = dres.x(ind) + dres.w(ind);
-y2 = dres.y(ind) + dres.h(ind);    
+x2 = dres.x(ind) + dres.w(ind) - 1;
+y2 = dres.y(ind) + dres.h(ind) - 1;    
 
 % template num
 num = tracker.num;
@@ -56,8 +56,10 @@ tracker.patterns = generate_pattern(img, bb, tracker.patchsize);
 tracker.bb_overlaps = ones(num, 1);
 
 % tracker resutls
+tracker.bbs_orig = cell(num, 1);
 tracker.bbs = cell(num, 1);
 tracker.points = cell(num, 1);
+tracker.std_points = cell(num, 1);
 tracker.flags = ones(num, 1);
 tracker.medFBs = zeros(num, 1);
 tracker.medFBs_left = zeros(num, 1);

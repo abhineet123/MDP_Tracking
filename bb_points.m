@@ -19,8 +19,8 @@
 function pt = bb_points(bb,numM,numN,margin)
 % Generates numM x numN points on BBox.
 
-bb(1:2) = bb(1:2)+margin;
-bb(3:4) = bb(3:4)-margin;
+bb(1:2) = bb(1:2) + margin;
+bb(3:4) = bb(3:4) - margin;
 
 if (numM == 1 && numN ==1)
     pt = bb_center(bb);

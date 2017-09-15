@@ -9,8 +9,8 @@ function opt = globals()
 %% Important settings
 
 opt.train_start_offset = 0;
-gram_train_ratio = 1;
-gram_split_train_ratio = 0.6;
+gram_train_ratio = 0.01;
+gram_split_train_ratio = 0.01;
 idot_train_ratio = 1;
 lost_train_ratio = 0.6;
 isl_train_ratio = 0.6;
@@ -68,9 +68,9 @@ opt.idot_seqs = {
     'idot_5_intersection_suburbs', 'idot_6_highway',...
     'idot_7_intersection_city_night', 'idot_8_intersection_city_night',...
     'idot_9_intersection_city_day', 'idot_10_city_road', 'idot_11_highway',...
-    'idot_12_city_road', 'idot_13_intersection_city_day'};
+    'idot_12_city_road', 'idot_13_intersection_city_day', 'idot_1_intersection_city_day_short'};
 opt.idot_nums = [8991, 8990, 8981, 8866, 8851, 8791, 8964, 8962, 8966,...
-    7500, 7500, 7500, 8851];
+    7500, 7500, 7500, 8851, 50];
 opt.idot_train_ratio = ones(1, numel(opt.idot_nums)) * idot_train_ratio;
 opt.idot_test_ratio = ones(1, numel(opt.idot_nums)) * idot_test_ratio;
 
