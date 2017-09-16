@@ -304,11 +304,15 @@ while 1 % for multiple passes
             tracker.dres.id = tracker.target_id;
             tracker.dres.state = tracker.state;
             
+            nazio = 1;
+            
             % tracked
         elseif tracker.state == 2
             tracker.streak_occluded = 0;
             % ignoring the features
             tracker = MDP_track(tracker, fr, dres_image, dres);
+            
+            nazio = 1;
             
             % occluded
         elseif tracker.state == 3

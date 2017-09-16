@@ -48,6 +48,10 @@ h = tracker.dres.h(end);
 BB3 = [ctrack(1)-w/2; ctrack(2)-h/2; ctrack(1)+w/2; ctrack(2)+h/2];
 % get a cropped image around the predicted location of the object
 [J_crop, BB3_crop, bb_crop, s] = LK_crop_image_box(J, BB3, tracker);
+tracker.J_crop = J_crop;
+tracker.BB3_crop = BB3_crop;
+tracker.ctrack = ctrack;
+tracker.BB3 = BB3;
 
 num_det = numel(dres_det.x);
 
@@ -198,7 +202,7 @@ for i = 1:tracker.num
     
     tracker.bbs_orig{i} = BB2_orig; 
     tracker.bbs{i} = BB2; % new estimated BB using reliable OF points
-    tracker.points{i} = xFJ; % coordinates, FB and NCC for all OF points  
+    tracker.points{i} = xFJ'; % coordinates, FB and NCC for all OF points  
     tracker.std_points{i} = xFI'; % coordinates, FB and NCC for all OF points      
     tracker.flags(i) = flag; % indicates success/reliability of OF
     % 1: successful

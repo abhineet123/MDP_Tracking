@@ -64,7 +64,7 @@ medFB_down = median2(xFJ(3, index));
 % end
 
 % save selected points (only for display purposes)
-xFJ = xFJ(:, idxF);
+%xFJ = xFJ(:, idxF);
 
 flag = 1; % success
 % detect failures

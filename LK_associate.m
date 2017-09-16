@@ -141,7 +141,7 @@ for i = 1:tracker.num
     end
     
     tracker.bbs{i} = BB3;
-    tracker.points{i} = xFJ;
+    tracker.points{i} = xFJ';
     tracker.std_points{i} = xFI';
     tracker.flags(i) = flag;
     tracker.medFBs(i) = medFB;

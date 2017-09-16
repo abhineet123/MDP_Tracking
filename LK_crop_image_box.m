@@ -17,6 +17,7 @@ I_scale = imResample(I, imsize, 'bilinear');
 bb_crop = bb_rescale_relative(bb_scale, tracker.enlarge_box);
 I_crop = im_crop(I_scale, bb_crop);
 BB_crop = bb_shift_absolute(bb_scale, [-bb_crop(1) -bb_crop(2)]);
+nazio = 1;
 
 % BB_crop
 % bb_crop
