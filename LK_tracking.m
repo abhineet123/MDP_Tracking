@@ -45,7 +45,9 @@ J = dres_image.Igray{frame_id};
 ctrack = apply_motion_prediction(frame_id, tracker);
 w = tracker.dres.w(end);
 h = tracker.dres.h(end);
-BB3 = [ctrack(1)-w/2; ctrack(2)-h/2; ctrack(1)+w/2; ctrack(2)+h/2];
+% annoying random convention in use - sometimes the BR is UL + size - 1 and
+% sometimes it is just UL + size
+BB3 = [ctrack(1)-w/2; ctrack(2)-h/2; ctrack(1)+w/2 - 1; ctrack(2)+h/2 - 1];
 % get a cropped image around the predicted location of the object
 [J_crop, BB3_crop, bb_crop, s] = LK_crop_image_box(J, BB3, tracker);
 tracker.J_crop = J_crop;
@@ -219,6 +221,8 @@ for i = 1:tracker.num
     tracker.indexes(i) = ind; % index of this detection
     tracker.angles(i) = angle; % angle between the current velociy and the mean velocities over all stored frames
     tracker.ratios(i) = ratio; %  ratio of the heights of the new and old BB
+    
+    nazio = 1;
 end
 
 % combine tracking and detection results

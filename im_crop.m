@@ -1,4 +1,4 @@
-function I = im_crop(img, bb)
+function [I, smin, smax, cmin, cmax] = im_crop(img, bb)
 % Extract the patch from the given image corresponding to the given bounding box after constraining it to lie within image extents;
 % this patch is then assigned to a new image which again has the same dimensions as the bounding box but the location within this new image where the patch is assigned does not seem to be quite as simple as one might imagine;
 % the coordinates of the top left corner off the bounding box is simply subtracted from the coordinates at which the image batch is extracted from within the given image since the same values are subtracted from both the top left and the bottom right corners of this new image coordinates the overall size remains the same;
@@ -14,6 +14,9 @@ x1 = max([1 bb(1)]);
 y1 = max([1 bb(2)]);
 x2 = min([size(img,2) bb(3)]);
 y2 = min([size(img,1) bb(4)]);
+smax = [x2, y2];
+smin = [x1, y1];
+
 patch = img(y1:y2, x1:x2);
 
 x1 = x1-bb(1)+1;
@@ -21,3 +24,5 @@ y1 = y1-bb(2)+1;
 x2 = x2-bb(1)+1;
 y2 = y2-bb(2)+1;
 I(y1:y2, x1:x2) = patch;
+cmax = [x2, y2];
+cmin = [x1, y1];

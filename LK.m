@@ -24,7 +24,7 @@ end
 % track all points by Lucas-Kanade tracker from frame I to frame J, 
 % estimate Forward-Backward error, and NCC for each point
 % this is finally where the mex code is being used
-xFJ = lk(2, I, J, xFI, xFII, level);
+xFJ = lk_cv(2, I, J, xFI, xFII, level);
 
 % xFJ: 4 x n matrix 
 % row 1: x coordinates, row 2: y coordinates, 
@@ -71,10 +71,8 @@ flag = 1; % success
 % bounding box undefined or out of image
 if ~bb_isdef(BB3) || bb_isout(BB3, size(J))
     flag = 2; % complete failure
-    return;
-end
+elseif medFB > 10
 % too unstable predictions
-if medFB > 10
     flag = 3; % unstable/unreliable tracking
-    return;
 end
+nazio = 1;
