@@ -18,6 +18,7 @@ for i = 1:nBB
     
     % normalize size to 'patchsize' and nomalize intensities to ZMUV
     pattern(:,i) = tldPatch2Pattern(patch,patchsize);
+    nazio= 1;
 end
 
 function pattern = tldPatch2Pattern(patch, patchsize)
@@ -25,3 +26,4 @@ function pattern = tldPatch2Pattern(patch, patchsize)
 patch   = imresize(patch, patchsize); % 'bilinear' is faster
 pattern = double(patch(:));
 pattern = pattern - mean(pattern);
+nazio= 1;

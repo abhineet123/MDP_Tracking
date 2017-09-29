@@ -80,3 +80,4 @@ else
 end
 tracker.prev_state = 2;
 
+nazio=1;

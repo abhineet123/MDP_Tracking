@@ -54,58 +54,60 @@ tracker.J_crop = J_crop;
 tracker.BB3_crop = BB3_crop;
 tracker.ctrack = ctrack;
 tracker.BB3 = BB3;
+tracker.add_factor  = bb_crop;
+tracker.mult_factor  = 1./s;
 
 num_det = numel(dres_det.x);
-
-if show_figs
-    n_cols = numel(colors_rgb);
-    figure(figure_ids(1));
-    set(figure_ids(1),...
-        'Name', sprintf('Current Image with current and predicted boxes'),...
-        'NumberTitle','off');
-    imshow(J);
-    hold on;
-    cx = tracker.dres.x(end);
-    cy = tracker.dres.y(end);
-    cw = tracker.dres.w(end);
-    ch = tracker.dres.h(end);
-    rectangle('Position', [cx cy cw ch], 'EdgeColor', colors_rgb{1},...
-        'LineWidth', line_width, 'LineStyle', line_style);      
-    % text(cx, cy-size(J,1)*0.01, sprintf('c'),...
-    %     'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);
-    px = BB3(1);
-    py = BB3(2);
-    pw = BB3(3) - px;
-    ph = BB3(4) - py;
-    rectangle('Position', [px py pw ph], 'EdgeColor', colors_rgb{2},...
-        'LineWidth', line_width, 'LineStyle', line_style);      
-    % text(px, py-size(J,1)*0.01, sprintf('p'),...
-    %     'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);
-    hold off; 
-    
-    figure(figure_ids(2));
-    set(figure_ids(2),'Name', sprintf('Predicted image and stored templates'),...
-        'NumberTitle','off');    
-    pcols = ceil(sqrt(tracker.num + 1));
-    prows = ceil(double(tracker.num + 1) / double(pcols));
-    subplot(prows,pcols,1);
-    imshow(J_crop);
-    hold on;
-    px = BB3_crop(1);
-    py = BB3_crop(2);
-    pw = BB3_crop(3) - px;
-    ph = BB3_crop(4) - py;
-    rectangle('Position', [px py pw ph], 'EdgeColor', [0, 0, 0],...
-        'LineWidth', line_width, 'LineStyle', line_style);      
-    text(px, py-size(J_crop,1)*0.01, sprintf('p'),...
-        'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);      
-    hold off; 
-    
-    % figure(figure_ids(3));
-    % set(figure_ids(3),'Name', sprintf('Stored templates'),...
-    %     'NumberTitle','off');
-
-end
+% 
+% if show_figs
+%     n_cols = numel(colors_rgb);
+%     figure(figure_ids(1));
+%     set(figure_ids(1),...
+%         'Name', sprintf('Current Image with current and predicted boxes'),...
+%         'NumberTitle','off');
+%     imshow(J);
+%     hold on;
+%     cx = tracker.dres.x(end);
+%     cy = tracker.dres.y(end);
+%     cw = tracker.dres.w(end);
+%     ch = tracker.dres.h(end);
+%     rectangle('Position', [cx cy cw ch], 'EdgeColor', colors_rgb{1},...
+%         'LineWidth', line_width, 'LineStyle', line_style);      
+%     % text(cx, cy-size(J,1)*0.01, sprintf('c'),...
+%     %     'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);
+%     px = BB3(1);
+%     py = BB3(2);
+%     pw = BB3(3) - px;
+%     ph = BB3(4) - py;
+%     rectangle('Position', [px py pw ph], 'EdgeColor', colors_rgb{2},...
+%         'LineWidth', line_width, 'LineStyle', line_style);      
+%     % text(px, py-size(J,1)*0.01, sprintf('p'),...
+%     %     'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);
+%     hold off; 
+%     
+%     figure(figure_ids(2));
+%     set(figure_ids(2),'Name', sprintf('Predicted image and stored templates'),...
+%         'NumberTitle','off');    
+%     pcols = ceil(sqrt(tracker.num + 1));
+%     prows = ceil(double(tracker.num + 1) / double(pcols));
+%     subplot(prows,pcols,1);
+%     imshow(J_crop);
+%     hold on;
+%     px = BB3_crop(1);
+%     py = BB3_crop(2);
+%     pw = BB3_crop(3) - px;
+%     ph = BB3_crop(4) - py;
+%     rectangle('Position', [px py pw ph], 'EdgeColor', [0, 0, 0],...
+%         'LineWidth', line_width, 'LineStyle', line_style);      
+%     text(px, py-size(J_crop,1)*0.01, sprintf('p'),...
+%         'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);      
+%     hold off; 
+%     
+%     % figure(figure_ids(3));
+%     % set(figure_ids(3),'Name', sprintf('Stored templates'),...
+%     %     'NumberTitle','off');
+% 
+% end
 % for i = 1:tracker.num
 %     if show_figs
 %         sbp_h = subplot(prows,pcols,i + 1);
@@ -125,22 +127,22 @@ for i = 1:tracker.num
     I_crop = tracker.Is{i};
     BB1_crop = tracker.BBs{i};
     
-    if show_figs
-        subplot(prows,pcols,i + 1);
-        imshow(I_crop);
-        hold on;
-        sx = BB1_crop(1);
-        sy = BB1_crop(2);
-        sw = BB1_crop(3) - sx;
-        sh = BB1_crop(4) - sy;
-        col_id = mod(i - 1, n_cols) + 1;
-        line_col = colors_rgb{col_id};
-        rectangle('Position', [sx sy sw sh], 'EdgeColor', line_col,...
-            'LineWidth', line_width, 'LineStyle', line_style);  
-        % text(sx, sy-size(I_crop,1)*0.01, sprintf('%d', i),...
-        %     'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);
-        hold off;
-    end
+    % if show_figs
+    %     subplot(prows,pcols,i + 1);
+    %     imshow(I_crop);
+    %     hold on;
+    %     sx = BB1_crop(1);
+    %     sy = BB1_crop(2);
+    %     sw = BB1_crop(3) - sx;
+    %     sh = BB1_crop(4) - sy;
+    %     col_id = mod(i - 1, n_cols) + 1;
+    %     line_col = colors_rgb{col_id};
+    %     rectangle('Position', [sx sy sw sh], 'EdgeColor', line_col,...
+    %         'LineWidth', line_width, 'LineStyle', line_style);
+    %     % text(sx, sy-size(I_crop,1)*0.01, sprintf('%d', i),...
+    %     %     'BackgroundColor', [.7 .9 .7], 'FontSize', obj_id_font_size);
+    %     hold off;
+    % end
     
     % LK tracking - wrapper over the mex LK tracker
     % also returns a bunch of appearance and optical flow features
@@ -154,7 +156,9 @@ for i = 1:tracker.num
     BB2 = [BB2(1)/s(1); BB2(2)/s(2); BB2(3)/s(1); BB2(4)/s(2)];   
 
     % ratio of the heights of the new and old BB
-    ratio = (BB2(4)-BB2(2)) / (BB1(4)-BB1(2));
+    % yet another instance of annoying habit of ignoring the extra 1 
+    % while computing the w and h 
+    ratio = (BB2(4)-BB2(2) + 1) / (BB1(4)-BB1(2) + 1);
     ratio = min(ratio, 1/ratio);
     
     if isnan(medFB) || isnan(medFB_left) || isnan(medFB_right) || isnan(medFB_up)...
@@ -177,8 +181,11 @@ for i = 1:tracker.num
         % compute overlap with detections
         dres.x = BB2(1);
         dres.y = BB2(2);
-        dres.w = BB2(3) - BB2(1);
-        dres.h = BB2(4) - BB2(2);
+        % really annoying habit of ignoring the extra 1 while computing the
+        % w and h but then putting it back on when computing the
+        % br coords from w and h
+        dres.w = BB2(3) - BB2(1) + 1;
+        dres.h = BB2(4) - BB2(2) + 1;
         if isempty(dres_det.fr) == 0 % why not just check if num_det is 0 ?
             overlap = calc_overlap(dres, 1, dres_det, 1:num_det);
             [o, ind] = max(overlap);
@@ -250,7 +257,9 @@ if bb_isdef(tracker.bb)
     tracker.nccs = nccs';
 else
     tracker.nccs = zeros(tracker.num, 1);
-end    
+end
+
+nazio=1;
 % 
 % if tracker.is_show
 %     fprintf('\ntarget %d: frame ids ', tracker.target_id);

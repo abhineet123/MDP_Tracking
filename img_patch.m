@@ -57,20 +57,25 @@ else
     
     % All coordinates are integers
     if isempty(find((round(bb)-bb) ~= 0, 1)) == 1
-        L = max([1 bb(1)]);
-        T = max([1 bb(2)]);
-        R = min([size(img,2) bb(3)]);
-        B = min([size(img,1) bb(4)]);
+        % yet another annoying horrible bug - the locations in ground truth
+        % are alwys 0-based while Matlab indexing is 1-based so we should
+        % be adding 1 to the locations before using them for indexing
+        L = max([1 bb(1) + 1]);
+        T = max([1 bb(2) + 1]);
+        R = min([size(img,2) bb(3) + 1]);
+        B = min([size(img,1) bb(4) + 1]);
         patch = img(T:B,L:R);
-        
+        nazio = 1;
+
         % Sub-pixel accuracy
     else
         
         cp = 0.5 * [bb(1)+bb(3); bb(2)+bb(4)]-1;
         H = [1 0 -cp(1); 0 1 -cp(2); 0 0 1];
+        H_inv = inv(H);
         
-        bbW = bb(3,:)-bb(1,:);
-        bbH = bb(4,:)-bb(2,:);
+        bbW = bb(3,:)-bb(1,:)+1;
+        bbH = bb(4,:)-bb(2,:)+1;
         if bbW <= 0 || bbH <= 0
             patch = [];
             return;
@@ -79,13 +84,13 @@ else
         
         if size(img,3) == 3
             for i = 1:3
-                P = warp(img(:,:,i),inv(H),box);
+                P = warp(img(:,:,i),H_inv, box);
                 patch(:,:,i) = uint8(P);
             end
         else
-            patch = warp(img,inv(H),box);
+            patch = warp(img,H_inv,box);
             patch = uint8(patch);
         end
-
+        nazio = 1;
     end
 end
