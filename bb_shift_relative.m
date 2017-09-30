@@ -22,7 +22,14 @@ function bb = bb_shift_relative(bb,shift)
 if isempty(bb)
     return;
 end
-bb(1,:) = bb(1,:) + bb_width(bb)*shift(1);
-bb(2,:) = bb(2,:) + bb_height(bb)* shift(2);
-bb(3,:) = bb(3,:) + bb_width(bb)*shift(1);
-bb(4,:) = bb(4,:) + bb_height(bb)*shift(2);
+% annoying bug - evidently the authors did not realize that computing 
+% width and height from 'bb' after having already shifted bb(1,:)
+% and bb(3,:) would cause the other two rows to be messed up
+
+shift_x = bb_width(bb)*shift(1);
+shift_y = bb_height(bb)*shift(2);
+
+bb(1,:) = bb(1,:) + shift_x;
+bb(2,:) = bb(2,:) + shift_y;
+bb(3,:) = bb(3,:) + shift_x;
+bb(4,:) = bb(4,:) + shift_y;
