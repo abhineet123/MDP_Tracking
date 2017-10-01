@@ -176,7 +176,11 @@ for i = 1:tracker.num
         ind = 1;
         angle = -1;
         flag = 2;
-        BB2 = [NaN; NaN; NaN; NaN];
+        BB2 = [NaN; NaN; NaN; NaN];        
+        v = [NaN, NaN];
+        centerI = [NaN, NaN];
+        centerJ = [NaN, NaN];
+        v_new = [NaN, NaN];        
     else
         % compute overlap with detections
         dres.x = BB2(1);
@@ -194,8 +198,7 @@ for i = 1:tracker.num
             o = 0;
             score = -1;
             ind = 0;
-        end
-        
+        end        
         % compute angle between the current velociy and the mean velocities
         % over all stored templates
         v = compute_velocity(tracker);
@@ -206,9 +209,8 @@ for i = 1:tracker.num
             angle = dot(v, v_new) / (norm(v) * norm(v_new));
         else
             angle = 1;
-        end        
-    end
-    
+        end     
+    end    
     tracker.bbs_orig{i} = BB2_orig; 
     tracker.bbs{i} = BB2; % new estimated BB using reliable OF points
     tracker.points{i} = xFJ'; % coordinates, FB and NCC for all OF points  
@@ -222,15 +224,21 @@ for i = 1:tracker.num
     tracker.medFBs_right(i) = medFB_right; % median of FB over OF points right of center
     tracker.medFBs_up(i) = medFB_up; % median of FB over OF points above center
     tracker.medFBs_down(i) = medFB_down; % median of FB over OF points below center
-    tracker.medNCCs(i) = medNCC; % median of NCC over all OF points
+    tracker.medNCCs(i) = medNCC; % median of NCC over all OF points    
+    
     tracker.overlaps(i) = o; % max overlap among all detections
     tracker.scores(i) = score; % score of this detection
     tracker.indexes(i) = ind; % index of this detection
     tracker.angles(i) = angle; % angle between the current velociy and the mean velocities over all stored frames
     tracker.ratios(i) = ratio; %  ratio of the heights of the new and old BB
     
+    tracker.v{i} = v;
+    tracker.centerI{i} = centerI;
+    tracker.centerJ{i} = centerJ;
+    tracker.v_new{i} = v_new;
     debugging=1;
 end
+
 
 % combine tracking and detection results
 % [~, ind] = min(tracker.medFBs);
@@ -262,83 +270,3 @@ else
 end
 
 debugging=1;
-% 
-% if tracker.is_show
-%     fprintf('\ntarget %d: frame ids ', tracker.target_id);
-%     for i = 1:tracker.num
-%         fprintf('%d ', tracker.frame_ids(i))
-%     end
-%     fprintf('\n');    
-%     fprintf('target %d: medFB ', tracker.target_id);
-%     for i = 1:tracker.num
-%         fprintf('%.2f ', tracker.medFBs(i))
-%     end
-%     fprintf('\n');
-%     
-%     fprintf('target %d: medFB left ', tracker.target_id);
-%     for i = 1:tracker.num
-%         fprintf('%.2f ', tracker.medFBs_left(i))
-%     end
-%     fprintf('\n');
-%     
-%     fprintf('target %d: medFB right ', tracker.target_id);
-%     for i = 1:tracker.num
-%         fprintf('%.2f ', tracker.medFBs_right(i))
-%     end
-%     fprintf('\n');
-%     
-%     fprintf('target %d: medFB up ', tracker.target_id);
-%     for i = 1:tracker.num
-%         fprintf('%.2f ', tracker.medFBs_up(i))
-%     end
-%     fprintf('\n');
-%     
-%     fprintf('target %d: medFB down ', tracker.target_id);
-%     for i = 1:tracker.num
-%         fprintf('%.2f ', tracker.medFBs_down(i))
-%     end
-%     fprintf('\n');       
-%     
-%     fprintf('target %d: medNCC ', tracker.target_id);
-%     for i = 1:tracker.num
-%         fprintf('%.2f ', tracker.medNCCs(i))
-%     end
-%     fprintf('\n');
-%     
-%     fprintf('target %d: overlap ', tracker.target_id);
-%     for i = 1:tracker.num
-%         fprintf('%.2f ', tracker.overlaps(i))
-%     end
-%     fprintf('\n');
-%     fprintf('target %d: detection score ', tracker.target_id);
-%     for i = 1:tracker.num
-%         fprintf('%.2f ', tracker.scores(i))
-%     end
-%     fprintf('\n');
-%     fprintf('target %d: flag ', tracker.target_id);
-%     for i = 1:tracker.num
-%         fprintf('%d ', tracker.flags(i))
-%     end
-%     fprintf('\n');
-%     fprintf('target %d: angle ', tracker.target_id);
-%     for i = 1:tracker.num
-%         fprintf('%.2f ', tracker.angles(i))
-%     end
-%     fprintf('\n');
-%     fprintf('target %d: ncc ', tracker.target_id);
-%     for i = 1:tracker.num
-%         fprintf('%.2f ', tracker.nccs(i))
-%     end
-%     fprintf('\n\n');
-%     fprintf('target %d: bb overlaps ', tracker.target_id);
-%     for i = 1:tracker.num
-%         fprintf('%.2f ', tracker.bb_overlaps(i))
-%     end
-%     fprintf('\n\n');
-% 
-%     if tracker.flags(ind) == 2
-%         fprintf('target %d: bounding box out of image\n', tracker.target_id);
-%     elseif tracker.flags(ind) == 3
-%         fprintf('target %d: too unstable predictions\n', tracker.target_id);
-%     end
-% end

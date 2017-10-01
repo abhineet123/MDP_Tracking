@@ -61,6 +61,7 @@ tracker.bbs = cell(num, 1);
 tracker.points = cell(num, 1);
 tracker.std_points = cell(num, 1);
 tracker.flags = ones(num, 1);
+tracker.features = zeros(num, 6);
 tracker.medFBs = zeros(num, 1);
 tracker.medFBs_left = zeros(num, 1);
 tracker.medFBs_right = zeros(num, 1);
@@ -73,6 +74,12 @@ tracker.indexes = zeros(num, 1);
 tracker.nccs = zeros(num, 1);
 tracker.angles = zeros(num, 1);
 tracker.ratios = zeros(num, 1);
+
+tracker.v = cell(num, 1);
+tracker.centerI = cell(num, 1);
+tracker.centerJ = cell(num, 1);
+tracker.v_new = cell(num, 1);
+
 
 % initialize features for occluded state
 if isempty(tracker.w_occluded) == 1
