@@ -16,7 +16,7 @@
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
 
-function patch = img_patch(img, bb, randomize,p_par)
+function patch_uint8 = img_patch(img, bb, randomize,p_par)
 
 if nargin == 4 && randomize > 0
     
@@ -50,7 +50,7 @@ if nargin == 4 && randomize > 0
     
     H     = Sh2*Ang*Sca*Sh1;
     bbsize = bb_size(bb);
-    patch = uint8(warp(img,inv(H),box) + NOISE*randn(bbsize(1),bbsize(2)));
+    patch_uint8 = uint8(warp(img,inv(H),box) + NOISE*randn(bbsize(1),bbsize(2)));
     
     
 else
@@ -64,8 +64,8 @@ else
         T = max([1 bb(2) + 1]);
         R = min([size(img,2) bb(3) + 1]);
         B = min([size(img,1) bb(4) + 1]);
-        patch = img(T:B,L:R);
-        nazio = 1;
+        patch_uint8 = img(T:B,L:R);
+        debugging=1;
 
         % Sub-pixel accuracy
     else
@@ -89,8 +89,8 @@ else
             end
         else
             patch = warp(img,H_inv,box);
-            patch = uint8(patch);
+            patch_uint8 = uint8(patch);
         end
-        nazio = 1;
+        debugging=1;
     end
 end

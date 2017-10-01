@@ -78,3 +78,4 @@ else
 end
 prediction = [cx_new cy_new];
 prediction1 = [w_new h_new];
+debugging = 1;

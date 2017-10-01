@@ -154,7 +154,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	float *fb     = (float*) cvAlloc(nPts*sizeof(float));
 	char  *status = (char*)  cvAlloc(nPts);
 
-	printf("Level: %d\n", Level);
+	// printf("Level: %d\n", Level);
 
 	cvCalcOpticalFlowPyrLK( IMG[I], IMG[J], PYR[I], PYR[J], points[0], 
 		points[1], nPts, cvSize(win_size,win_size), Level, status, 0, 

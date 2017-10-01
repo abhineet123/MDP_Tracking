@@ -32,7 +32,7 @@ tracker.x1(index) = tracker.bb(1);
 tracker.y1(index) = tracker.bb(2);
 tracker.x2(index) = tracker.bb(3);
 tracker.y2(index) = tracker.bb(4);
-% replace the old pattern with the new one – a pattern is just the the set
+% replace the old pattern with the new one ï¿½ a pattern is just the the set
 % of pixel values corresponding to the location all for this bounding box
 % that has been subjected to some preliminary preprocessing like
 % normalization and stuff
@@ -40,15 +40,22 @@ tracker.patterns(:,index) = generate_pattern(img, tracker.bb, tracker.patchsize)
 
 % update images and boxes
 BB = [tracker.x1(index); tracker.y1(index); tracker.x2(index); tracker.y2(index)];
-[I_crop, BB_crop] = LK_crop_image_box(img, BB, tracker);
+[I_crop, BB_crop, bb_crop, s, I_scale] = LK_crop_image_box(img, BB, tracker);
+
+% dlmwrite('log/frame.txt', img, 'delimiter', '\t', 'precision','%d');
+% dlmwrite('log/scaled_frame.txt', I_scale, 'delimiter', '\t', 'precision','%d');
+% dlmwrite('log/roi.txt', I_crop, 'delimiter', '\t', 'precision','%d');
+
 tracker.Is{index} = I_crop; 
 tracker.BBs{index} = BB_crop;
 
 % compute overlap
 dres.x = tracker.bb(1);
 dres.y = tracker.bb(2);
-dres.w = tracker.bb(3) - tracker.bb(1);
-dres.h = tracker.bb(4) - tracker.bb(2);
+% Yet another annoying horrible and insidious bug where the +1 has simply
+% been skipped by the computing the width and height;
+dres.w = tracker.bb(3) - tracker.bb(1) + 1;
+dres.h = tracker.bb(4) - tracker.bb(2) + 1;
 num_det = numel(dres_det.fr);
 if isempty(dres_det.fr) == 0
     o = calc_overlap(dres, 1, dres_det, 1:num_det);
@@ -56,3 +63,4 @@ if isempty(dres_det.fr) == 0
 else
     tracker.bb_overlaps(index) = 0;
 end
+debugging=1;

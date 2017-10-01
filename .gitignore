@@ -4,6 +4,7 @@ results/
 results_gram/
 results_kitti/
 gitu.bat
+log/
 GT/
 Detections/
 Tracked/

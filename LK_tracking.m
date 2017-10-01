@@ -24,20 +24,20 @@ function tracker = LK_tracking(frame_id, dres_image, dres_det, tracker,...
 % tracker.flag = 2; % complete failure
 % tracker.flag = 3; % unstable/unreliable tracking
 
-show_figs = 0;
-line_width = 1;
-line_style = '-';
-obj_id_font_size = 6;
-
-if nargin<4
-    figure_ids = [];
-end
-if nargin<5
-    colors_rgb = {};
-end
-if ~isempty(figure_ids) && ~isempty(colors_rgb)
-    show_figs = 1;
-end
+% show_figs = 0;
+% line_width = 1;
+% line_style = '-';
+% obj_id_font_size = 6;
+% 
+% if nargin<4
+%     figure_ids = [];
+% end
+% if nargin<5
+%     colors_rgb = {};
+% end
+% if ~isempty(figure_ids) && ~isempty(colors_rgb)
+%     show_figs = 1;
+% end
 
 % current frame + motion
 J = dres_image.Igray{frame_id};
@@ -229,7 +229,7 @@ for i = 1:tracker.num
     tracker.angles(i) = angle; % angle between the current velociy and the mean velocities over all stored frames
     tracker.ratios(i) = ratio; %  ratio of the heights of the new and old BB
     
-    nazio = 1;
+    debugging=1;
 end
 
 % combine tracking and detection results
@@ -237,8 +237,10 @@ end
 ind = tracker.anchor; % ID of the current template
 if tracker.overlaps(ind) > tracker.overlap_box
     index = tracker.indexes(ind);
+    % yet another horrible annoying bug - the -1 has simply disappeared
+    % from the computation of the BR coords
     bb_det = [dres_det.x(index); dres_det.y(index); ...
-        dres_det.x(index)+dres_det.w(index); dres_det.y(index)+dres_det.h(index)];
+        dres_det.x(index)+dres_det.w(index)-1; dres_det.y(index)+dres_det.h(index)-1];
     % weighted average of the tracked BB corresponding to the template and
     % the BB corresponding to the detection that has maximum overlap with
     % this BB
@@ -259,7 +261,7 @@ else
     tracker.nccs = zeros(tracker.num, 1);
 end
 
-nazio=1;
+debugging=1;
 % 
 % if tracker.is_show
 %     fprintf('\ntarget %d: frame ids ', tracker.target_id);

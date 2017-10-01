@@ -27,8 +27,10 @@ if bb_isdef(tracker.bb)
 	dres_one.id = tracker.target_id;
 	dres_one.x = tracker.bb(1);
 	dres_one.y = tracker.bb(2);
-	dres_one.w = tracker.bb(3) - tracker.bb(1);
-	dres_one.h = tracker.bb(4) - tracker.bb(2);
+    % yet another instance of the annoying horrible insidious bug where the
+    % +1 is simply ignored
+	dres_one.w = tracker.bb(3) - tracker.bb(1) + 1;
+	dres_one.h = tracker.bb(4) - tracker.bb(2) + 1;
 	dres_one.r = 1;
 else
 	dres_one = sub(tracker.dres, numel(tracker.dres.fr));
@@ -80,4 +82,4 @@ else
 end
 tracker.prev_state = 2;
 
-nazio=1;
+debugging=1;

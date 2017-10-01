@@ -21,18 +21,18 @@ else
     xFII = bb_points(BB2, 10, 10, [margin(1); margin(2)]);
 end
 
-dlmwrite('patch_1.txt', I, 'delimiter', '\t', 'precision','%d');
-dlmwrite('patch_2.txt', J, 'delimiter', '\t', 'precision','%d');
-
-dlmwrite('pts_1.txt', xFI', 'delimiter', '\t', 'precision','%.4f');
-dlmwrite('pts_2.txt', xFII', 'delimiter', '\t', 'precision','%.4f');
+% dlmwrite('log/patch_1.txt', I, 'delimiter', '\t', 'precision','%d');
+% dlmwrite('log/patch_2.txt', J, 'delimiter', '\t', 'precision','%d');
+% 
+% dlmwrite('log/pts_1.txt', xFI', 'delimiter', '\t', 'precision','%.4f');
+% dlmwrite('log/pts_2.txt', xFII', 'delimiter', '\t', 'precision','%.4f');
 
 % track all points by Lucas-Kanade tracker from frame I to frame J, 
 % estimate Forward-Backward error, and NCC for each point
 % this is finally where the mex code is being used
 xFJ = lk_cv(2, I, J, xFI, xFII, level);
 
-nan_idx = find(isnan(xFJ(1,:)));
+% nan_idx = find(isnan(xFJ(1,:)));
 
 % xFJ: 4 x n matrix 
 % row 1: x coordinates, row 2: y coordinates, 
@@ -62,7 +62,7 @@ medFB_down = median2(xFJ(3, index));
 
 % get indices of reliable points
 idxF = xFJ(3,:) <= medFB & xFJ(4,:)>= medNCC;
-idxF_nz = find(idxF);
+% idxF_nz = find(idxF);
 
 % estimate BB3 using the reliable points only
 [BB3,  shift, d1, d2]    = bb_predict(BB1, xFI(:,idxF), xFJ(1:2,idxF));
@@ -86,4 +86,4 @@ elseif medFB > 10
 % too unstable predictions
     flag = 3; % unstable/unreliable tracking
 end
-nazio = 1;
+debugging=1;
