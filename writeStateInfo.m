@@ -14,7 +14,7 @@ for i = 1:tracker.num
     points(:, i) = tracker.points{i}(:);
     roi(:, i) = tracker.Is{i}(:);
 end
-if write_to_bin
+if write_to_bin    
     fwrite(fopen('log/flags.bin','w'), tracker.flags,'uint8');
     fwrite(fopen('log/indices.bin','w'), tracker.indexes - 1,'uint8');
     fwrite(fopen('log/overlaps.bin','w'), tracker.overlaps,'float64');
@@ -27,6 +27,7 @@ if write_to_bin
     fwrite(fopen('log/features.bin','w'), tracker.features','float64');
     fwrite(fopen('log/lk_out.bin','w'), points','float64');
     fwrite(fopen('log/roi.bin','w'), roi','uint8');
+    fclose('all');
 else
     dlmwrite('log/flags.txt', tracker.flags, 'delimiter', '\t',...
         'precision','%d');
