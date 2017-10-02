@@ -17,15 +17,15 @@ end
 if write_to_bin    
     fwrite(fopen('log/flags.bin','w'), tracker.flags,'uint8');
     fwrite(fopen('log/indices.bin','w'), tracker.indexes - 1,'uint8');
-    fwrite(fopen('log/overlaps.bin','w'), tracker.overlaps,'float64');
-    fwrite(fopen('log/angles.bin','w'), tracker.angles,'float64');
-    fwrite(fopen('log/ratios.bin','w'), tracker.ratios,'float64');
-    fwrite(fopen('log/bb_overlaps.bin','w'), tracker.bb_overlaps,'float64');
-    fwrite(fopen('log/similarity.bin','w'), tracker.nccs,'float64');
-    fwrite(fopen('log/scores.bin','w'), tracker.scores,'float64');
-    fwrite(fopen('log/patterns.bin','w'), tracker.patterns','float64');
-    fwrite(fopen('log/features.bin','w'), tracker.features','float64');
-    fwrite(fopen('log/lk_out.bin','w'), points','float64');
+    fwrite(fopen('log/overlaps.bin','w'), tracker.overlaps,'float32');
+    fwrite(fopen('log/angles.bin','w'), tracker.angles,'float32');
+    fwrite(fopen('log/ratios.bin','w'), tracker.ratios,'float32');
+    fwrite(fopen('log/bb_overlaps.bin','w'), tracker.bb_overlaps,'float32');
+    fwrite(fopen('log/similarity.bin','w'), tracker.nccs,'float32');
+    fwrite(fopen('log/scores.bin','w'), tracker.scores,'float32');
+    fwrite(fopen('log/patterns.bin','w'), tracker.patterns','float32');
+    fwrite(fopen('log/features.bin','w'), tracker.features','float32');
+    fwrite(fopen('log/lk_out.bin','w'), points','float32');
     fwrite(fopen('log/roi.bin','w'), roi','uint8');
     fclose('all');
 else
