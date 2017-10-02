@@ -82,8 +82,9 @@ else
 end
 tracker.prev_state = 2;
 
-write_state_info = 11;
+write_state_info = 18;
+write_to_bin = 1;
 if frame_id >= write_state_info
-    writeStateInfo(tracker);    
+    writeStateInfo(tracker, write_to_bin);    
     debugging=1;
 end
