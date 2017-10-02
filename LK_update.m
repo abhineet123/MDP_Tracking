@@ -14,7 +14,7 @@ function tracker = LK_update(frame_id, tracker, img, dres_det,...
 
 medFBs = tracker.medFBs;
 if is_change_anchor == 0
-    % find the template with max FB error but not the anchor
+    % find the template with max FB error except the current anchor
     % this is the one that will presumably be replaced with the new one
     medFBs(tracker.anchor) = -inf;    
     [~, index] = max(medFBs);

@@ -82,40 +82,8 @@ else
 end
 tracker.prev_state = 2;
 
-dlmwrite('log/flags.txt', tracker.flags, 'delimiter', '\t',...
-    'precision','%d');
-dlmwrite('log/indices.txt', tracker.indexes, 'delimiter', '\t',...
-    'precision','%d');
-dlmwrite('log/overlaps.txt', tracker.overlaps, 'delimiter', '\t',...
-    'precision','%.6f');
-dlmwrite('log/angles.txt', tracker.angles, 'delimiter', '\t',...
-    'precision','%.6f');
-dlmwrite('log/ratios.txt', tracker.ratios, 'delimiter', '\t',...
-    'precision','%.6f');
-dlmwrite('log/angles.txt', tracker.angles, 'delimiter', '\t',...
-    'precision','%.6f');
-dlmwrite('log/bb_overlaps.txt', tracker.bb_overlaps, 'delimiter', '\t',...
-    'precision','%.6f');
-dlmwrite('log/similarity.txt', tracker.nccs, 'delimiter', '\t',...
-    'precision','%.6f');
-dlmwrite('log/scores.txt', tracker.scores, 'delimiter', '\t',...
-    'precision','%.6f');
-dlmwrite('log/patterns.txt', tracker.patterns, 'delimiter', '\t',...
-    'precision','%.6f');
-tracker.features(:, 1) = tracker.medFBs;
-tracker.features(:, 2) = tracker.medFBs_left;
-tracker.features(:, 3) = tracker.medFBs_right;
-tracker.features(:, 4) = tracker.medFBs_up;
-tracker.features(:, 5) = tracker.medFBs_down;
-tracker.features(:, 6) = tracker.medNCCs;
-dlmwrite('log/features.txt', tracker.features, 'delimiter', '\t',...
-    'precision','%.6f');
-points = zeros(numel(tracker.points{1}), tracker.num);
-for i = 1:tracker.num
-    points(:, i) = tracker.points{i}(:);
+write_state_info = 11;
+if frame_id >= write_state_info
+    writeStateInfo(tracker);    
+    debugging=1;
 end
-dlmwrite('log/lk_out.txt', points, 'delimiter', '\t',...
-    'precision','%.6f');
-end
-
-debugging=1;
