@@ -466,6 +466,12 @@ while 1 % for multiple passes
                 end
             end
         end
+        write_state_info = 21;
+        write_to_bin = 1;
+        if fr >= write_state_info
+            writeStateInfo(tracker, write_to_bin);    
+            debugging=1;
+        end
         
         % check if outside image
         if tracker.state == 2

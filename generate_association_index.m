@@ -28,6 +28,8 @@ function [dres_det, index_det, ctrack] = generate_association_index(tracker,...
 
 num_det = numel(dres_det.fr);
 % centers of the detections
+% annoying insidious buggy coding practice - sometimes the center is (ul + br)/2
+% and at other times it is ul + size/2 even though size = br - ul + 1
 cdets = [dres_det.x + dres_det.w/2, dres_det.y + dres_det.h/2];
 % centers of predicted locations of the tracked bounding boxes
 ctrack = apply_motion_prediction(frame_id, tracker);

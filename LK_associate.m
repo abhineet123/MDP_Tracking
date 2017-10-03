@@ -50,7 +50,8 @@ for i = 1:tracker.num
     
     % Compute ratio of the heights of new and old boxes
     BB1 = [tracker.x1(i); tracker.y1(i); tracker.x2(i); tracker.y2(i)];
-    ratio = (BB3(4)-BB3(2)) / (BB1(4)-BB1(2));
+    % yet another instance of the horrible annoying insidious bug
+    ratio = (BB3(4)-BB3(2) + 1) / (BB1(4)-BB1(2) + 1);
     ratio = min(ratio, 1/ratio);    
     
     if isnan(medFB) || isnan(medFB_left) || isnan(medFB_right) || isnan(medFB_up) || isnan(medFB_down)  ...
@@ -72,8 +73,9 @@ for i = 1:tracker.num
         % create temporary sructure
         dres.x = BB3(1);
         dres.y = BB3(2);
-        dres.w = BB3(3) - BB3(1);
-        dres.h = BB3(4) - BB3(2);
+        % yet another instance of the horrible annoying insidious bug
+        dres.w = BB3(3) - BB3(1) + 1;
+        dres.h = BB3(4) - BB3(2) + 1;
         % Overlap of all of the possible associated detections with the tracked
         % location of the current template within the cropped image corresponding to
         % the first potentially associated detection

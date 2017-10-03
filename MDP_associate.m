@@ -70,15 +70,19 @@ if label > 0
 	dres_one.id = tracker.target_id;
 	dres_one.x = tracker.bb(1);
 	dres_one.y = tracker.bb(2);
-	dres_one.w = tracker.bb(3) - tracker.bb(1);
-	dres_one.h = tracker.bb(4) - tracker.bb(2);
+    % yet another instance of the horrible annoying insidious bug
+	dres_one.w = tracker.bb(3) - tracker.bb(1) + 1;
+	dres_one.h = tracker.bb(4) - tracker.bb(2) + 1;
 	dres_one.r = 1;
 	dres_one.state = 2;
 	
 	if isfield(tracker.dres, 'type')
 		dres_one.type = tracker.dres.type{1};
 	end        
-	
+	% if the current frame is already in the history, remove it and replace
+	% its status with the new one; this happens during training when the
+	% tracker has just been lost and we try to reconnect it using
+	% association with the detections
 	if tracker.dres.fr(end) == frame_id
 		dres = tracker.dres;
 		index = 1:numel(dres.fr)-1;
@@ -129,3 +133,4 @@ else
 	% history of the tracker
 	tracker.dres = concatenate_dres(tracker.dres, dres_one);          
 end
+debugging = 1;

@@ -81,10 +81,3 @@ else
 	tracker.dres = concatenate_dres(tracker.dres, dres_one);        
 end
 tracker.prev_state = 2;
-
-write_state_info = 21;
-write_to_bin = 1;
-if frame_id >= write_state_info
-    writeStateInfo(tracker, write_to_bin);    
-    debugging=1;
-end

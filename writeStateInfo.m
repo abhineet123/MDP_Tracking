@@ -14,6 +14,11 @@ for i = 1:tracker.num
     points(:, i) = tracker.points{i}(:);
     roi(:, i) = tracker.Is{i}(:);
 end
+locations = np.zeros(numel(tracker.dres.fr), 4);
+locations(:, 1) = tracker.dres.x;
+locations(:, 2) = tracker.dres.y;
+locations(:, 3) = tracker.dres.w;
+locations(:, 4) = tracker.dres.h;
 if write_to_bin    
     fwrite(fopen('log/flags.bin','w'), tracker.flags,'uint8');
     fwrite(fopen('log/indices.bin','w'), tracker.indexes - 1,'uint8');
@@ -25,8 +30,13 @@ if write_to_bin
     fwrite(fopen('log/scores.bin','w'), tracker.scores,'float32');
     fwrite(fopen('log/patterns.bin','w'), tracker.patterns','float32');
     fwrite(fopen('log/features.bin','w'), tracker.features','float32');
-    fwrite(fopen('log/lk_out.bin','w'), points','float32');
+    fwrite(fopen('log/lk_out.bin','w'), points','float32');    
     fwrite(fopen('log/roi.bin','w'), roi','uint8');
+    fwrite(fopen('log/ids.bin','w'), tracker.dres.id,'uint8');
+    fwrite(fopen('log/frame_ids.bin','w'), tracker.dres.fr,'uint8');
+    fwrite(fopen('log/states.bin','w'), tracker.dres.state,'uint8');
+    fwrite(fopen('log/locations.bin','w'), locations','float32');
+    fwrite(fopen('log/scores.bin','w'), tracker.dres.r,'float32');
     fclose('all');
 else
     dlmwrite('log/flags.txt', tracker.flags, 'delimiter', '\t',...
@@ -53,6 +63,16 @@ else
         'precision', fp_fmt);
     dlmwrite('log/roi.txt', roi, 'delimiter', '\t',...
         'precision', '%d');
+    dlmwrite('log/ids.txt', tracker.dres.id, 'delimiter', '\t',...
+        'precision', '%d');
+    dlmwrite('log/frame_ids.txt', tracker.dres.fr, 'delimiter', '\t',...
+        'precision', '%d');
+    dlmwrite('log/states.txt', tracker.dres.state, 'delimiter', '\t',...
+        'precision', '%d');
+    dlmwrite('log/features.txt', locations', 'delimiter', '\t',...
+        'precision',fp_fmt);
+    dlmwrite('log/features.txt', tracker.dres.r, 'delimiter', '\t',...
+        'precision',fp_fmt);    
 end
 end
 
