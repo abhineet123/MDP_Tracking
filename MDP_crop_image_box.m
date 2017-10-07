@@ -62,7 +62,9 @@ dres.bb_crop = cell(num, 1);
 dres.scale = cell(num, 1);
 
 for i = 1:num
-    BB = [dres.x(i); dres.y(i); dres.x(i) + dres.w(i); dres.y(i) + dres.h(i)];
+    % yet another of the countless instances of the horribly annoying and
+    % insidious bug where the -1 is simply ignored
+    BB = [dres.x(i); dres.y(i); dres.x(i) + dres.w(i) - 1; dres.y(i) + dres.h(i) - 1];
     [I_crop, BB_crop, bb_crop, s] = LK_crop_image_box(I, BB, tracker);  
   
     dres.I_crop{i} = I_crop;
@@ -92,6 +94,6 @@ for i = 1:num
     %     % k = waitforbuttonpress;
     % end
 end
-if show_figs
-    pause(0.75);
-end
+% if show_figs
+%     pause(0.75);
+% end

@@ -6,7 +6,8 @@
 % --------------------------------------------------------
 %
 % apply motion models to predict the next locations of the targets
-function [prediction, prediction1] = apply_motion_prediction(fr_current, tracker)
+function [prediction, prediction1, vx, vy] = apply_motion_prediction(fr_current,...
+    tracker, debug_mode)
 % this actually returns only the predicted location of the last bounding box
 % though it uses all the bounding boxes in the history to compute the mean
 % velocity which in turn is used to compute this a predicted location of last bounding box;
@@ -15,6 +16,10 @@ function [prediction, prediction1] = apply_motion_prediction(fr_current, tracker
 % the first output is the centre of this predicted box and the next output 
 % is the size in terms of the width  and the height;
 % apply motion model and predict next location
+if nargin < 3
+    debug_mode = 0;
+end
+
 dres = tracker.dres;
 % consider only those frames where the object was actually tracked
 index = find(dres.state == 2);
@@ -78,4 +83,6 @@ else
 end
 prediction = [cx_new cy_new];
 prediction1 = [w_new h_new];
-debugging = 1;
+if debug_mode
+    debugging = 1;
+end

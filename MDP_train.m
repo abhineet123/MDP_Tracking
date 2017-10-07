@@ -466,7 +466,7 @@ while 1 % for multiple passes
                 end
             end
         end
-        write_state_info = 2;
+        write_state_info = 23;
         write_to_bin = 1;
         if fr >= write_state_info
             writeStateInfo(tracker, write_to_bin);    
