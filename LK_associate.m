@@ -168,8 +168,9 @@ end
 % seems rather pointless as there is only one detection so index will
 % always be 1
 index = tracker.indexes(ind);
+% yet another instance of the horrible insidious bug
 bb_det = [dres_one.x(index); dres_one.y(index); ...
-    dres_one.x(index)+dres_one.w(index); dres_one.y(index)+dres_one.h(index)];
+    dres_one.x(index)+dres_one.w(index)-1; dres_one.y(index)+dres_one.h(index)-1];
 if tracker.overlaps(ind) > tracker.overlap_box
     % weighted average of tracked box and detection box
     tracker.bb = mean([repmat(tracker.bbs{ind}, 1, tracker.weight_association) bb_det], 2);
@@ -187,6 +188,7 @@ if bb_isdef(tracker.bb)
 else
     tracker.nccs = zeros(tracker.num, 1);
 end
+debugging = 1;
 
 % if tracker.is_show
 %     fprintf('LK association, target %d detection %.2f, medFBs ', ...
