@@ -88,9 +88,11 @@ else
         overlap = calc_overlap(dres_gt, index, dres, index_det);
     end
 end
-if is_text
-    fprintf('max overlap in association %.2f\n', max(overlap));
-end
+
+% if is_text
+%     fprintf('max overlap in association %.2f\n', max(overlap));
+% end
+
 % if the detection label is 1
 if max(overlap) > opt.overlap_pos % 0.5
     % This means that the detector was able to detect the current object in the
@@ -169,9 +171,9 @@ if max(overlap) > opt.overlap_pos % 0.5
                 [~, ind] = max(overlap);
                 dres_one = sub(dres, index_det(ind));
                 f = MDP_feature_occluded(fr, dres_image, dres_one, tracker);
-                if is_text
-                    fprintf('Missed association!\n');
-                end
+%                 if is_text
+%                     fprintf('Missed association!\n');
+%                 end
                 is_end = 1;
             end
         else
@@ -237,6 +239,7 @@ else
         end
     end
 end
-if is_text
-    fprintf('reward %.1f\n', reward);
-end
+debugging = 1;
+% if is_text
+%     fprintf('reward %.1f\n', reward);
+% end

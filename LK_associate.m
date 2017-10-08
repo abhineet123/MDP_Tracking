@@ -173,7 +173,8 @@ bb_det = [dres_one.x(index); dres_one.y(index); ...
     dres_one.x(index)+dres_one.w(index)-1; dres_one.y(index)+dres_one.h(index)-1];
 if tracker.overlaps(ind) > tracker.overlap_box
     % weighted average of tracked box and detection box
-    tracker.bb = mean([repmat(tracker.bbs{ind}, 1, tracker.weight_association) bb_det], 2);
+    tracker.bb = mean([repmat(tracker.bbs{ind}, 1,...
+        tracker.weight_association) bb_det], 2);
 else
     % tracking is assumed to be less reliable than detection, hence
     % considered to have failed and its output thus rejected

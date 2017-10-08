@@ -343,6 +343,8 @@ while 1 % for multiple passes
             % Since a particular target can only occur once in any given frame 
             % it is not quite clear why we need just the first matching object
             % for this frame;
+            % also not clear what is supposed to happen if there are no
+            % matches at all
             index_gt = find(dres_gt.fr == fr, 1);
             if dres_gt.covered(index_gt) ~= 0
                 % If this target is even partially covered by another object
@@ -466,7 +468,7 @@ while 1 % for multiple passes
                 end
             end
         end
-        write_state_info = 23;
+        write_state_info = 24;
         write_to_bin = 1;
         if fr >= write_state_info
             writeStateInfo(tracker, write_to_bin);    
