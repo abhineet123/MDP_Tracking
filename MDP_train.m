@@ -183,6 +183,10 @@ counter = zeros(num_train, 1);
 is_good = zeros(num_train, 1);
 is_difficult = zeros(num_train, 1);
 
+write_state_info = 1;
+write_thresh = [22, 2];
+write_to_bin = 1;
+
 while 1 % for multiple passes
     iter = iter + 1;
     if is_text
@@ -243,6 +247,7 @@ while 1 % for multiple passes
     
     % start tracking
     while fr <= seq_num  % for the current sequence 
+        tracker.pause_for_debug = write_state_info && fr >= write_thresh(1) && iter >= write_thresh(2);
         if is_text
             fprintf('\n iter %d, frame %d, state %d\n', iter, fr, tracker.state);
         end
@@ -471,12 +476,7 @@ while 1 % for multiple passes
                     fprintf('target exits due to long time occlusion\n');
                 end
             end
-        end
-        write_state_info = 1;
-        write_thresh = [22, 2];
-        write_to_bin = 1;
-        tracker.pause_for_debug = write_state_info && fr >= write_thresh(1) && iter >= write_thresh(2);
-        
+        end        
         if tracker.pause_for_debug
             writeStateInfo(tracker, write_to_bin);    
             debugging=1;
