@@ -468,15 +468,14 @@ while 1 % for multiple passes
                 end
             end
         end
-        write_state_info = 1;
-        write_thresh = [24, 2];
+        write_state_info = 24;
+        write
         write_to_bin = 1;
-        if write_state_info
-            if fr >= write_thresh(1) || iter >= write_thresh(2)
-                writeStateInfo(tracker, write_to_bin);    
-                debugging=1;
-            end
-        end        
+        if fr >= write_state_info
+            writeStateInfo(tracker, write_to_bin);    
+            debugging=1;
+        end
+        
         % check if outside image
         if tracker.state == 2
             [~, ov] = calc_overlap(tracker.dres, numel(tracker.dres.fr),...
