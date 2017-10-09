@@ -133,4 +133,6 @@ else
 	% history of the tracker
 	tracker.dres = concatenate_dres(tracker.dres, dres_one);          
 end
-debugging = 1;
+if tracker.pause_for_debug 
+    debugging=1;
+end 

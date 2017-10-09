@@ -66,3 +66,4 @@ tracker.weight_association = opt.weight_association;
 
 % display results or not
 tracker.is_show = opt.is_show;
+tracker.pause_for_debug = 0;

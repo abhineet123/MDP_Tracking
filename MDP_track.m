@@ -81,3 +81,6 @@ else
 	tracker.dres = concatenate_dres(tracker.dres, dres_one);        
 end
 tracker.prev_state = 2;
+if tracker.pause_for_debug
+    debugging = 1;
+end

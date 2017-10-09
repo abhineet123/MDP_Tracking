@@ -236,7 +236,9 @@ for i = 1:tracker.num
     tracker.centerI{i} = centerI;
     tracker.centerJ{i} = centerJ;
     tracker.v_new{i} = v_new;
-    debugging=1;
+    if tracker.pause_for_debug
+        debugging=1;
+    end
 end
 
 
@@ -268,5 +270,6 @@ if bb_isdef(tracker.bb)
 else
     tracker.nccs = zeros(tracker.num, 1);
 end
-
-debugging=1;
+if tracker.pause_for_debug
+    debugging=1;
+end

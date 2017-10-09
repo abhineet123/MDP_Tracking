@@ -182,6 +182,7 @@ num_train = numel(dres_train);
 counter = zeros(num_train, 1);
 is_good = zeros(num_train, 1);
 is_difficult = zeros(num_train, 1);
+
 while 1 % for multiple passes
     iter = iter + 1;
     if is_text
@@ -243,7 +244,7 @@ while 1 % for multiple passes
     % start tracking
     while fr <= seq_num  % for the current sequence 
         if is_text
-            fprintf('\nframe %d, state %d\n', fr, tracker.state);
+            fprintf('\n iter %d, frame %d, state %d\n', iter, fr, tracker.state);
         end
         if ~read_images_in_batch
             % read this image - this unfortunately leads to the same image
@@ -304,7 +305,10 @@ while 1 % for multiple passes
             tracker.dres.id = tracker.target_id;
             tracker.dres.state = tracker.state;
             
-            debugging=1;
+            
+            if tracker.pause_for_debug
+                debugging = 1;
+            end
             
             % tracked
         elseif tracker.state == 2
@@ -473,7 +477,7 @@ while 1 % for multiple passes
         write_to_bin = 1;
         tracker.pause_for_debug = write_state_info && fr >= write_thresh(1) && iter >= write_thresh(2);
         
-        if fr >= write_thresh(1) && iter >= write_thresh(2)
+        if tracker.pause_for_debug
             writeStateInfo(tracker, write_to_bin);    
             debugging=1;
         end        
