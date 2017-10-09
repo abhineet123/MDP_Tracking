@@ -16,7 +16,7 @@ end
 
 is_show = 0;   % set is_show to 1 to show tracking results in training
 is_save = 1;   % set is_save to 1 to save trained tracker
-is_text = 0;   % set is_text to 1 to display detailed info in training
+is_text = 1;   % set is_text to 1 to display detailed info in training
 is_pause = 0;  % set is_pause to 1 to debug
 save_images = 0;
 
@@ -396,7 +396,7 @@ while 1 % for multiple passes
                     tracker.f_occluded(end+1,:) = f;
                     tracker.l_occluded(end+1) = label;
                     tracker.w_occluded = svmtrain(tracker.l_occluded,...
-                        tracker.f_occluded, '-c 1 -q -g 1 -b 1');
+                        tracker.f_occluded, '-c 1 -g 1 -b 1');
                     if is_text
                         fprintf('training examples in occluded state %d\n',...
                             size(tracker.f_occluded,1));
@@ -468,14 +468,15 @@ while 1 % for multiple passes
                 end
             end
         end
-        write_state_info = 24;
-        write
+        write_state_info = 1;
+        write_thresh = [22, 2];
         write_to_bin = 1;
-        if fr >= write_state_info
-            writeStateInfo(tracker, write_to_bin);    
-            debugging=1;
-        end
-        
+        if write_state_info
+            if fr >= write_thresh(1) && iter >= write_thresh(2)
+                writeStateInfo(tracker, write_to_bin);    
+                debugging=1;
+            end
+        end        
         % check if outside image
         if tracker.state == 2
             [~, ov] = calc_overlap(tracker.dres, numel(tracker.dres.fr),...
