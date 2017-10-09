@@ -28,9 +28,8 @@ if read_from_bin
         fprintf('Binary image data file: %s does not exist\n',...
             src_img_fname_bin);
         fprintf('Reading from image files instead\n');
-        read_from_bin = 0;        
+        read_from_bin = 0;
     end
-  
 end
 if read_from_bin
     fprintf('Reading binary image data from: %s\n', src_img_fname_bin);
@@ -40,7 +39,7 @@ if read_from_bin
     img_width=fread(img_fid, 1, 'uint32', 'a');
     img_height=fread(img_fid, 1, 'uint32', 'a');
     no_of_frames = (img_data_size - 8)/(img_width*img_height);
-    fprintf('no_of_frames: %d\n', no_of_frames);  
+    fprintf('no_of_frames: %d\n', no_of_frames);
 else
     if verbose
         fprintf('Reading images from %s\n', seq_path);
@@ -66,25 +65,25 @@ if store_rgb
 else
     if verbose
         fprintf('Discarding the RGB images\n');
-    end    
+    end
 end
 % figure;
-for frame_id = start_idx:end_idx  
+for frame_id = start_idx:end_idx
     id = frame_id - start_idx + 1 + storage_offset;
-    if read_bin
-         dres_image.Igray{id}=uint8(fread(img_fid, [img_width img_height], 'uint8', 'a'))';
-%          imshow(dres_image.Igray{id}); 
-%          pause(0.1);
+    if read_from_bin
+        dres_image.Igray{id}=uint8(fread(img_fid, [img_width img_height], 'uint8', 'a'))';
+        % imshow(dres_image.Igray{id});
+        % pause(0.1);
     else
         filename = fullfile(seq_path, sprintf('image%06d.jpg', frame_id));
-%       I = cv.imread(filename);
+        % I = cv.imread(filename);
         I = imread(filename);
-%         imshow(I);    
-        if store_gs     
+        % imshow(I);
+        if store_gs
             dres_image.Igray{id} = cv.cvtColor(I, 'BGR2GRAY');
             %dres_image.Igray{id} = rgb2gray_cv(I);
             % dres_image.Igray{id} = rgb2gray(I);
-    %         imshow(dres_image.Igray{id})
+            % imshow(dres_image.Igray{id})
         end
         if store_rgb
             dres_image.I{id} = I;
@@ -93,11 +92,11 @@ for frame_id = start_idx:end_idx
     dres_image.x(id) = 1;
     dres_image.y(id) = 1;
     dres_image.w(id) = size(dres_image.Igray{id}, 2);
-    dres_image.h(id) = size(dres_image.Igray{id}, 1);    
+    dres_image.h(id) = size(dres_image.Igray{id}, 1);
     if mod(id - storage_offset, 500) == 0
         fprintf('Done %d frames\n', id - storage_offset);
-    end    
+    end
 end
-if read_bin
+if read_from_bin
     fclose(img_fid);
 end
