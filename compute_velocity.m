@@ -40,9 +40,13 @@ vx = 0;
 vy = 0;
 cx = centers(:,1);
 cy = centers(:,2);
+vx_list = zeros(num - 1, 1);
+vy_list = zeros(num - 1, 1);
 for j = 2:num
-    vx = vx + (cx(j)-cx(j-1)) / (fr(j) - fr(j-1));
-    vy = vy + (cy(j)-cy(j-1)) / (fr(j) - fr(j-1));
+    vx_list(j - 1) = (cx(j)-cx(j-1)) / (fr(j) - fr(j-1));
+    vy_list(j - 1) = (cy(j)-cy(j-1)) / (fr(j) - fr(j-1));
+    vx = vx + vx_list(j - 1);
+    vy = vy + vy_list(j - 1);
     count = count + 1;
 end
 if count
@@ -51,3 +55,6 @@ if count
     vy = vy / count;
 end
 v = [vx, vy];
+if tracker.pause_for_debug
+    debugging=1;
+end

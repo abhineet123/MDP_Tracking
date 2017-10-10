@@ -52,6 +52,10 @@ else
 	[qscore, ind] = max(probs(:,1));
 	label = labels(ind);
 	f = features(ind,:);
+    
+    if tracker.pause_for_debug 
+        debugging=1;
+    end 
 
 	dres_one = sub(dres_det, index_det(ind));
 	tracker = LK_associate(frame_id, dres_image, dres_one, tracker);

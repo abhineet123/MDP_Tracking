@@ -182,11 +182,6 @@ num_train = numel(dres_train);
 counter = zeros(num_train, 1);
 is_good = zeros(num_train, 1);
 is_difficult = zeros(num_train, 1);
-
-write_state_info = 1;
-write_thresh = [22, 2];
-write_to_bin = 1;
-
 while 1 % for multiple passes
     iter = iter + 1;
     if is_text
@@ -247,7 +242,7 @@ while 1 % for multiple passes
     
     % start tracking
     while fr <= seq_num  % for the current sequence 
-        tracker.pause_for_debug = write_state_info && fr >= write_thresh(1) && iter >= write_thresh(2);
+        tracker.pause_for_debug = opt.write_state_info && fr >= opt.write_thresh(1) && iter >= opt.write_thresh(2);
         if is_text
             fprintf('\n iter %d, frame %d, state %d\n', iter, fr, tracker.state);
         end
@@ -478,7 +473,7 @@ while 1 % for multiple passes
             end
         end        
         if tracker.pause_for_debug
-            writeStateInfo(tracker, write_to_bin);    
+            writeStateInfo(tracker, opt.write_to_bin);    
             debugging=1;
         end        
         % check if outside image
