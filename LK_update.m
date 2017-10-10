@@ -63,4 +63,6 @@ if isempty(dres_det.fr) == 0
 else
     tracker.bb_overlaps(index) = 0;
 end
-debugging=1;
+if tracker.pause_for_debug 
+    debugging=1;
+end 

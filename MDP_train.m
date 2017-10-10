@@ -471,11 +471,7 @@ while 1 % for multiple passes
                     fprintf('target exits due to long time occlusion\n');
                 end
             end
-        end        
-        if tracker.pause_for_debug
-            writeStateInfo(tracker, opt.write_to_bin);    
-            debugging=1;
-        end        
+        end     
         % check if outside image
         if tracker.state == 2
             [~, ov] = calc_overlap(tracker.dres, numel(tracker.dres.fr),...
@@ -525,7 +521,10 @@ while 1 % for multiple passes
         %     % filename = sprintf('results/%s_%06d.png', seq_name, fr);
         %     % hgexport(h, filename, hgexport('factorystyle'), 'Format', 'png');
         % end
-        
+        if tracker.pause_for_debug
+            writeStateInfo(tracker, opt.write_to_bin);    
+            debugging=1;
+        end 
         % try to connect recently lost target
         if ~(tracker.state == 3 && tracker.prev_state == 2)
             % We do not move on to the next frame if the tracker was
@@ -545,7 +544,7 @@ while 1 % for multiple passes
             % tracker enough to be able to find this object in this frame
             % whwn we track on it again in the next iteration
             fr = fr + 1;
-        end        
+        end
     end % end tracking this sequence
     
     if fr > seq_num

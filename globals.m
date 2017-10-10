@@ -9,7 +9,7 @@ function opt = globals()
 %% Important settings
 
 opt.write_state_info = 1;
-opt.write_thresh = [23, 3];
+opt.write_thresh = [1, 4];
 opt.write_to_bin = 1;
 
 opt.train_start_offset = 0;
