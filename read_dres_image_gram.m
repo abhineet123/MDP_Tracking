@@ -23,7 +23,7 @@ read_from_bin = 1;
 n_frames = end_idx - start_idx + 1;
 seq_path = fullfile(db_path, 'Images', seq_name);
 if read_from_bin
-    src_img_fname_bin = sprintf('%s.bin', seq_path);
+    src_img_fname_bin = sprintf('%s_%d_%d.bin', seq_path, start_idx, end_idx);
     if exist(src_img_fname_bin, 'file') ~= 2
         fprintf('Binary image data file: %s does not exist\n',...
             src_img_fname_bin);
