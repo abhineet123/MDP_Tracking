@@ -198,10 +198,10 @@ while 1 % for multiple passes
     end
     if isempty(find(is_good == 0, 1)) == 1 % all sequwences are good
         % two pass training
+        count = count + 1;
         if count == opt.max_pass
             break;
-        else
-            count = count + 1;
+        else            
             fprintf('%s :: pass %d finished\n', seq_name, count);
             is_good = zeros(num_train, 1);
             is_good(is_difficult == 1) = 1;

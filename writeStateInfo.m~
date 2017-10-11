@@ -3,11 +3,10 @@ function writeStateInfo(tracker, write_to_bin)
 fp_fmt = '%.10f';
 fp_dtype = 'float32';
 
-root_dir = sprintf('log/target_%d', tracker.target_id);
+root_dir = sprintf('log/target_%d', tracker.id);
 
-if ~exist(root_dir, 'dir')
-    mkdir(root_dir);
-end
+if ~exist(root_dir)
+    
 
 tracker.features(:, 1) = tracker.medFBs;
 tracker.features(:, 2) = tracker.medFBs_left;
