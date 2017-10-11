@@ -16,7 +16,7 @@ pause_exec = 1;
 
 is_show = 0;   % set is_show to 1 to show tracking results in testing
 is_save = 1;   % set is_save to 1 to save tracking result
-is_text = 0;   % set is_text to 1 to display detailed info
+is_text = 1;   % set is_text to 1 to display detailed info
 is_pause = 0;  % set is_pause to 1 to debug
 save_images = 0;
 
@@ -269,6 +269,8 @@ trackers = [];
 id = 0;
 start_t = tic;
 for fr = 1:seq_num
+    tracker.pause_for_debug = opt.write_state_info && fr >= opt.write_thresh(1);
+
     if is_text
         fprintf('frame %d\n', fr);
     else
@@ -349,9 +351,6 @@ for fr = 1:seq_num
         index_track = sort_trackers(trackers);
     end
     
-    if save_video
-        
-    end
     
     % process trackers
     for i = 1:numel(index_track)
@@ -420,7 +419,7 @@ for fr = 1:seq_num
         f = MDP_feature_active(tracker, dres_one);
         % prediction
         % Check if this detection is a true positive for a false positive
-        label = svmpredict(1, f, tracker.w_active, '-q');
+        label = svmpredict(1, f, tracker.w_active, '');
         % make a decision
         if label < 0
             continue;
@@ -465,6 +464,13 @@ for fr = 1:seq_num
     %         pause(0.01);
     %     end
     % end
+    if tracker.pause_for_debug
+        n_trackers = numel(trackers);
+        for i = 1:n_trackers            
+            writeStateInfo(trackers{i}, opt.write_to_bin);    
+        end
+        debugging=1;
+    end 
     
 end
 elapsed_time  = toc(start_t);
