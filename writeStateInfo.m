@@ -21,11 +21,17 @@ for i = 1:tracker.num
     points(:, i) = tracker.points{i}(:);
     roi(:, i) = tracker.Is{i}(:);
 end
-locations = zeros(numel(tracker.dres.fr), 4);
-locations(:, 1) = tracker.dres.x;
-locations(:, 2) = tracker.dres.y;
-locations(:, 3) = tracker.dres.w;
-locations(:, 4) = tracker.dres.h;
+history_locations = zeros(numel(tracker.dres.fr), 4);
+history_locations(:, 1) = tracker.dres.x;
+history_locations(:, 2) = tracker.dres.y;
+history_locations(:, 3) = tracker.dres.w;
+history_locations(:, 4) = tracker.dres.h;
+
+locations = zeros(tracker.num, 4);
+locations(:, 1) = tracker.x1;
+locations(:, 2) = tracker.y1;
+locations(:, 3) = tracker.x2 - tracker.x1 + 1;
+locations(:, 4) = tracker.y2 - tracker.y1 + 1;
 if write_to_bin  
     fwrite(fopen(sprintf('%s/active_train_features.bin', root_dir),'w'), tracker.factive',fp_dtype);
     fwrite(fopen(sprintf('%s/active_train_labels.bin', root_dir),'w'), tracker.lactive,fp_dtype);
@@ -33,6 +39,7 @@ if write_to_bin
     fwrite(fopen(sprintf('%s/lost_train_labels.bin', root_dir),'w'), tracker.l_occluded,fp_dtype);
     fwrite(fopen(sprintf('%s/flags.bin', root_dir),'w'), tracker.flags,'uint8');
     fwrite(fopen(sprintf('%s/indices.bin', root_dir),'w'), tracker.indexes - 1,'uint8');
+    fwrite(fopen(sprintf('%s/locations.bin', root_dir),'w'), locations',fp_dtype);
     fwrite(fopen(sprintf('%s/overlaps.bin', root_dir),'w'), tracker.overlaps,fp_dtype);
     fwrite(fopen(sprintf('%s/angles.bin', root_dir),'w'), tracker.angles,fp_dtype);
     fwrite(fopen(sprintf('%s/ratios.bin', root_dir),'w'), tracker.ratios,fp_dtype);
@@ -46,7 +53,7 @@ if write_to_bin
     fwrite(fopen(sprintf('%s/ids.bin', root_dir),'w'), tracker.dres.id,'uint8');
     fwrite(fopen(sprintf('%s/frame_ids.bin', root_dir),'w'), tracker.dres.fr - 1,'uint8');
     fwrite(fopen(sprintf('%s/states.bin', root_dir),'w'), tracker.dres.state,'uint8');
-    fwrite(fopen(sprintf('%s/locations.bin', root_dir),'w'), locations',fp_dtype);
+    fwrite(fopen(sprintf('%s/history_locations.bin', root_dir),'w'), history_locations',fp_dtype);
     fwrite(fopen(sprintf('%s/history_scores.bin', root_dir),'w'), tracker.dres.r,fp_dtype);
     fclose('all');
 else
@@ -62,6 +69,8 @@ else
         'precision','%d');
     dlmwrite(sprintf('%s/indices.txt', root_dir), tracker.indexes - 1, 'delimiter', '\t',...
         'precision','%d');
+    dlmwrite(sprintf('%s/locations.txt', root_dir), locations, 'delimiter', '\t',...
+        'precision',fp_fmt);
     dlmwrite(sprintf('%s/overlaps.txt', root_dir), tracker.overlaps, 'delimiter', '\t',...
         'precision',fp_fmt);
     dlmwrite(sprintf('%s/angles.txt', root_dir), tracker.angles, 'delimiter', '\t',...
@@ -88,7 +97,7 @@ else
         'precision', '%d');
     dlmwrite(sprintf('%s/states.txt', root_dir), tracker.dres.state, 'delimiter', '\t',...
         'precision', '%d');
-    dlmwrite(sprintf('%s/features.txt', root_dir), locations', 'delimiter', '\t',...
+    dlmwrite(sprintf('%s/features.txt', root_dir), history_locations', 'delimiter', '\t',...
         'precision',fp_fmt);
     dlmwrite(sprintf('%s/history_scores.txt', root_dir), tracker.dres.r, 'delimiter', '\t',...
         'precision',fp_fmt);    
