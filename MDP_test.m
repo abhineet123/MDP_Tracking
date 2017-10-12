@@ -360,18 +360,18 @@ for fr = 1:seq_num
             % track target
             trackers{ind} = track(fr, dres_image, dres, trackers{ind}, opt,...
                 fig_ids_track, colors_rgb);
-            if show_cropped_figs && save_video
-                if i > numel(aviobjs)
-                    file_video = sprintf('%s/%s_%d_%d_%d_templates.avi',...
-                        video_dir, seq_name, test_start_idx, test_end_idx, i);
-                    aviobj = VideoWriter(file_video);
-                    aviobj.FrameRate = 10;
-                    open(aviobj);
-                    aviobjs{i} = aviobj;
-                    fprintf('saving video for tracker %d to %s\n', i, file_video);
-                end
-                writeVideo(aviobjs{i}, getframe(fig_ids_track(2)));
-            end
+            % if show_cropped_figs && save_video
+            %     if i > numel(aviobjs)
+            %         file_video = sprintf('%s/%s_%d_%d_%d_templates.avi',...
+            %             video_dir, seq_name, test_start_idx, test_end_idx, i);
+            %         aviobj = VideoWriter(file_video);
+            %         aviobj.FrameRate = 10;
+            %         open(aviobj);
+            %         aviobjs{i} = aviobj;
+            %         fprintf('saving video for tracker %d to %s\n', i, file_video);
+            %     end
+            %     writeVideo(aviobjs{i}, getframe(fig_ids_track(2)));
+            % end
             % connect target
             % Check if the tracking failure can be fixed by using the detections
             if trackers{ind}.state == 3
