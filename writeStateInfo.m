@@ -1,4 +1,4 @@
-function writeStateInfo(tracker, write_to_bin)
+function writeStateInfo(tracker, write_to_bin, sync_id)
 
 fp_fmt = '%.10f';
 fp_dtype = 'float32';
@@ -32,6 +32,8 @@ locations(:, 1) = tracker.x1;
 locations(:, 2) = tracker.y1;
 locations(:, 3) = tracker.x2 - tracker.x1 + 1;
 locations(:, 4) = tracker.y2 - tracker.y1 + 1;
+
+
 if write_to_bin  
     fwrite(fopen(sprintf('%s/active_train_features.bin', root_dir),'w'), tracker.factive',fp_dtype);
     fwrite(fopen(sprintf('%s/active_train_labels.bin', root_dir),'w'), tracker.lactive,fp_dtype);
@@ -101,6 +103,17 @@ else
         'precision',fp_fmt);
     dlmwrite(sprintf('%s/history_scores.txt', root_dir), tracker.dres.r, 'delimiter', '\t',...
         'precision',fp_fmt);    
+end
+if sync_id > 0
+    sync_w_fname = sprintf('%s/write_%d.sync', root_dir, sync_id);
+    fclose(fopen(sync_w_fname, 'w'));    
+    sync_r_fname = sprintf('%s/read_%d.sync', root_dir, sync_id);
+    fprintf('Waiting for sync %d files to be read',sync_id);
+    pause('on')
+    while ~exists(sync_r_fname, 'file')
+        pause(0.1);
+    end
+    delete sync_r_fname
 end
 end
 
