@@ -7,7 +7,7 @@
 %
 % MDP value function
 function [tracker, qscore, f] = MDP_associate(tracker, frame_id, dres_image,...
-    dres_det, index_det)
+    dres_det, index_det, opt)
 if tracker.state ~= 3
 	error('Association can only be performed in the occluded state');
 end
@@ -64,6 +64,9 @@ end
 % make a decision
 tracker.prev_state = tracker.state;
 if label > 0
+    if opt.is_text
+        fprintf('target %d associated\n', tracker.target_id);
+    end
 	% association was successful so the object moves from lost to 
 	% tracked state
 	tracker.state = 2;
@@ -110,6 +113,9 @@ if label > 0
 	% update LK tracker
 	tracker = LK_update(frame_id, tracker, dres_image.Igray{frame_id}, dres_det, 1);           
 else
+    if opt.is_text
+        fprintf('target %d not associated\n', tracker.target_id);
+    end
 	% no association
 	tracker.state = 3;
 	% Extract the last bounding box that is present in the history
