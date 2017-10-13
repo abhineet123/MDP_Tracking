@@ -9,22 +9,39 @@ function opt = globals()
 %% Important settings
 
 opt.write_state_info = 1;
-opt.write_thresh = [1, 1];
+opt.write_thresh = [2, 1];
 opt.write_to_bin = 1;
+train_ratio = 0.05;
+test_ratio = 0.05;
 
 opt.train_start_offset = 0;
-gram_train_ratio = 0.01;
-gram_split_train_ratio = 0.01;
-idot_train_ratio = 1;
-lost_train_ratio = 0.6;
-isl_train_ratio = 0.6;
 
-gram_test_ratio = 0.05;
-gram_split_test_ratio = 1;
-idot_test_ratio = 1;
-lost_test_ratio = 1;
-isl_test_ratio = 1;
-
+if exist('train_ratio', 'var')
+    gram_train_ratio = train_ratio;
+    gram_split_train_ratio = train_ratio;
+    idot_train_ratio = train_ratio;
+    lost_train_ratio = train_ratio;
+    isl_train_ratio = train_ratio;
+else
+    gram_train_ratio = 0.05;
+    gram_split_train_ratio = 0.5;
+    idot_train_ratio = 0.5;
+    lost_train_ratio = 0.6;
+    isl_train_ratio = 0.6;
+end
+if exist('test_ratio', 'var')
+    gram_test_ratio = test_ratio;
+    gram_split_test_ratio = test_ratio;
+    idot_test_ratio = test_ratio;
+    lost_test_ratio = test_ratio;
+    isl_test_ratio = test_ratio;
+else
+    gram_test_ratio = 0.05;
+    gram_split_test_ratio = 1;
+    idot_test_ratio = 1;
+    lost_test_ratio = 1;
+    isl_test_ratio = 1;
+end
 
 if isunix
     gram_paths = {'/home/abhineet/C/Datasets/GRAM'};

@@ -10,12 +10,12 @@ function GRAM_test(is_train, seq_idx_train, seq_idx_test,...
     continue_from_seq, use_hungarian, start_offset,...
     read_images_in_batch, enable_eval, show_cropped_figs, save_video)
 
-def.is_train = 0;
+def.is_train = 1;
 % def.seq_idx_train = {[1:9, 16:24], [31:50]};
 % def.seq_idx_test = {[10:15, 25:30], [51:60]};
 % def.seq_idx_train = {[1, 2], [3]};
 % def.seq_idx_test = {[1, 2], [3]};
-def.seq_idx_train = {[79]};
+def.seq_idx_train = {[66]};
 def.seq_idx_test = {[1]};
 def.continue_from_seq = 0;
 def.use_hungarian = 0;
