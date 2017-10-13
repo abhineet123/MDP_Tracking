@@ -8,6 +8,8 @@
 % initialization of the tracker
 function tracker = MDP_initialize(I, dres_det, labels, opt)
 
+tracker = createTracker()
+
 image_width = size(I,2);
 image_height = size(I,1);
 

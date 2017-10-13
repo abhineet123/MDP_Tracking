@@ -182,6 +182,7 @@ num_train = numel(dres_train);
 counter = zeros(num_train, 1);
 is_good = zeros(num_train, 1);
 is_difficult = zeros(num_train, 1);
+tracker.pause_for_debug = 0;
 while 1 % for multiple passes
     iter = iter + 1;
     if is_text
@@ -242,7 +243,9 @@ while 1 % for multiple passes
     
     % start tracking
     while fr <= seq_num  % for the current sequence 
-        tracker.pause_for_debug = opt.write_state_info && fr >= opt.write_thresh(1) && iter >= opt.write_thresh(2);
+        if opt.write_state_info && fr >= opt.write_thresh(1) && iter >= opt.write_thresh(2)
+            tracker.pause_for_debug = 1;
+        end
         if is_text
             fprintf('\n iter %d, frame %d, state %d\n', iter, fr, tracker.state);
         end
