@@ -9,7 +9,7 @@ function opt = globals()
 %% Important settings
 
 opt.write_state_info = 1;
-opt.write_thresh = [2, 1];
+opt.write_thresh = [77, 2];
 opt.write_to_bin = 1;
 train_ratio = 0.05;
 test_ratio = 0.05;

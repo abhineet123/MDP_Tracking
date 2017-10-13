@@ -61,6 +61,13 @@ for i = 1:num
     end
 end
 
+% entries = {
+%     {overlaps, 'detections_overlaps', 'float32',  '%.10f'},...
+%     {labels, 'detections_labels', 'float32', '%.10f'},...
+%     };
+% writeToFiles('log', 0, entries);
+
+
 % build the training sequences
 ids = unique(dres_gt.id);
 dres_train = [];

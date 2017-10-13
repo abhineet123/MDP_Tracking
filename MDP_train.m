@@ -314,7 +314,7 @@ while 1 % for multiple passes
         elseif tracker.state == 2
             tracker.streak_occluded = 0;
             % ignoring the features
-            tracker = MDP_track(tracker, fr, dres_image, dres);
+            [tracker, qscore, f] = MDP_track(tracker, fr, dres_image, dres);
             
             debugging=1;
             
