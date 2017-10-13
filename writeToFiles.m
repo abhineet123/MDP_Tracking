@@ -17,6 +17,12 @@ for i=1:n_entries
     fname = sprintf('%s/%s.%s', root_dir, entry{2}, file_ext);
     if write_to_bin
         dtype = entry{3};
+        [m, n] = size(array);
+        if m>1 && n>1
+            % transpose for compatibility with the row major storage in
+            % C/Python/Numpy
+            array = array';
+        end
         fid = fopen(fname,'w');
         fwrite(fid, array, dtype);
         fclose(fid);

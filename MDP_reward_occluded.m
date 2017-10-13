@@ -239,7 +239,9 @@ else
         end
     end
 end
-debugging = 1;
+if tracker.pause_for_debug
+    debugging = 1;
+end
 % if is_text
 %     fprintf('reward %.1f\n', reward);
 % end

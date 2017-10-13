@@ -81,5 +81,7 @@ for i = 1:n_detections
     else
         flag(i) = 1;
     end
-    debugging = 1;
+    if tracker.pause_for_debug
+        debugging = 1;
+    end
 end
