@@ -71,7 +71,7 @@ if sync_id > 0
         if iter_id == max_iters
             % pause for debugging after 5 seconds
             debugging = 1;
-            break;
+            % break;
         end
         % fprintf('.');
     end

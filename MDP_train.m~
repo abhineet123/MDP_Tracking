@@ -494,7 +494,7 @@ while 1 % for multiple passes
                 dres_image, fr);
             if ov < opt.exit_threshold
                 if is_text
-                    fprintf('target outside image by checking boarders\n');
+                    fprintf('target outside image by checking borders\n');
                 end
                 % If the tracker state is 2, that is, it is in the tracked state
                 % but the current location of the object is too far outside the image

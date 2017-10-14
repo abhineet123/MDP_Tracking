@@ -9,12 +9,12 @@ function opt = globals()
 %% Important settings
 
 opt.write_state_info = 1;
-opt.write_thresh = [385, 3];
+opt.write_thresh = [1, 1];
 opt.write_to_bin = 1;
 opt.is_text = 1;   % set is_text to 1 to display detailed info
 
-train_ratio = 0.05;
-test_ratio = 0.05;
+train_ratio = 1;
+test_ratio = 1;
 
 opt.train_start_offset = 0;
 
