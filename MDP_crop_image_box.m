@@ -72,6 +72,10 @@ for i = 1:num
     dres.bb_crop{i} = bb_crop;
     dres.scale{i} = s;
     
+    if tracker.pause_for_debug 
+        debugging=1;
+    end 
+    
     % if show_figs
     %     subplot(prows, pcols,i);
     %     % figure(figure_ids(2));

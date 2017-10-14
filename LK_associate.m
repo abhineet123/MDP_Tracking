@@ -189,7 +189,9 @@ if bb_isdef(tracker.bb)
 else
     tracker.nccs = zeros(tracker.num, 1);
 end
-debugging = 1;
+if tracker.pause_for_debug 
+    debugging=1;
+end 
 
 % if tracker.is_show
 %     fprintf('LK association, target %d detection %.2f, medFBs ', ...

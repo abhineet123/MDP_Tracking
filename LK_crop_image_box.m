@@ -25,7 +25,9 @@ BB_crop = bb_shift_absolute(bb_scale, [-bb_crop(1) -bb_crop(2)]);
 % dlmwrite('log/scaled_frame.txt', I_scale, 'delimiter', '\t', 'precision','%d');
 % dlmwrite('log/roi.txt', I_crop, 'delimiter', '\t', 'precision','%d');
 
-debugging=1;
+if tracker.pause_for_debug 
+    debugging=1;
+end 
 
 % BB_crop
 % bb_crop

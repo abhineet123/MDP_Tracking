@@ -183,6 +183,19 @@ counter = zeros(num_train, 1);
 is_good = zeros(num_train, 1);
 is_difficult = zeros(num_train, 1);
 tracker.pause_for_debug = 0;
+
+if opt.write_state_info
+    % remove lof files created by previous runs to avoid annoying conflicts
+    d = dir('log');
+    isub = [d(:).isdir];
+    folders = {d(isub).name};
+    n_folders = numel(folders);
+    for i=1:n_folders
+        if ~isempty(strfind(folders{i}, 'target_'))
+            rmdir(fullfile('log', folders{i}),'s');
+        end
+    end
+end    
 while 1 % for multiple passes
     iter = iter + 1;
     if is_text
