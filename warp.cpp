@@ -33,122 +33,137 @@
 
 #define M(r, c) H[c*3+r]
 
-/* Warps image of size w x h, using affine transformation matrix (2x2 part) 
-   and offset (center of warping) ofsx, ofsy. Result is the region of size 
+/* Warps image of size w x h, using affine transformation matrix (2x2 part)
+   and offset (center of warping) ofsx, ofsy. Result is the region of size
    defined with roi. */
 void warp_image_roi(unsigned char *image, int w, int h, double *H,
-                    double xmin, double xmax, double ymin, double ymax,
-                    double fill, double *result)
+	double xmin, double xmax, double ymin, double ymax,
+	int n_rows, int n_cols, double fill, double *result)
 {
-   double curx, cury, curz, wx, wy, wz, ox, oy, oz;
-   int x, y;
-   unsigned char *tmp;
-   double *output=result, i, j, xx, yy;
-   /* precalulate necessary constant with respect to i,j offset 
-      translation, H is column oriented (transposed) */   
-   ox = M(0,2);
-   oy = M(1,2);
-   oz = M(2,2);
+	double curx, cury, curz, wx, wy, wz, ox, oy, oz;
+	int x, y;
+	unsigned char *tmp;
+	double *output = result, i, j, xx, yy;
+	/* precalulate necessary constant with respect to i,j offset
+	   translation, H is column oriented (transposed) */
+	ox = M(0, 2);
+	oy = M(1, 2);
+	oz = M(2, 2);
 
-   yy = ymin;
-   for (j=0; j<(int)(ymax-ymin+1); j++)
-   {
-      /* calculate x, y for current row */
-      curx = M(0,1)*yy + ox;
-      cury = M(1,1)*yy + oy;
-      curz = M(2,1)*yy + oz;
-      xx = xmin; 
-      yy = yy + 1;
-      for (i=0; i<(int)(xmax-xmin+1); i++)
-      {
-         /* calculate x, y in current column */
-         wx = M(0,0)*xx + curx;
-         wy = M(1,0)*xx + cury;
-         wz = M(2,0)*xx + curz;
-//       printf("%g %g, %g %g %g\n", xx, yy, wx, wy, wz);
-         wx /= wz; wy /= wz;
-         xx = xx + 1;
-         
-         x = (int)floor(wx);
-         y = (int)floor(wy);
+	yy = ymin;
+	for(j = 0; j < n_rows; j++)
+	{
+		/* calculate x, y for current row */
+		curx = M(0, 1)*yy + ox;
+		cury = M(1, 1)*yy + oy;
+		curz = M(2, 1)*yy + oz;
+		xx = xmin;
+		yy = yy + 1;
+		for(i = 0; i < n_cols; i++)
+		{
+			/* calculate x, y in current column */
+			wx = M(0, 0)*xx + curx;
+			wy = M(1, 0)*xx + cury;
+			wz = M(2, 0)*xx + curz;
+			//       printf("%g %g, %g %g %g\n", xx, yy, wx, wy, wz);
+			wx /= wz; wy /= wz;
+			xx = xx + 1;
 
-         if (x>=0 && y>=0)
-         {
-            wx -= x; wy -= y; 
-            if (x+1==w && wx==1)
-               x--;
-            if (y+1==h && wy==1)
-               y--;
-            if ((x+1)<w && (y+1)<h)
-            {
-               tmp = &image[coord(x,y,w,h)];
-               /* image[x,y]*(1-wx)*(1-wy) + image[x+1,y]*wx*(1-wy) +
-                  image[x,y+1]*(1-wx)*wy + image[x+1,y+1]*wx*wy */
-               *output++ = 
-                  (*(tmp) * (1-wx) + *nextcol(tmp, w, h) * wx) * (1-wy) +
-                  (*nextrow(tmp,w,h) * (1-wx) + *nextr_c(tmp,w,h) * wx) * wy;
-            } else 
-               *output++ = fill;
-         } else 
-            *output++ = fill;
-      }
-   }
+			x = (int)floor(wx);
+			y = (int)floor(wy);
+
+			if(x >= 0 && y >= 0)
+			{
+				wx -= x; wy -= y;
+				if(x + 1 == w && wx == 1)
+					x--;
+				if(y + 1 == h && wy == 1)
+					y--;
+				if((x + 1) < w && (y + 1) < h)
+				{
+					tmp = &image[coord(x, y, w, h)];
+					/* image[x,y]*(1-wx)*(1-wy) + image[x+1,y]*wx*(1-wy) +
+					   image[x,y+1]*(1-wx)*wy + image[x+1,y+1]*wx*wy */
+					*output++ =
+						(*(tmp)* (1 - wx) + *nextcol(tmp, w, h) * wx) * (1 - wy) +
+						(*nextrow(tmp, w, h) * (1 - wx) + *nextr_c(tmp, w, h) * wx) * wy;
+				} else
+					*output++ = fill;
+			} else
+				*output++ = fill;
+		}
+	}
 }
 
 mxArray *to_matlab(const double *image, int num_cols, int num_rows)
 {
-   // convert to matlab's column based representation
-   int i, j;
-   mxArray *result;
-   const double* s_ptr = image;
-   double* d_ptr,* data;
-   result = mxCreateDoubleMatrix(num_rows, num_cols, mxREAL);
-   data = (double *)mxGetData(result);
-   for (i=0;i<num_rows;i++)
-   {
-      d_ptr = &data[i];
-      for (j=0; j<num_cols; j++, d_ptr+=num_rows, s_ptr++)
-         (*d_ptr) = (*s_ptr);
-   }
-   return result;
+	// convert to matlab's column based representation
+	int i, j;
+	mxArray *result;
+	const double* s_ptr = image;
+	double* d_ptr, *data;
+	result = mxCreateDoubleMatrix(num_rows, num_cols, mxREAL);
+	data = (double *)mxGetData(result);
+	for(i = 0; i < num_rows; i++)
+	{
+		d_ptr = &data[i];
+		for(j = 0; j < num_cols; j++, d_ptr += num_rows, s_ptr++)
+			(*d_ptr) = (*s_ptr);
+	}
+	return result;
 }
 
-void mexFunction (int nlhs, mxArray *plhs [], int nrhs, const mxArray *prhs [])
+void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-   int w, h;
-   unsigned char *im;
-   double *result;
-   double *H = 0;
-   double xmin, xmax, ymin, ymax, fill;
-   if (nrhs>0)
-   {
-	  w = mxGetN(prhs[0]);
-	  h = mxGetM(prhs[0]);
-	  im = (unsigned char*) mxGetPr(prhs[0]);
-      //from_matlab(prhs[0], &im, &w, &h);
-      if (nrhs>1)
-         H = (double *)mxGetData(prhs[1]);
+	int w, h;
+	unsigned char *im;
+	double *result;
+	double *H = 0;
+	double xmin, xmax, ymin, ymax, fill;
+	if(nrhs > 0)
+	{
+		w = mxGetN(prhs[0]);
+		h = mxGetM(prhs[0]);
+		im = (unsigned char*)mxGetPr(prhs[0]);
+		//from_matlab(prhs[0], &im, &w, &h);
+		if(nrhs > 1)
+			H = (double *)mxGetData(prhs[1]);
 
-      if (nrhs>2 && mxGetM(prhs[2])>0)
-      {
-         double *B;
-         B = (double*)mxGetData(prhs[2]);
-         xmin = (*B++); xmax = (*B++);
-         ymin = (*B++); ymax = (*B++);
-      } else {
-         xmin = ymin = 0;
-         xmax = w-1; ymax = h-1;
-      }
-      if (nrhs>3)
-         fill=0;
-      else
-         fill=0;
-      result=new double[((int)(xmax-xmin+1)*(int)(ymax-ymin+1))];
-      {
-         warp_image_roi(im, w, h, H, xmin, xmax, ymin, ymax, fill, result);
-      }
-      
-      plhs[0]=to_matlab(result, (int)(xmax-xmin+1), (int)(ymax-ymin+1));
-      delete [] result;
-   }
+		if(nrhs > 2 && mxGetM(prhs[2]) > 0)
+		{
+			double *B;
+			B = (double*)mxGetData(prhs[2]);
+			xmin = (*B++); xmax = (*B++);
+			ymin = (*B++); ymax = (*B++);
+		} else {
+			xmin = ymin = 0;
+			xmax = w - 1; ymax = h - 1;
+		}
+		if(nrhs > 3)
+			fill = 0;
+		else
+			fill = 0;
+
+		double n_rows_double = ymax - ymin + 1;
+		double n_cols_double = xmax - xmin + 1;
+		int n_rows = (int)(n_rows_double);
+		int n_cols = (int)(n_cols_double);
+		int n_rows_round = round(n_rows_double);
+		int n_cols_round = round(n_cols_double);
+		printf("ymax: %f ymin: %f xmax: %f xmin: %f\n", ymax, ymin, xmax, xmin);
+		printf("n_rows: %d n_cols: %d\n", n_rows, n_cols);
+		printf("n_rows_round: %d n_cols_round: %d\n", n_rows_round, n_cols_round);
+		printf("n_rows_double: %.30f n_cols_double: %.30f\n", n_rows_double, n_cols_double);
+
+		int _n_rows = round(n_rows_double);
+		int _n_cols = round(n_cols_double);
+
+		result = new double[(_n_cols*_n_rows)];
+		{
+			warp_image_roi(im, w, h, H, xmin, xmax, ymin, ymax, _n_rows, _n_cols,  fill, result);
+		}
+
+		plhs[0] = to_matlab(result, _n_cols, _n_rows);
+		delete[] result;
+	}
 }

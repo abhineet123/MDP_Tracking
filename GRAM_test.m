@@ -123,9 +123,13 @@ for i = 1:N
         num = numel(idx_train);
         % online training
         for j = 1:num
+            tic;
             fprintf('Online training on sequence: %s\n', opt.gram_seqs{idx_train(j)});
             tracker = MDP_train(idx_train(j), tracker, db_type,...
                 read_images_in_batch(1));
+            t = toc;
+            fprintf('Done training on sequence: %s. Time taken: %f secs\n',...
+                opt.gram_seqs{idx_train(j)}, t);
         end
         fprintf('%d training examples after online training\n', size(tracker.f_occluded, 1));
     end

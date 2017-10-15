@@ -40,6 +40,7 @@ if read_from_bin
     img_height=fread(img_fid, 1, 'uint32', 'a');
     no_of_frames = (img_data_size - 8)/(img_width*img_height);
     fprintf('no_of_frames: %d\n', no_of_frames);
+    verbose = 0;
 else
     if verbose
         fprintf('Reading images from %s\n', seq_path);
@@ -71,7 +72,8 @@ end
 for frame_id = start_idx:end_idx
     id = frame_id - start_idx + 1 + storage_offset;
     if read_from_bin
-        dres_image.Igray{id}=uint8(fread(img_fid, [img_width img_height], 'uint8', 'a'))';
+        dres_image.Igray{id}=uint8(fread(img_fid, [img_width img_height],...
+            'uint8', 'a'))';
         % imshow(dres_image.Igray{id});
         % pause(0.1);
     else

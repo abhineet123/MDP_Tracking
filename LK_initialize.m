@@ -50,7 +50,8 @@ end
 
 % initialize the patterns
 img = dres_image.Igray{frame_id};
-tracker.patterns = generate_pattern(img, bb, tracker.patchsize);
+tracker.patterns = generate_pattern(img, bb, tracker.patchsize,...
+    tracker.pause_for_debug);
 
 % box overlap history
 tracker.bb_overlaps = ones(num, 1);
@@ -89,4 +90,6 @@ if isempty(tracker.w_occluded) == 1
     tracker.l_occluded = labels;
     tracker.w_occluded = svmtrain(labels, features, '-c 1 -g 1 -b 1');
 end
-debugging = 1;
+if tracker.pause_for_debug
+    debugging = 1;
+end

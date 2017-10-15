@@ -121,7 +121,8 @@ if max(overlap) > opt.overlap_pos % 0.5
             label = -1;
             is_end = 1;
             if is_text
-                fprintf('associated to wrong target (%.2f, %.2f)! Game over\n', max(overlap), ov);
+                fprintf('associated to wrong target (%.2f, %.2f)! Game over\n',...
+                    max(overlap), ov);
             end
         end
     else  % target not associated  

@@ -16,12 +16,12 @@ end
 
 is_show = 0;   % set is_show to 1 to show tracking results in training
 is_save = 1;   % set is_save to 1 to save trained tracker
-is_text = 1;   % set is_text to 1 to display detailed info in training
 is_pause = 0;  % set is_pause to 1 to debug
 save_images = 0;
 
 opt = globals();
 opt.is_show = is_show;
+is_text = opt.is_text; 
 
 if db_type < 2
     read_images_in_batch = 0;
@@ -365,7 +365,7 @@ while 1 % for multiple passes
             % for this frame;
             % also not clear what is supposed to happen if there are no
             % matches at all
-            index_gt = find(dres_gt.fr == fr, 1);
+            index_gt = find(dres_gt.fr == fr, 1);              
             if dres_gt.covered(index_gt) ~= 0
                 % If this target is even partially covered by another object
                 % in the current frame then the associated detections that we found

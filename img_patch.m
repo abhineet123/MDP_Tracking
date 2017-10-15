@@ -16,9 +16,12 @@
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
 
-function patch_uint8 = img_patch(img, bb, randomize,p_par)
-
-if nargin == 4 && randomize > 0
+function patch_uint8 = img_patch(img, bb, pause_for_debug,...
+    randomize, p_par)
+if nargin < 3
+    pause_for_debug = 0;
+end
+if nargin == 5 && randomize > 0
     
     rand('state',randomize);
     randn('state',randomize);
@@ -65,7 +68,9 @@ else
         R = min([size(img,2) bb(3) + 1]);
         B = min([size(img,1) bb(4) + 1]);
         patch_uint8 = img(T:B,L:R);
-        debugging=1;
+        if pause_for_debug
+            debugging=1;
+        end
 
         % Sub-pixel accuracy
     else
@@ -77,20 +82,32 @@ else
         bbW = bb(3,:)-bb(1,:)+1;
         bbH = bb(4,:)-bb(2,:)+1;
         if bbW <= 0 || bbH <= 0
-            patch = [];
+            patch_uint8 = [];
             return;
         end
         box = [-bbW/2 bbW/2 -bbH/2 bbH/2];
         
         if size(img,3) == 3
             for i = 1:3
-                P = warp(img(:,:,i),H_inv, box);
-                patch(:,:,i) = uint8(P);
+                patch = warp(img(:,:,i),H_inv, box);
+                patch_uint8(:,:,i) = uint8(patch);
             end
         else
             patch = warp(img,H_inv,box);
             patch_uint8 = uint8(patch);
+%             if pause_for_debug
+%                 entries = {
+%                     {patch, 'patch', 'float32',  '%.10f'},...
+%                     {patch_uint8, 'patch_uint8', 'uint8', '%d'},...
+%                     };
+%                 writeToFiles('log', 0, entries);
+%             end
         end
+        if pause_for_debug
+            debugging=1;
+        end
+    end
+    if pause_for_debug
         debugging=1;
     end
 end
