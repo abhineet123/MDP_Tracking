@@ -10,8 +10,8 @@ function opt = globals()
 
 opt.is_text = 1;  
 opt.write_state_info = 1;
-opt.write_thresh = [1, 1];
-opt.write_to_bin = 1;
+opt.write_thresh = [556, 6];
+opt.write_to_bin = 0;
 
 train_ratio = 1;
 test_ratio = 1;

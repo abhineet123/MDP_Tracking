@@ -144,19 +144,19 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		else
 			fill = 0;
 
-		double n_rows_double = ymax - ymin + 1;
-		double n_cols_double = xmax - xmin + 1;
-		int n_rows = (int)(n_rows_double);
-		int n_cols = (int)(n_cols_double);
-		int n_rows_round = round(n_rows_double);
-		int n_cols_round = round(n_cols_double);
-		printf("ymax: %f ymin: %f xmax: %f xmin: %f\n", ymax, ymin, xmax, xmin);
-		printf("n_rows: %d n_cols: %d\n", n_rows, n_cols);
-		printf("n_rows_round: %d n_cols_round: %d\n", n_rows_round, n_cols_round);
-		printf("n_rows_double: %.30f n_cols_double: %.30f\n", n_rows_double, n_cols_double);
+		//double n_rows_double = ymax - ymin + 1;
+		//double n_cols_double = xmax - xmin + 1;
+		//int n_rows = (int)(n_rows_double);
+		//int n_cols = (int)(n_cols_double);
+		//int n_rows_round = round(n_rows_double);
+		//int n_cols_round = round(n_cols_double);
+		//printf("ymax: %f ymin: %f xmax: %f xmin: %f\n", ymax, ymin, xmax, xmin);
+		//printf("n_rows: %d n_cols: %d\n", n_rows, n_cols);
+		//printf("n_rows_round: %d n_cols_round: %d\n", n_rows_round, n_cols_round);
+		//printf("n_rows_double: %.30f n_cols_double: %.30f\n", n_rows_double, n_cols_double);
 
-		int _n_rows = round(n_rows_double);
-		int _n_cols = round(n_cols_double);
+		int _n_rows = (int)(ymax - ymin + 1);
+		int _n_cols = (int)(xmax - xmin + 1);
 
 		result = new double[(_n_cols*_n_rows)];
 		{

@@ -1,6 +1,6 @@
 function writeStateInfo(tracker, write_to_bin, sync_id)
 
-fp_fmt = '%.10f';
+fp_fmt = '%.4f';
 fp_dtype = 'float32';
 
 root_dir = sprintf('log/target_%d', tracker.target_id);
