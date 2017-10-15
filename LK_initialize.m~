@@ -88,11 +88,11 @@ if isempty(tracker.w_occluded) == 1
     labels = [+1; -1];
     tracker.f_occluded = features;
     tracker.l_occluded = labels;
-    svm_options = '-c 1 -g 1 -b 1';
+    svm_options = '-c 1';
     if ~tracker.verbose_svm
         svm_options = strcat(svm_options, ' -q');
     end
-    tracker.w_occluded = svmtrain(labels, features, svm_options);
+    tracker.w_occluded = svmtrain(labels, features, );
 end
 if tracker.pause_for_debug
     debugging = 1;

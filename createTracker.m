@@ -68,6 +68,7 @@ tracker.threshold_dis=[];
 tracker.threshold_ratio=[];
 tracker.v=[];
 tracker.v_new=[];
+tracker.verbose_svm = [];
 tracker.w_active=[];
 tracker.w_occluded=[];
 tracker.weight_association=[];

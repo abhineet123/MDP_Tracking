@@ -22,7 +22,7 @@ save_images = 0;
 opt = globals();
 opt.is_show = is_show;
 is_text = opt.is_text; 
-
+tracker.verbose_svm = opt.verbose_svm;
 if db_type < 2
     read_images_in_batch = 0;
 end
@@ -415,8 +415,12 @@ while 1 % for multiple passes
                 if reward == -1
                     tracker.f_occluded(end+1,:) = f;
                     tracker.l_occluded(end+1) = label;
+                    svm_options = '-c 1 -g 1 -b 1';
+                    if ~tracker.verbose_svm
+                        svm_options = strcat(svm_options, ' -q');
+                    end
                     tracker.w_occluded = svmtrain(tracker.l_occluded,...
-                        tracker.f_occluded, '-c 1 -g 1 -b 1');
+                        tracker.f_occluded, svm_options);
                     if is_text
                         fprintf('training examples in occluded state %d\n',...
                             size(tracker.f_occluded,1));

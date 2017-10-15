@@ -8,10 +8,11 @@ function opt = globals()
 
 %% Important settings
 
-opt.is_text = 1;  
-opt.write_state_info = 1;
-opt.write_thresh = [556, 6];
-opt.write_to_bin = 0;
+opt.is_text = 0;  
+opt.write_state_info = 0;
+opt.write_thresh = [1, 1];
+opt.write_to_bin = 1;
+opt.verbose_svm = 0;
 
 train_ratio = 1;
 test_ratio = 1;

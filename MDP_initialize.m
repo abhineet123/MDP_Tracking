@@ -33,7 +33,11 @@ tracker.lactive = labels(index);
 % seem to be trying to learn something about the relationship between the
 % FP/TP nature of the detections from these basic features which seems very
 % far fetched indeed - sec. 3.2.1
-tracker.w_active = svmtrain(tracker.lactive, tracker.factive, '-c 1');
+svm_options = '-c 1';
+if ~tracker.verbose_svm
+    svm_options = strcat(svm_options, ' -q');
+end
+tracker.w_active = svmtrain(tracker.lactive, tracker.factive, svm_options);
 
 % initial state
 tracker.prev_state = 1;
