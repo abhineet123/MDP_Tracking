@@ -100,7 +100,7 @@ for i = 1:numel(ids)
             % for some unknown reason, if the max y of this box exceeds the
             % max y of another box, the norm overlap between them is set to 0
             invalid_idx = y(j) > y_gt(index);
-            ov(invalid_idx) = 0;
+            ov() = 0;
             % fractional coverage of this object is the max norm overlap
             dres.covered(j) = max(ov);
         end
