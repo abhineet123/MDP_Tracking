@@ -33,6 +33,7 @@ tracker.lactive = labels(index);
 % seem to be trying to learn something about the relationship between the
 % FP/TP nature of the detections from these basic features which seems very
 % far fetched indeed - sec. 3.2.1
+tracker.verbose_svm = opt.verbose_svm;
 svm_options = '-c 1';
 if ~tracker.verbose_svm
     svm_options = strcat(svm_options, ' -q');

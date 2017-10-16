@@ -22,7 +22,6 @@ save_images = 0;
 opt = globals();
 opt.is_show = is_show;
 is_text = opt.is_text; 
-tracker.verbose_svm = opt.verbose_svm;
 if db_type < 2
     read_images_in_batch = 0;
 end
