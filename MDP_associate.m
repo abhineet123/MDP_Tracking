@@ -46,7 +46,8 @@ else
     if ~tracker.verbose_svm
         svm_options = strcat(svm_options, ' -q');
     end
-	[labels, acc, probs] = svmpredict(labels, features, tracker.w_occluded, svm_options);
+	[labels, acc, probs] = svmpredict(labels, features, tracker.w_occluded,...
+        svm_options);
 
 	probs(flag == 0, 1) = 0;
 	probs(flag == 0, 2) = 1;
