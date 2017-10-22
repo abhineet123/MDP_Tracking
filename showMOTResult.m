@@ -4,7 +4,7 @@ function status = showMOTResult(seq_idx_list, test_start_offset,...
 % addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
 opt = globals();
 if nargin < 2
-    seq_idx_list = [81];
+    seq_idx_list = [82];
 end
 if nargin < 2
     test_start_offset = 0;
@@ -170,6 +170,7 @@ for seq_idx = seq_idx_list
     else
         filename = sprintf('%s/%s_%d_%d.txt', res_path, seq_name,...
             start_idx, end_idx);
+        fprintf('Reading tracking result from %s\n', filename);
         dres_track = read_gram2dres(filename);
     end
     fprintf('reading tracking results from %s\n', filename);

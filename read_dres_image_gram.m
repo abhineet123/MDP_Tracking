@@ -93,8 +93,13 @@ for frame_id = start_idx:end_idx
     end
     dres_image.x(id) = 1;
     dres_image.y(id) = 1;
-    dres_image.w(id) = size(dres_image.Igray{id}, 2);
-    dres_image.h(id) = size(dres_image.Igray{id}, 1);
+    if store_gs
+        dres_image.w(id) = size(dres_image.Igray{id}, 2);
+        dres_image.h(id) = size(dres_image.Igray{id}, 1);
+    else
+        dres_image.w(id) = size(dres_image.I{id}, 2);
+        dres_image.h(id) = size(dres_image.I{id}, 1);
+    end
     if mod(id - storage_offset, 500) == 0
         fprintf('Done %d frames\n', id - storage_offset);
     end

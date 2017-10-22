@@ -171,10 +171,12 @@ if max(overlap) > opt.overlap_pos % 0.5
                 % ground truth bounding box
                 [~, ind] = max(overlap);
                 dres_one = sub(dres, index_det(ind));
+                % note that any changes made to the tracker are NOT
+                % propagated to the main tracker object
                 f = MDP_feature_occluded(fr, dres_image, dres_one, tracker);
-%                 if is_text
-%                     fprintf('Missed association!\n');
-%                 end
+                if is_text
+                    fprintf('Missed association!\n');
+                end
                 is_end = 1;
             end
         else
