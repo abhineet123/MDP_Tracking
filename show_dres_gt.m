@@ -1,5 +1,5 @@
 function show_dres_gt(frame_id, I, dres, colors_rgb,...
-    box_line_width, traj_line_width, obj_id_font_size)
+    box_line_width, traj_line_width, obj_id_font_size, det_color)
 
 if nargin<5
     box_line_width = 1;
@@ -9,6 +9,9 @@ if nargin<6
 end
 if nargin<7
     obj_id_font_size = 6;
+end
+if nargin<7
+    det_color = [0, 0, 0];
 end
 imshow(I);
 hold on;
@@ -34,7 +37,7 @@ for i = 1:numel(index)
         c = colors_rgb{col_id};
         str = sprintf('%d', id);
     else
-        c = [0, 0, 0];
+        c = det_color;
         str = '';
     end
     rectangle('Position', [x y w h], 'EdgeColor', c,...

@@ -16,6 +16,7 @@ db_type = 2;
 start_idx = 82;
 end_idx = 73;
 % seq_idx_list = [1:3, 66:78];
+det_color = [0, 1, 0];
 
 seq_start_offset_ratio = 0;
 seq_ratio = 1;
@@ -23,7 +24,7 @@ seq_ratio = 1;
 save_input_images = 0;
 video_fps = 30;
 
-box_line_width = 1;
+box_line_width = 2;
 traj_line_width = 1;
 obj_id_font_size = 6;
 
@@ -197,7 +198,8 @@ for seq_idx = seq_idx_list
         if read_images_in_batch
             if show_detections
                 show_dres_gt(fr, dres_image.I{fr}, dres_det, colors_rgb,...
-                    box_line_width, traj_line_width, obj_id_font_size);
+                    box_line_width, traj_line_width, obj_id_font_size,...
+                    det_color);
             else
                 show_dres_gt(fr, dres_image.I{fr}, dres_gt, colors_rgb,...
                     box_line_width, traj_line_width, obj_id_font_size);
@@ -207,7 +209,8 @@ for seq_idx = seq_idx_list
                 fr_, fr_, 0, 1, 0, verbose, read_from_bin);
             if show_detections
                 show_dres_gt(fr, dres_image.I{1}, dres_det, colors_rgb,...
-                    box_line_width, traj_line_width, obj_id_font_size);
+                    box_line_width, traj_line_width, obj_id_font_size,...
+                    det_color);
             else
                 show_dres_gt(fr, dres_image.I{1}, dres_gt, colors_rgb,...
                     box_line_width, traj_line_width, obj_id_font_size);
