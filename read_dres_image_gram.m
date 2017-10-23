@@ -5,7 +5,8 @@
 % Written by Yu Xiang
 % --------------------------------------------------------
 function dres_image = read_dres_image_gram(db_path, seq_name,...
-    start_idx, end_idx, storage_offset, store_rgb, store_gs, verbose)
+    start_idx, end_idx, storage_offset, store_rgb, store_gs, verbose,...
+    read_from_bin)
 addpath('./mexopencv-2.4.11/')
 if nargin < 5
     storage_offset = 0;
@@ -19,7 +20,9 @@ end
 if nargin < 8
     verbose = 1;
 end
-read_from_bin = 1;
+if nargin < 8
+    read_from_bin = 1;
+end
 n_frames = end_idx - start_idx + 1;
 seq_path = fullfile(db_path, 'Images', seq_name);
 if read_from_bin

@@ -4,7 +4,7 @@ function status = showMOTResult(seq_idx_list, test_start_offset,...
 % addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
 opt = globals();
 if nargin < 2
-    seq_idx_list = [82];
+    seq_idx_list = [95];
 end
 if nargin < 2
     test_start_offset = 0;
@@ -16,6 +16,8 @@ if nargin < 4
     n_frames = 0;
 end
 read_images_in_batch = 0;
+verbose = 0;
+read_from_bin = 0;
 save_video = 1;
 save_as_img_seq = 0;
 db_type = 2;
@@ -148,7 +150,8 @@ for seq_idx = seq_idx_list
                 dres_image = read_dres_image_kitti(opt, seq_set, seq_name, seq_num);
             else
                 dres_image = read_dres_image_gram(db_path, seq_name,...
-                    start_frame_idx, end_frame_idx, 1, 0);
+                    start_frame_idx, end_frame_idx, 1, 0, verbose,...
+                    read_from_bin);
             end
             fprintf('done\n');
             if save_input_images
