@@ -205,7 +205,7 @@ for seq_idx = seq_idx_list
                 box_line_width, traj_line_width, obj_id_font_size);
         else
             dres_image = read_dres_image_gram(db_path, seq_name,...
-                fr, fr, 0, 1, 0, 0);
+                fr, fr, 0, 1, 0, verbose, read_from_bin);
             show_dres_gt(fr, dres_image.I{1}, dres_track, colors_rgb,...
                 box_line_width, traj_line_width, obj_id_font_size);
         end

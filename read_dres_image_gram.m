@@ -20,7 +20,7 @@ end
 if nargin < 8
     verbose = 1;
 end
-if nargin < 8
+if nargin < 9
     read_from_bin = 1;
 end
 n_frames = end_idx - start_idx + 1;

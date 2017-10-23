@@ -7,16 +7,18 @@
 function showMOTGT()
 
 addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
-
+read_images_in_batch = 0;
+verbose = 0;
+read_from_bin = 0;
 save_video = 1;
 show_detections = 1;
 db_type = 2;
-start_idx = 81;
+start_idx = 82;
 end_idx = 73;
 % seq_idx_list = [1:3, 66:78];
 
 seq_start_offset_ratio = 0;
-seq_ratio = 0.1;
+seq_ratio = 1;
 
 save_input_images = 0;
 video_fps = 30;
@@ -115,28 +117,29 @@ for seq_idx = seq_idx_list
             seq_name, start_idx, end_idx);
         seq_num = end_frame_idx - start_frame_idx + 1;
     end  
-    
-    % build the dres structure for images
-    if exist(filename, 'file') ~= 0
-        fprintf('loading images from file %s...', filename);
-        object = load(filename);
-        dres_image = object.dres_image;
-        fprintf('done\n');
-    else
-        fprintf('reading images...\n');
-        if db_type == 0
-            dres_image = read_dres_image(opt, seq_set, seq_name, seq_num);
-        elseif db_type == 1
-            dres_image = read_dres_image_kitti(opt, seq_set, seq_name, seq_num);
-        else
-            dres_image = read_dres_image_gram(db_path, seq_name,...
-                start_frame_idx, end_frame_idx);
-        end 
-        fprintf('done\n');
-        if save_input_images
-            fprintf('saving images to file %s...', filename);
-            save(filename, 'dres_image', '-v7.3');
+    if read_images_in_batch
+        % build the dres structure for images
+        if exist(filename, 'file') ~= 0
+            fprintf('loading images from file %s...', filename);
+            object = load(filename);
+            dres_image = object.dres_image;
             fprintf('done\n');
+        else
+            fprintf('reading images...\n');
+            if db_type == 0
+                dres_image = read_dres_image(opt, seq_set, seq_name, seq_num);
+            elseif db_type == 1
+                dres_image = read_dres_image_kitti(opt, seq_set, seq_name, seq_num);
+            else
+                dres_image = read_dres_image_gram(db_path, seq_name,...
+                    start_frame_idx, end_frame_idx, 0, 1, 0, verbose, read_from_bin);
+            end 
+            fprintf('done\n');
+            if save_input_images
+                fprintf('saving images to file %s...', filename);
+                save(filename, 'dres_image', '-v7.3');
+                fprintf('done\n');
+            end
         end
     end
     if show_detections
@@ -187,22 +190,37 @@ for seq_idx = seq_idx_list
         aviobj.FrameRate = video_fps;
         open(aviobj);
         fprintf('saving video to %s\n', file_video);
-    end
+    end   
     
-    
-    for fr = 1:seq_num
-        if show_detections
-            show_dres_gt(fr, dres_image.I{fr}, dres_det, colors_rgb,...
-                box_line_width, traj_line_width, obj_id_font_size);
+    for fr_ = start_frame_idx:end_frame_idx
+        fr = fr_ - start_frame_idx + 1;
+        if read_images_in_batch
+            if show_detections
+                show_dres_gt(fr, dres_image.I{fr}, dres_det, colors_rgb,...
+                    box_line_width, traj_line_width, obj_id_font_size);
+            else
+                show_dres_gt(fr, dres_image.I{fr}, dres_gt, colors_rgb,...
+                    box_line_width, traj_line_width, obj_id_font_size);
+            end
         else
-            show_dres_gt(fr, dres_image.I{fr}, dres_gt, colors_rgb,...
-                box_line_width, traj_line_width, obj_id_font_size);
+            dres_image = read_dres_image_gram(db_path, seq_name,...
+                fr_, fr_, 0, 1, 0, verbose, read_from_bin);
+            if show_detections
+                show_dres_gt(fr, dres_image.I{1}, dres_det, colors_rgb,...
+                    box_line_width, traj_line_width, obj_id_font_size);
+            else
+                show_dres_gt(fr, dres_image.I{1}, dres_gt, colors_rgb,...
+                    box_line_width, traj_line_width, obj_id_font_size);
+            end
         end
         % imshow(dres_image.I{fr});
         if save_video
             writeVideo(aviobj, getframe(hf));
         else
             pause(0.001);
+        end
+        if mod(fr, 100) == 0
+            fprintf('Done %d frames\n', fr);
         end
     end
 
