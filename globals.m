@@ -8,9 +8,9 @@ function opt = globals()
 
 %% Important settings
 
-opt.is_text = 0;  
+opt.is_text = 1;  
 opt.write_state_info = 1;
-opt.write_thresh = [1, 1];
+opt.write_thresh = [62, 1];
 opt.write_to_bin = 1;
 opt.verbose_svm = 0;
 

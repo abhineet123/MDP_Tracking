@@ -30,9 +30,8 @@ else
 	% this particular object based on some preliminary thresholding that was
 	% performed during association to obtain the indices in index_det
 	dres = sub(dres_det, index_det);
-	[features, flag, J_crops] = MDP_feature_occluded(frame_id, dres_image, dres,...
+	[features, flag] = MDP_feature_occluded(frame_id, dres_image, dres,...
 		tracker);
-    tracker.J_crops = J_crops;
 	% Use the existing SVM to get labels for all of these features for
 	% the potentially associated detections
 	% along with labels we also get the probabilities

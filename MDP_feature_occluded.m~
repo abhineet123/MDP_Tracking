@@ -6,7 +6,7 @@
 % --------------------------------------------------------
 %
 % extract features for occluded state
-function [feature, flag, J_crops] = MDP_feature_occluded(frame_id, dres_image, dres, tracker)
+function [feature, flag, J_crops, ] = MDP_feature_occluded(frame_id, dres_image, dres, tracker)
 
 f = zeros(1, tracker.fnum_occluded);
 % Number of candidate bounding boxes with respect to which these occluded 

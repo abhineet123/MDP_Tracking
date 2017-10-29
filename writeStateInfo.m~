@@ -83,26 +83,26 @@ if tracker.prev_state == 2
         };
     writeToFiles(sprintf('%s/tracked', root_dir), write_to_bin, entries);    
 elseif tracker.prev_state == 3
+    occ_roi = zeros(numel(tracker.J_crops), numel(tracker.J_crops{1}));
+    for i = 1:tracker.num
+        occ_roi(:, i) = tracker.J_crops{i}(:);
+    end
     entries = {
         {tracker.f_occluded, 'train_features', fp_dtype, fp_fmt},...
         {tracker.l_occluded, 'train_labels', fp_dtype, fp_fmt},...
+        {occ_roi, 'roi', 'uint8', '%d'},...
         };
-    if ~isempty(tracker.J_crops) 
-        n_det = numel(tracker.J_crops);
-        occ_roi = zeros(n_det, numel(tracker.J_crops{1}));
-        for i = 1:n_det
-            occ_roi(i, :) = tracker.J_crops{i}(:);
-        end
-        entries{end + 1} = {occ_roi, 'roi', 'uint8', '%d'};
+    if ~isempty(tracker.J_crops)        
+        entries{end + 1} = {tracker.f_test_occluded, 'features', fp_dtype, fp_fmt};
     end
     if ~isempty(tracker.f_test_occluded)
         entries{end + 1} = {tracker.f_test_occluded, 'features', fp_dtype, fp_fmt};
     end
     if ~isempty(tracker.l_test_occluded)
-        entries{end + 1} = {tracker.l_test_occluded, 'labels', fp_dtype, fp_fmt};
+        entries{end + 1} = {tracker.l_test_occluded, 'features', fp_dtype, fp_fmt};
     end
     if ~isempty(tracker.probs_occluded)
-        entries{end + 1} = {tracker.probs_occluded, 'probabilities', fp_dtype, fp_fmt};
+        entries{end + 1} = {tracker.probs_occluded, 'features', fp_dtype, fp_fmt};
     end
     writeToFiles(sprintf('%s/lost', root_dir), write_to_bin, entries);
 end

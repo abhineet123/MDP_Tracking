@@ -39,13 +39,13 @@ for i = 1:tracker.num
     % LK tracking
     % try to track the current template from its own frame to the cropped image
     % corresponding to the first potentially associated detection
-    [BB3, xFJ, xFI, flag, medFB, medNCC, medFB_left,...
-        medFB_right, medFB_up, medFB_down] = LK(I_crop, ...
+    [BB3_orig, xFJ, xFI, flag, medFB, medNCC, medFB_left,...
+        medFB_right, medFB_up, medFB_down, shift] = LK(I_crop, ...
         J_crop, BB1_crop, BB2_crop, tracker.margin_box, tracker.level);
     
     % convert the point locations from the frame of reference of the cropped 
     % image to that of the original image    
-    BB3 = bb_shift_absolute(BB3, [bb_crop_J(1) bb_crop_J(2)]);
+    BB3 = bb_shift_absolute(BB3_orig, [bb_crop_J(1) bb_crop_J(2)]);
     BB3 = [BB3(1)/s_J(1); BB3(2)/s_J(2); BB3(3)/s_J(1); BB3(4)/s_J(2)];
     
     % Compute ratio of the heights of new and old boxes
@@ -141,8 +141,8 @@ for i = 1:tracker.num
             angle = 1;
         end        
     end
-    
-    tracker.bbs{i} = BB3;
+    tracker.bbs_orig{i} = BB3_orig; 
+    tracker.bbs{i} = BB3;    
     tracker.points{i} = xFJ';
     tracker.std_points{i} = xFI';
     tracker.flags(i) = flag;
@@ -154,6 +154,7 @@ for i = 1:tracker.num
     tracker.medNCCs(i) = medNCC;
     tracker.overlaps(i) = o;
     tracker.scores(i) = score;
+    tracker.shifts(i, :) = shift;
      % indexes into the detections
     tracker.indexes(i) = ind;
     tracker.angles(i) = angle;
