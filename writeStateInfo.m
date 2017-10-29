@@ -13,8 +13,10 @@ tracker.features(:, 5) = tracker.medFBs_down;
 tracker.features(:, 6) = tracker.medNCCs;
 points = zeros(numel(tracker.points{1}), tracker.num);
 roi = zeros(numel(tracker.Is{1}), tracker.num);
+lk_locations = zeros(tracker.num, 4);
 for i = 1:tracker.num
     points(:, i) = tracker.points{i}(:);
+    lk_locations(i, :) = tracker.bbs_orig{i}(:);
     roi(:, i) = tracker.Is{i}(:);
 end
 history_locations = zeros(numel(tracker.dres.fr), 4);
@@ -45,7 +47,7 @@ entries = {
 writeToFiles(sprintf('%s/history', root_dir), write_to_bin, entries);
 
 entries = {
-    {tracker.bbs_orig, 'locations', fp_dtype, fp_fmt},...
+    {lk_locations, 'locations', fp_dtype, fp_fmt},...
     {points, 'lk_out', fp_dtype, fp_fmt},...
     {tracker.shifts, 'shifts', fp_dtype, fp_fmt},...
     };
@@ -68,9 +70,13 @@ entries = {
 writeToFiles(sprintf('%s/templates', root_dir), write_to_bin, entries);
 
 if tracker.prev_state == 2
+    tracked_locations = zeros(tracker.num, 4);
+    for i = 1:tracker.num
+        tracked_locations(i, :) = tracker.bbs{i}(:);
+    end
     entries = {
         {tracker.f_tracked, 'features', fp_dtype, fp_fmt},...
-        {tracker.bbs, 'locations', fp_dtype, fp_fmt},...
+        {tracked_locations, 'locations', fp_dtype, fp_fmt},...
         {tracker.J_crop, 'roi', 'uint8', '%d'},...
         };
     writeToFiles(sprintf('%s/tracked', root_dir), write_to_bin, entries);
