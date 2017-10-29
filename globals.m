@@ -14,7 +14,7 @@ opt.write_thresh = [1, 1];
 opt.write_to_bin = 1;
 opt.verbose_svm = 0;
 
-train_ratio = 1;
+train_ratio = 0.1;
 test_ratio = 1;
 
 opt.train_start_offset = 0;

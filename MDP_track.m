@@ -21,6 +21,8 @@ end
 [tracker, f] = MDP_feature_tracked(frame_id, dres_image, dres_det,...
     tracker, fig_ids, colors_rgb);
 
+tracker.f_tracked = f;
+
 % build the dres structure
 if bb_isdef(tracker.bb)
 	dres_one.fr = frame_id;

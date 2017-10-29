@@ -19,6 +19,7 @@ for i = 1:tracker.num
     lk_locations(i, :) = tracker.bbs_orig{i}(:);
     roi(:, i) = tracker.Is{i}(:);
 end
+lk_locations(:, 3:4) = lk_locations(:, 3:4) - lk_locations(:, 1:2) + 1;
 history_locations = zeros(numel(tracker.dres.fr), 4);
 history_locations(:, 1) = tracker.dres.x;
 history_locations(:, 2) = tracker.dres.y;
@@ -74,12 +75,13 @@ if tracker.prev_state == 2
     for i = 1:tracker.num
         tracked_locations(i, :) = tracker.bbs{i}(:);
     end
+    tracked_locations(:, 3:4) = tracked_locations(:, 3:4) - tracked_locations(:, 1:2) + 1;
     entries = {
         {tracker.f_tracked, 'features', fp_dtype, fp_fmt},...
         {tracked_locations, 'locations', fp_dtype, fp_fmt},...
         {tracker.J_crop, 'roi', 'uint8', '%d'},...
         };
-    writeToFiles(sprintf('%s/tracked', root_dir), write_to_bin, entries);
+    writeToFiles(sprintf('%s/tracked', root_dir), write_to_bin, entries);    
 elseif tracker.prev_state == 3
     occ_roi = zeros(numel(tracker.J_crops), numel(tracker.J_crops{1}));
     for i = 1:tracker.num
