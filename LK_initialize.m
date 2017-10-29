@@ -75,6 +75,8 @@ tracker.indexes = zeros(num, 1);
 tracker.nccs = zeros(num, 1);
 tracker.angles = zeros(num, 1);
 tracker.ratios = zeros(num, 1);
+tracker.shifts = zeros(num, 1);
+tracker.f_tracked = zeros(tracker.fnum_tracked, 1);
 
 tracker.v = cell(num, 1);
 tracker.centerI = cell(num, 1);

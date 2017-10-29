@@ -82,18 +82,16 @@ elseif tracker.prev_state == 3
     entries = {
         {tracker.f_occluded, 'train_features', fp_dtype, fp_fmt},...
         {tracker.l_occluded, 'train_labels', fp_dtype, fp_fmt},...
+        {tracker.f_test_occluded, 'features', fp_dtype, fp_fmt},...
+        {tracker.l_test_occluded, 'labels', fp_dtype, fp_fmt},...
+        {tracker.probs_occluded, 'probabilities', fp_dtype, fp_fmt},...
         {occ_roi, 'roi', 'uint8', '%d'},...
         };
-    if ~isempty(tracker.f_test_occluded)
+    if ~isempty(index_det)
         entries{end + 1} = {tracker.f_test_occluded, 'features', fp_dtype, fp_fmt};
+        
     end
-    if ~isempty(tracker.l_test_occluded)
-        entries{end + 1} = {tracker.l_test_occluded, 'features', fp_dtype, fp_fmt};
-    end
-    if ~isempty(tracker.probs_occluded)
-        entries{end + 1} = {tracker.probs_occluded, 'features', fp_dtype, fp_fmt};
-    end
-    writeToFiles(sprintf('%s/lost', root_dir), write_to_bin, entries);
+    writeToFiles(sprintf('%s/lost', root_dir), write_to_bin, entries);    
 end
 
 if sync_id > 0

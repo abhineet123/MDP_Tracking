@@ -147,7 +147,7 @@ for i = 1:tracker.num
     % LK tracking - wrapper over the mex LK tracker
     % also returns a bunch of appearance and optical flow features
     [BB2_orig, xFJ, xFI, flag, medFB, medNCC, medFB_left, medFB_right,...
-        medFB_up, medFB_down] = LK(I_crop, J_crop, ...
+        medFB_up, medFB_down, shift] = LK(I_crop, J_crop, ...
         BB1_crop, BB3_crop, tracker.margin_box, tracker.level_track);      
     
     % change the coordinate system of  BB2 from the cropped resized image
@@ -231,7 +231,8 @@ for i = 1:tracker.num
     tracker.indexes(i) = ind; % index of this detection
     tracker.angles(i) = angle; % angle between the current velociy and the mean velocities over all stored frames
     tracker.ratios(i) = ratio; %  ratio of the heights of the new and old BB
-    
+    tracker.shifts(i) = shift;
+
     tracker.v{i} = v;
     tracker.centerI{i} = centerI;
     tracker.centerJ{i} = centerJ;

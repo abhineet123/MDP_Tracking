@@ -45,7 +45,7 @@ for i = 1:n_detections
     % by separately storing the result of all of these optical flow
     % computations for each of one of the potential associated detections
     dres_one = sub(dres, i);
-    tracker.J_crops{i} = dres_one.I_crop{1};
+    tracker.J_crops{i} = 
     tracker = LK_associate(frame_id, dres_image, dres_one, tracker);
     
     % design features

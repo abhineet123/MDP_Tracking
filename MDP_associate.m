@@ -20,6 +20,9 @@ if isempty(index_det) == 1
 	qscore = 0;
 	label = -1;
 	f = [];
+    tracker.f_test_occluded = [];
+    tracker.l_test_occluded = [];
+    tracker.probs_occluded = [];
 else
 	% extract features with LK association
 	% Get features for all the detections that are likely to correspond to
@@ -52,6 +55,11 @@ else
 	probs(flag == 0, 1) = 0;
 	probs(flag == 0, 2) = 1;
 	labels(flag == 0) = -1;
+    
+    tracker.f_test_occluded = features;
+    tracker.l_test_occluded = labels;
+    tracker.probs_occluded = probs;
+    
 	% find the detection with the maximum probability and use only its
 	% label and features
 	[qscore, ind] = max(probs(:,1));

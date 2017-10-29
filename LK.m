@@ -1,7 +1,7 @@
 % Estimates motion from bounding box BB1 in frame I to bounding box BB2 in frame J
 % obj is the background model
 function [BB3, xFJ, xFI, flag, medFB, medNCC, medFB_left,...
-    medFB_right, medFB_up, medFB_down] = LK(I, J, BB1, BB2, margin, level)
+    medFB_right, medFB_up, medFB_down, shift] = LK(I, J, BB1, BB2, margin, level)
 
 % initialize output variables
 BB3 = []; % estimated bounding
