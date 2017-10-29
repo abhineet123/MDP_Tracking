@@ -231,7 +231,7 @@ for i = 1:tracker.num
     tracker.indexes(i) = ind; % index of this detection
     tracker.angles(i) = angle; % angle between the current velociy and the mean velocities over all stored frames
     tracker.ratios(i) = ratio; %  ratio of the heights of the new and old BB
-    tracker.shifts(i) = shift;
+    tracker.shifts(i, :) = shift;
 
     tracker.v{i} = v;
     tracker.centerI{i} = centerI;
