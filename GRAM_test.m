@@ -11,12 +11,6 @@ function GRAM_test(is_train, seq_idx_train, seq_idx_test,...
     read_images_in_batch, enable_eval, show_cropped_figs, save_video)
 
 def.is_train = 1;
-% def.seq_idx_train = {[1:9, 16:24], [31:50]};
-% def.seq_idx_test = {[10:15, 25:30], [51:60]};
-% def.seq_idx_train = {[1, 2], [3]};
-% def.seq_idx_test = {[1, 2], [3]};
-def.seq_idx_train = {[67]};
-def.seq_idx_test = {[67]};
 def.continue_from_seq = 0;
 def.use_hungarian = 0;
 def.start_offset = 0;
@@ -25,6 +19,8 @@ def.enable_eval = 1;
 def.show_cropped_figs = 0;
 def.save_video = 0;
 
+opt = globals();
+
 % set is_train to 0 if testing trained trackers only
 arg_id = 1;
 if nargin < arg_id
@@ -32,11 +28,11 @@ if nargin < arg_id
 end
 arg_id = arg_id + 1;
 if nargin < arg_id
-    seq_idx_train = def.seq_idx_train;
+    seq_idx_train = opt.seq_idx_train;
 end
 arg_id = arg_id + 1;
 if nargin < arg_id
-    seq_idx_test = def.seq_idx_test;
+    seq_idx_test = opt.seq_idx_test;
 end
 arg_id = arg_id + 1;
 if nargin<arg_id
@@ -68,7 +64,6 @@ if nargin<arg_id
 end
 
 db_type = 2;
-opt = globals();
 seq_set_test = 'testing';
 N = max([numel(seq_idx_train),numel(seq_idx_test)]);
 
