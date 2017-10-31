@@ -81,7 +81,6 @@ dres_gt.occluded = zeros(n_gt, 1);
 dres_gt.covered = zeros(n_gt, 1);
 dres_gt.overlap = zeros(n_gt, 1);
 dres_gt.area_inside = zeros(n_gt, 1);
-dres_gt.r = zeros(n_gt, 1);
 
 % one object/target in the GT at a time
 for i = 1:numel(ids)    
@@ -114,7 +113,7 @@ for i = 1:numel(ids)
             ov(invalid_idx) = 0;
             % fractional coverage of this object is the max norm overlap
             dres.covered(j) = max(ov);
-            
+            dres_gt.covered(index(j)) = dres.covered(j);
         end
         % if fractional coverage of this obj exceeds a threshold, it is
         % considered as occluded
@@ -138,11 +137,8 @@ for i = 1:numel(ids)
             [~, overlap] = calc_overlap(dres_det, index(ind), dres_image, 1);
             dres.area_inside(j) = overlap;
         end
-        dres_gt.covered(index(j)) = dres.covered(j);
-        dres_gt.overlap(index(j)) = dres.overlap(j);
-        dres_gt.occluded(index(j)) = dres.occluded(j);
-        dres_gt.area_inside(index(j)) = dres.area_inside(j);        
-        dres_gt.r(index(j)) = dres.r(j);        
+        
+        dres_gt.area_inside(index(j)) = dres.area_inside(j);
     end
     
     % start with bounding overlap > opt.overlap_pos and non-occluded box
@@ -179,38 +175,12 @@ if opt.write_state_info
         {indices, 'indices', 'int32', '%d'},...
         };
     writeToFiles(sprintf('log/detections'), write_to_bin, entries);
-        dres_gt.covered(index(j)) = dres.covered(j);
-        dres_gt.overlap(index(j)) = dres.overlap(j);
-        dres_gt.occluded(index(j)) = dres.occluded(j);
-        dres_gt.area_inside(index(j)) = dres.area_inside(j);        
-        dres_gt.r(index(j)) = dres.r(j); 
     entries = {
-        {dres_gt.covered, 'covered', fp_dtype, fp_fmt},...
-        {dres_gt.overlap, 'overlap', fp_dtype, fp_fmt},...
-        {dres_gt.occluded, 'occluded', fp_dtype, fp_fmt},...
-        {dres_gt.area_inside, 'area_inside', fp_dtype, fp_fmt},...
-        {dres_gt.r, 'scores', fp_dtype, fp_fmt},...
+        {covered, 'labels', 'int32', '%d'},...
+        {overlaps, 'overlaps', fp_dtype, fp_fmt},...
+        {indices, 'indices', 'int32', '%d'},...
         };
-    writeToFiles(sprintf('log/annotations'), write_to_bin, entries);
-    sync_w_fname = sprintf('log/write_0.sync');
-    fclose(fopen(sync_w_fname, 'w'));
-    sync_r_fname = sprintf('log/read_0.sync');
-    fprintf('Waiting for %s...',sync_r_fname);
-    pause('on')
-    iter_id = 0;
-    max_iters = 10;
-    while ~exist(sync_r_fname, 'file')
-        pause(0.5);
-        iter_id = iter_id + 1;
-        if iter_id == max_iters
-            % pause for debugging after 5 seconds
-            debugging = 1;
-            % break;
-        end
-        % fprintf('.');
-    end
-    fprintf('\n');
-    delete(sync_r_fname);
+    writeToFiles(sprintf('log/detections'), write_to_bin, entries);
 end
 
 fprintf('%s: %d positive sequences\n', seq_name, numel(dres_train));
