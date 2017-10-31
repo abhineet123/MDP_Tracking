@@ -10,16 +10,16 @@ function opt = globals()
 
 opt.is_text = 1;  
 opt.write_state_info = 1;
-opt.write_thresh = [1, 1];
+opt.write_thresh = [2, 96];
 opt.write_to_bin = 1;
-opt.verbose_svm = 0;
+opt.verbose_svm = 1;
 
 % def.seq_idx_train = {[1:9, 16:24], [31:50]};
 % def.seq_idx_test = {[10:15, 25:30], [51:60]};
 % def.seq_idx_train = {[1, 2], [3]};
 % def.seq_idx_test = {[1, 2], [3]};
-opt.seq_idx_train = {[67]};
-opt.seq_idx_test = {[67]};
+opt.seq_idx_train = {[68]};
+opt.seq_idx_test = {[68]};
 
 train_ratio = 1;
 test_ratio = 1;

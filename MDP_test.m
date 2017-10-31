@@ -268,7 +268,7 @@ trackers = [];
 id = 0;
 start_t = tic;
 for fr = 1:seq_num
-    tracker.pause_for_debug = opt.write_state_info && fr >= opt.write_thresh(1);
+    tracker.pause_for_debug = opt.write_state_info && fr >= opt.write_thresh(2);
 
     if is_text
         fprintf('frame %d\n', fr);

@@ -255,7 +255,7 @@ while 1 % for multiple passes
     
     % start tracking
     while fr <= seq_num  % for the current sequence 
-        if opt.write_state_info && fr >= opt.write_thresh(1) && iter >= opt.write_thresh(2)
+        if opt.write_state_info && fr >= opt.write_thresh(2) && iter >= opt.write_thresh(1)
             tracker.pause_for_debug = 1;
         end
         if is_text
@@ -561,7 +561,7 @@ while 1 % for multiple passes
             % It must be that to the change in parameters by retraining the SVM,
             % if indeed such was done, is expected to have improved the
             % tracker enough to be able to find this object in this frame
-            % whwn we track on it again in the next iteration
+            % when we track on it again in the next iteration
             fr = fr + 1;
         end
     end % end tracking this sequence
