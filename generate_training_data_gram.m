@@ -88,8 +88,8 @@ for i = 1:numel(ids)
     % check if the target is occluded or not
     
      % set of frames with this object
-    index = find(dres_gt.id == ids(i)); 
-    dres = sub(dres_gt, index); 
+    index_global = find(dres_gt.id == ids(i)); 
+    dres = sub(dres_gt, index_global); 
     % no. of frames with this object
     num = numel(dres.fr);
     dres.occluded = zeros(num, 1);
@@ -102,15 +102,15 @@ for i = 1:numel(ids)
     for j = 1:num
         fr = dres.fr(j);
         % all objects except the current one in the current frame 
-        index = find(dres_gt.fr == fr & dres_gt.id ~= ids(i));
+        index_gt = find(dres_gt.fr == fr & dres_gt.id ~= ids(i));
         
-        if isempty(index) == 0
+        if isempty(index_gt) == 0
             % normalized intersection area of this GT box with all other 
             % GT boxes in the current frame
-            [~, ov] = calc_overlap(dres, j, dres_gt, index); 
+            [~, ov] = calc_overlap(dres, j, dres_gt, index_gt); 
             % for some unknown reason, if the max y of this box exceeds the
             % max y of another box, the norm overlap between them is set to 0
-            invalid_idx = y(j) > y_gt(index);
+            invalid_idx = y(j) > y_gt(index_gt);
             ov(invalid_idx) = 0;
             % fractional coverage of this object is the max norm overlap
             dres.covered(j) = max(ov);
@@ -123,26 +123,27 @@ for i = 1:numel(ids)
         end
         
         % overlap with detections
-        index = find(dres_det.fr == fr);
-        if isempty(index) == 0
-            overlap = calc_overlap(dres, j, dres_det, index);
+        index_det = find(dres_det.fr == fr);
+        if isempty(index_det) == 0
+            overlap = calc_overlap(dres, j, dres_det, index_det);
             [o, ind] = max(overlap);
             % overlap is the IoU rather than the IoA that was
             % used for GT coverage; the pruning of boxes whose maximum y exceeds
             % this box's is not done either
             dres.overlap(j) = o;        
             % detection score of the detection with the maximum overlap
-            dres.r(j) = dres_det.r(index(ind));
+            dres.r(j) = dres_det.r(index_det(ind));
             
             % area inside image of the max overlap detection
-            [~, overlap] = calc_overlap(dres_det, index(ind), dres_image, 1);
+            [~, overlap] = calc_overlap(dres_det, index_det(ind), dres_image, 1);
             dres.area_inside(j) = overlap;
         end
-        dres_gt.covered(index(j)) = dres.covered(j);
-        dres_gt.overlap(index(j)) = dres.overlap(j);
-        dres_gt.occluded(index(j)) = dres.occluded(j);
-        dres_gt.area_inside(index(j)) = dres.area_inside(j);        
-        dres_gt.r(index(j)) = dres.r(j);        
+        gt_id = index_global(j);
+        dres_gt.covered(gt_id) = dres.covered(j);
+        dres_gt.overlap(gt_id) = dres.overlap(j);
+        dres_gt.occluded(gt_id) = dres.occluded(j);
+        dres_gt.area_inside(gt_id) = dres.area_inside(j);        
+        dres_gt.r(gt_id) = dres.r(j);        
     end
     
     % start with bounding overlap > opt.overlap_pos and non-occluded box
@@ -173,25 +174,22 @@ for i = 1:numel(ids)
 end
 
 if opt.write_state_info
+    fp_dtype = 'float32';
+    fp_fmt = '%.10f';
     entries = {
         {labels, 'labels', 'int32', '%d'},...
         {overlaps, 'overlaps', fp_dtype, fp_fmt},...
         {indices, 'indices', 'int32', '%d'},...
         };
-    writeToFiles(sprintf('log/detections'), write_to_bin, entries);
-        dres_gt.covered(index(j)) = dres.covered(j);
-        dres_gt.overlap(index(j)) = dres.overlap(j);
-        dres_gt.occluded(index(j)) = dres.occluded(j);
-        dres_gt.area_inside(index(j)) = dres.area_inside(j);        
-        dres_gt.r(index(j)) = dres.r(j); 
+    writeToFiles(sprintf('log/detections'), opt.write_to_bin, entries);
     entries = {
         {dres_gt.covered, 'covered', fp_dtype, fp_fmt},...
-        {dres_gt.overlap, 'overlap', fp_dtype, fp_fmt},...
+        {dres_gt.overlap, 'overlaps', fp_dtype, fp_fmt},...
         {dres_gt.occluded, 'occluded', fp_dtype, fp_fmt},...
         {dres_gt.area_inside, 'area_inside', fp_dtype, fp_fmt},...
         {dres_gt.r, 'scores', fp_dtype, fp_fmt},...
         };
-    writeToFiles(sprintf('log/annotations'), write_to_bin, entries);
+    writeToFiles(sprintf('log/annotations'), opt.write_to_bin, entries);
     sync_w_fname = sprintf('log/write_0.sync');
     fclose(fopen(sync_w_fname, 'w'));
     sync_r_fname = sprintf('log/read_0.sync');

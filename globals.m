@@ -21,7 +21,7 @@ opt.verbose_svm = 1;
 opt.seq_idx_train = {[68]};
 opt.seq_idx_test = {[68]};
 
-train_ratio = 1;
+train_ratio = 0.1;
 test_ratio = 1;
 
 opt.train_start_offset = 0;

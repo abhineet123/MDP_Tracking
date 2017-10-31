@@ -140,7 +140,7 @@ else
     % generate training data
     I = dres_image.Igray{1}; % first image to get its size
     
-    [dres_train, dres_det, labels] = generate_training_data_gram(db_path, seq_name,...
+    [dres_train, dres_det, labels, dres_gt_orig] = generate_training_data_gram(db_path, seq_name,...
         dres_image, opt, train_start_idx, train_end_idx);
 end
 
