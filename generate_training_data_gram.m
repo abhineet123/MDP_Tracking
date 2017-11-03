@@ -56,11 +56,11 @@ for i = 1:num
             labels(i) = 0; % unknown
         end
         overlaps(i) = o;
-        indices(i) = max_ind;
+        indices(i) = index(max_ind);
     else
         overlaps(i) = 0;
         labels(i) = -1;
-        indices(i) = -1;
+        indices(i) = 0;
     end
 end
 
@@ -179,7 +179,7 @@ if opt.write_state_info
     entries = {
         {labels, 'labels', 'int32', '%d'},...
         {overlaps, 'overlaps', fp_dtype, fp_fmt},...
-        {indices, 'indices', 'int32', '%d'},...
+        {indices - 1, 'indices', 'int32', '%d'},...
         };
     writeToFiles(sprintf('log/detections'), opt.write_to_bin, entries);
     entries = {

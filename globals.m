@@ -11,7 +11,7 @@ function opt = globals()
 opt.is_text = 1;  
 opt.write_state_info = 1;
 opt.write_thresh = [2, 96];
-opt.write_to_bin = 0;
+opt.write_to_bin = 1;
 opt.verbose_svm = 1;
 
 % def.seq_idx_train = {[1:9, 16:24], [31:50]};
