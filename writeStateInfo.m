@@ -90,7 +90,7 @@ else
             };
         writeToFiles(sprintf('%s/tracked', root_dir), write_to_bin, entries);    
     elseif tracker.prev_state == 3
-        trunc_idx = 1:tracker.tracker.fnum_occluded;
+        trunc_idx = 1:tracker.fnum_occluded;
         trunc_idx(8) = [];
         f_occluded_trunc = tracker.f_occluded(:, trunc_idx); 
         entries = {            
