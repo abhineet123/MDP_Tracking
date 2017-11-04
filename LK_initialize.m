@@ -48,6 +48,10 @@ for i = 1:num
     tracker.BBs{i} = BB_crop;
 end
 
+if tracker.pause_for_debug
+    debugging = 1;
+end
+
 % initialize the patterns
 img = dres_image.Igray{frame_id};
 tracker.patterns = generate_pattern(img, bb, tracker.patchsize,...

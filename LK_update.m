@@ -32,6 +32,11 @@ tracker.x1(index) = tracker.bb(1);
 tracker.y1(index) = tracker.bb(2);
 tracker.x2(index) = tracker.bb(3);
 tracker.y2(index) = tracker.bb(4);
+
+if tracker.pause_for_debug 
+    debugging=1;
+end 
+
 % replace the old pattern with the new one � a pattern is just the the set
 % of pixel values corresponding to the location all for this bounding box
 % that has been subjected to some preliminary preprocessing like

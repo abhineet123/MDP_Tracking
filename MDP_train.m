@@ -540,7 +540,7 @@ while 1 % for multiple passes
         %     % filename = sprintf('results/%s_%06d.png', seq_name, fr);
         %     % hgexport(h, filename, hgexport('factorystyle'), 'Format', 'png');
         % end
-        if fr ~= dres_gt.fr(1) && tracker.pause_for_debug
+        if tracker.pause_for_debug
             writeStateInfo(tracker, opt.write_to_bin, fr);    
             debugging=1;
         end 
