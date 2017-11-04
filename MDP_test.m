@@ -416,13 +416,14 @@ for fr = 1:seq_num
         % extract features
         dres_one = sub(dres, index(i));
         f = MDP_feature_active(tracker, dres_one);
+        tracker.f_test_active = f;
         % prediction
         % Check if this detection is a true positive for a false positive
         label = svmpredict(1, f, tracker.w_active, '');
         % make a decision
         if label < 0
             continue;
-        end
+        end        
         
         % reset tracker
         tracker.prev_state = 1;

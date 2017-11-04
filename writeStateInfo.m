@@ -58,6 +58,10 @@ if tracker.prev_state == 1
         {tracker.factive, 'train_features', fp_dtype, fp_fmt},...
         {tracker.lactive, 'train_labels', fp_dtype, fp_fmt},...
         };
+        if ~isempty(tracker.f_test_active) 
+            entries{end + 1} = {tracker.f_test_active, 'features',...
+                fp_dtype, fp_fmt};
+        end
     writeToFiles(sprintf('%s/active', root_dir), write_to_bin, entries);
 else
     points = zeros(numel(tracker.points{1}), tracker.num);
@@ -86,8 +90,11 @@ else
             };
         writeToFiles(sprintf('%s/tracked', root_dir), write_to_bin, entries);    
     elseif tracker.prev_state == 3
-        entries = {
-            {tracker.f_occluded, 'train_features', fp_dtype, fp_fmt},...
+        trunc_idx = 1:tracker.tracker.fnum_occluded;
+        trunc_idx(8) = [];
+        f_occluded_trunc = tracker.f_occluded(:, trunc_idx); 
+        entries = {            
+            {f_occluded_trunc, 'train_features', fp_dtype, fp_fmt},...
             {tracker.l_occluded, 'train_labels', fp_dtype, fp_fmt},...
             };
         if ~isempty(tracker.J_crops) 
@@ -99,7 +106,8 @@ else
             entries{end + 1} = {occ_roi, 'roi', 'uint8', '%d'};
         end
         if ~isempty(tracker.f_test_occluded)
-            entries{end + 1} = {tracker.f_test_occluded, 'features', fp_dtype, fp_fmt};
+            f_test_occluded_trunc = tracker.f_test_occluded(:, trunc_idx); 
+            entries{end + 1} = {f_test_occluded_trunc, 'features', fp_dtype, fp_fmt};
         end
         if ~isempty(tracker.l_test_occluded)
             entries{end + 1} = {tracker.l_test_occluded, 'labels', fp_dtype, fp_fmt};

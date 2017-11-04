@@ -19,6 +19,7 @@ tracker.f_occluded=[];
 tracker.f_test_occluded=[];
 tracker.f_tracked=[];
 tracker.factive=[];
+tracker.f_test_active=[];
 tracker.fb_factor=[];
 tracker.features=[];
 tracker.flags=[];
