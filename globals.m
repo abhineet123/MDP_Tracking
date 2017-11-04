@@ -10,7 +10,7 @@ function opt = globals()
 
 opt.is_text = 1;  
 opt.write_state_info = 1;
-opt.write_thresh = [4, 79];
+opt.write_thresh = [6, 80];
 opt.write_to_bin = 1;
 opt.verbose_svm = 1;
 

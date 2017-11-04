@@ -18,15 +18,15 @@
 
 function idx_out = bb_isout(bb,imsize)
 
-% amazingly horrible and insidiously buggy piece of crap
-% so what it is essentially testing is whether ul is greater the patch size
+% amazingly horrible and insidious piece of buggy crap
+% so what it is essentially testing is whether ul is greater the given size
 % and br is less than 1 which makes no sense at all for deciding whether
-% this box lies within the extents of the patch; if the box
+% this box lies within the extents of a patch of the given size; if the box
 % was outside the patch, its ul would be less than 1 (or more correctly 0 
 % but we can let that go considering the generally horrible nature of the 
 % code here) and its br would be greater than the patch size
 
-idx_out = bb(3,:) > imsize(2) | ...
-bb(4,:) > imsize(1) | ...
-bb(1,:) < 1 | ...
-bb(2,:) < 1;
+idx_out = bb(1,:) > imsize(2) | ...
+bb(2,:) > imsize(1) | ...
+bb(3,:) < 1 | ...
+bb(4,:) < 1;
