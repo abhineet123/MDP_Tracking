@@ -8,6 +8,7 @@ log/
 GT/
 Detections/
 Tracked/
+mexopencv-2.4.11/
 *.mp4
 *.avi
 *.asv
