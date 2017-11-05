@@ -173,7 +173,7 @@ for i = 1:numel(ids)
     end
 end
 
-if opt.write_state_info
+if opt.write_state_info && opt.write_thresh(1)<=1 && opt.write_thresh(2)<=1
     fp_dtype = 'float32';
     fp_fmt = '%.10f';
     entries = {
