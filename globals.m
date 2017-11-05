@@ -54,7 +54,7 @@ else
 end
 
 if isunix
-    gram_paths = {'/home/abhineet/C/Datasets/GRAM'};
+    gram_paths = {'/data/GRAM'};
     idot_paths = {'/data/IDOT'};
 else
     gram_paths = {'C:\Datasets\GRAM'};
