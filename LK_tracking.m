@@ -154,13 +154,16 @@ for i = 1:tracker.num
     % to the original image
     BB2 = bb_shift_absolute(BB2_orig, [bb_crop(1) bb_crop(2)]);
     BB2 = [BB2(1)/s(1); BB2(2)/s(2); BB2(3)/s(1); BB2(4)/s(2)];   
-
-    % ratio of the heights of the new and old BB
-    % yet another instance of annoying habit of ignoring the extra 1 
-    % while computing the w and h 
-    ratio = (BB2(4)-BB2(2) + 1) / (BB1(4)-BB1(2) + 1);
-    ratio = min(ratio, 1/ratio);
     
+    if ~bb_isdef(BB2)
+        ratio=0;
+    else        
+        % ratio of the heights of the new and old BB
+        % yet another instance of annoying habit of ignoring the extra 1 
+        % while computing the w and h 
+        ratio = (BB2(4)-BB2(2) + 1) / (BB1(4)-BB1(2) + 1);
+        ratio = min(ratio, 1/ratio);   
+    end    
     if isnan(medFB) || isnan(medFB_left) || isnan(medFB_right) || isnan(medFB_up)...
         || isnan(medFB_down)  || isnan(medNCC) || ~bb_isdef(BB2)...
         || ratio < tracker.max_ratio
@@ -180,7 +183,7 @@ for i = 1:tracker.num
         v = [NaN, NaN];
         centerI = [NaN, NaN];
         centerJ = [NaN, NaN];
-        v_new = [NaN, NaN];        
+        v_new = [NaN, NaN]; 
     else
         % compute overlap with detections
         dres.x = BB2(1);
