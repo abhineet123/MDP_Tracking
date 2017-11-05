@@ -10,7 +10,6 @@ function GRAM_test(is_train, seq_idx_train, seq_idx_test,...
     continue_from_seq, use_hungarian, start_offset,...
     read_images_in_batch, enable_eval, show_cropped_figs, save_video)
 
-def.is_train = 1;
 def.continue_from_seq = 0;
 def.use_hungarian = 0;
 def.start_offset = 0;
@@ -24,7 +23,7 @@ opt = globals();
 % set is_train to 0 if testing trained trackers only
 arg_id = 1;
 if nargin < arg_id
-    is_train = def.is_train;
+    is_train = opt.is_train;
 end
 arg_id = arg_id + 1;
 if nargin < arg_id

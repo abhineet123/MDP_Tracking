@@ -14,6 +14,7 @@ function opt = globals()
 % def.seq_idx_test = {[1, 2], [3]};
 opt.seq_idx_train = {[69]};
 opt.seq_idx_test = {[69]};
+opt.is_train = 1;
 
 train_ratio = 1;
 test_ratio = 1;
