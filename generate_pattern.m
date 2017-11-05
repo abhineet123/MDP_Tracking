@@ -27,7 +27,7 @@ for i = 1:nBB
 end
 
 function pattern = tldPatch2Pattern(patch, patchsize, pause_for_debug)
-addpath('mexopencv-2.4.11');
+% addpath('mexopencv-2.4.11');
 % resized_patch   = imresize(patch, patchsize); % 'bilinear' is faster
 resized_patch   = cv.resize(patch, [patchsize(2), patchsize(1)]); 
 pattern = double(resized_patch(:));

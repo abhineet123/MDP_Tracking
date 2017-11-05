@@ -7,7 +7,7 @@
 %
 % crop canonical image and bounding box
 function [I_crop, BB_crop, bb_crop, s, I_scale] = LK_crop_image_box(I, BB, tracker)
-addpath('./mexopencv-2.4.11/')
+% addpath('./mexopencv-2.4.11/')
 
 s = [tracker.std_box(1)/bb_width(BB), tracker.std_box(2)/bb_height(BB)];
 bb_scale = round([BB(1)*s(1); BB(2)*s(2); BB(3)*s(1); BB(4)*s(2)]);
