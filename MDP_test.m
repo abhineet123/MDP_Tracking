@@ -421,13 +421,23 @@ for fr = 1:seq_num
         dres_one = sub(dres, index(i));
         f = MDP_feature_active(tracker, dres_one);
         tracker.f_test_active = f;
+        svm_options = '';
+        if ~tracker.verbose_svm
+            svm_options = strcat(svm_options, ' -q');
+        end
         % prediction
         % Check if this detection is a true positive for a false positive
-        label = svmpredict(1, f, tracker.w_active, '');
+        label = svmpredict(1, f, tracker.w_active, svm_options);
+        
+        if tracker.pause_for_debug
+            debugging = 1;
+        end
         % make a decision
         if label < 0
-            continue;
+            fprintf('Target %d not added\n', id + 1);
+            continue;            
         end        
+        fprintf('Target %d added\n', id + 1);
         
         % reset tracker
         tracker.prev_state = 1;
