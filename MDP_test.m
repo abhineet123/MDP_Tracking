@@ -285,7 +285,7 @@ for fr = 1:seq_num
         tracker.pause_for_debug = 1;
     end
     if is_text
-        fprintf('frame %d, targets %d\n', fr, numel(trackers));
+        fprintf('\n\nframe %d, targets %d\n', fr, numel(trackers));
     else
         fprintf('.');
         if mod(fr, 100) == 0
