@@ -353,11 +353,11 @@ for fr = 1:seq_num
     
     % process trackers
     for i = 1:numel(index_track)
-        ind = index_track(i);       
         if opt.is_text
-            fprintf('Target %d id: %d state: %d\n', ind,...
-                trackers{ind}.target_id, trackers{ind}.state)
-        end        
+            fprintf('Target %d state %d', trackers{ind})
+        end
+        ind = index_track(i);
+        
         if trackers{ind}.state == 2
             % track target
             trackers{ind} = track(fr, dres_image, dres, trackers{ind}, opt,...
@@ -470,7 +470,7 @@ for fr = 1:seq_num
     if tracker.pause_for_debug
         n_trackers = numel(trackers);
         for i = 1:n_trackers            
-            writeStateInfo(trackers{i}, opt.write_to_bin, fr, 1);    
+            writeStateInfo(trackers{i}, opt.write_to_bin, fr);    
         end
         debugging=1;
     end 

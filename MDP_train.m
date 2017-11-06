@@ -541,7 +541,7 @@ while 1 % for multiple passes
         %     % hgexport(h, filename, hgexport('factorystyle'), 'Format', 'png');
         % end
         if tracker.pause_for_debug
-            writeStateInfo(tracker, opt.write_to_bin, fr);    
+            writeStateInfo(tracker, opt.write_to_bin, fr, 0);    
             debugging=1;
         end 
         % try to connect recently lost target

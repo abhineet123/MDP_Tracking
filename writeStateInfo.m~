@@ -90,14 +90,16 @@ else
             };
         writeToFiles(sprintf('%s/tracked', root_dir), write_to_bin, entries);    
     elseif tracker.prev_state == 3
-        entries = {};
         trunc_idx = 1:tracker.fnum_occluded;
         trunc_idx(8) = [];
         if ~is_test
-            f_occluded_trunc = tracker.f_occluded(:, trunc_idx); 
             entries{end + 1} =  {f_occluded_trunc, 'train_features', fp_dtype, fp_fmt};
-            entries{end + 1} =  {tracker.l_occluded, 'train_labels', fp_dtype, fp_fmt};
-        end           
+            {tracker.l_occluded, 'train_labels', fp_dtype, fp_fmt};
+        end
+            
+        f_occluded_trunc = tracker.f_occluded(:, trunc_idx); 
+        entries = {          
+            };
         if ~isempty(tracker.J_crops) 
             n_det = numel(tracker.J_crops);
             occ_roi = zeros(n_det, numel(tracker.J_crops{1}));
