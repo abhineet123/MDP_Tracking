@@ -6,7 +6,8 @@
 % --------------------------------------------------------
 %
 % find detections for initialization
-function [dres_det, index_det] = generate_initial_index(trackers, dres_det)
+function [dres_det, index_det] = generate_initial_index(trackers, dres_det,...
+    pause_for_debug)
 
 if isempty(dres_det) == 1
     index_det = [];
@@ -68,4 +69,7 @@ if num_track
     end
 else
     index_det = 1:num_det;
+end
+if pause_for_debug
+    debugging = 1;
 end

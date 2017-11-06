@@ -184,7 +184,7 @@ is_difficult = zeros(num_train, 1);
 tracker.pause_for_debug = 0;
 
 if opt.write_state_info
-    % remove lof files created by previous runs to avoid annoying conflicts
+    % remove log files created by previous runs to avoid annoying conflicts
     d = dir('log');
     isub = [d(:).isdir];
     folders = {d(isub).name};

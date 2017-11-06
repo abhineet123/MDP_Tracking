@@ -247,6 +247,19 @@ if nargin < 3
     tracker = object.tracker;
 end
 
+if opt.write_state_info
+    % remove log files created by previous runs to avoid annoying conflicts
+    d = dir('log');
+    isub = [d(:).isdir];
+    folders = {d(isub).name};
+    n_folders = numel(folders);
+    for i=1:n_folders
+        if ~isempty(strfind(folders{i}, 'target_'))
+            rmdir(fullfile('log', folders{i}),'s');
+        end
+    end
+end 
+
 
 %% perform tracking
 
@@ -381,7 +394,7 @@ for fr = 1:seq_num
                 % Remove detections corresponding to tracker bounding boxes that
                 % have already been tracked
                 [dres_tmp, index] = generate_initial_index(trackers(index_track(1:i-1)),...
-                    dres);
+                    dres, tracker.pause_for_debug);
                 dres_associate = sub(dres_tmp, index);
                 % Of the remaining detections, find those that are close to
                 % the predicted location of this object based on its last
@@ -400,7 +413,8 @@ for fr = 1:seq_num
             % performed in the new frame after we failed to associate the lost
             % tracker with any of the detections in the frame
             % where it was first found to be occluded
-            [dres_tmp, index] = generate_initial_index(trackers(index_track(1:i-1)), dres);
+            [dres_tmp, index] = generate_initial_index(trackers(index_track(1:i-1)),...
+                dres, tracker.pause_for_debug);
             dres_associate = sub(dres_tmp, index);
             trackers{ind} = associate(fr, dres_image, dres_associate,...
                 trackers{ind}, opt, 1);
@@ -415,7 +429,8 @@ for fr = 1:seq_num
     end
     
     % find detections for initialization
-    [dres, index] = generate_initial_index(trackers, dres);
+    [dres, index] = generate_initial_index(trackers, dres,...
+        tracker.pause_for_debug);
     for i = 1:numel(index)
         % extract features
         dres_one = sub(dres, index(i));
