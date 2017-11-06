@@ -268,10 +268,11 @@ trackers = [];
 id = 0;
 start_t = tic;
 for fr = 1:seq_num
-    tracker.pause_for_debug = opt.write_state_info && fr >= opt.write_thresh(2);
-
+    if opt.write_state_info && fr >= opt.write_thresh(2)
+        tracker.pause_for_debug = 1;
+    end
     if is_text
-        fprintf('frame %d\n', fr);
+        fprintf('frame %d, targets %d\n', fr, numel(trackers));
     else
         fprintf('.');
         if mod(fr, 100) == 0

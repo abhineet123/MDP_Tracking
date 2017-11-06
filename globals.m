@@ -21,8 +21,7 @@ opt.train_start_offset = 0;
 
 opt.is_text = 1;  
 opt.write_state_info = 1;
-% opt.write_thresh = [1,1];
-opt.write_thresh = [1,1];
+opt.write_thresh = [1,63];
 opt.write_to_bin = 1;
 opt.verbose_svm = 1;
 
