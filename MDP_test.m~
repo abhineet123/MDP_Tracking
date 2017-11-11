@@ -230,7 +230,7 @@ else
                 save(filename, 'dres_image', '-v7.3');
             end
         end
-    end
+    end    
     % read detections
     filename = fullfile(db_path, 'Detections', [seq_name '.txt']);
     dres_det = read_gram2dres(filename, test_start_idx, test_end_idx);
@@ -259,7 +259,7 @@ if opt.write_state_info
             rmdir(fullfile('log', folders{i}),'s');
         end
     end
-end
+end 
 
 
 %% perform tracking
@@ -282,14 +282,6 @@ trackers = [];
 id = 0;
 start_t = tic;
 for fr = 1:seq_num
-    good_targets_idx = [];
-    % get non-inactive targets
-    for i = 1:numel(trackers)
-        if trackers{i}.state==0
-            continue;
-        end
-        good_targets_idx(end+1) = i;
-    end
     if opt.write_state_info && fr >= opt.write_thresh(2)
         tracker.pause_for_debug = 1;
         for i = 1:numel(trackers)
@@ -297,7 +289,8 @@ for fr = 1:seq_num
         end
     end
     if is_text
-        fprintf('\n\nframe %d, targets %d\n', fr, numel(good_targets_idx));
+        
+        fprintf('\n\nframe %d, targets %d\n', fr, numel(trackers));
     else
         fprintf('.');
         if mod(fr, 100) == 0
@@ -379,10 +372,7 @@ for fr = 1:seq_num
     
     % process trackers
     for i = 1:numel(index_track)
-        ind = index_track(i);  
-        if trackers{ind}.state==0
-            continue;
-        end
+        ind = index_track(i);       
         if opt.is_text
             fprintf('Target %d id: %d state: %d\n', ind,...
                 trackers{ind}.target_id, trackers{ind}.state)
