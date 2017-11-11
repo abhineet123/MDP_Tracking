@@ -383,7 +383,7 @@ for fr = 1:seq_num
                     trackers{ind}.dres = sub(dres_tmp, index_tmp);
                 end
                 % Fill-in the location of this object for any missing frames
-                trackers{ind}.dres = interpolate_dres(trackers{ind}.dres, dres_one);
+                trackers{ind}.dres = interpolate_dres(trackers{ind}.dres, dres_one, trackers{ind}.pause_for_debug);
                 % update LK tracker
                 
                 % change the anchor or the principal template to the one 

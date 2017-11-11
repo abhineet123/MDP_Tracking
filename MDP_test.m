@@ -384,7 +384,8 @@ for fr = 1:seq_num
             continue;
         end
         if opt.is_text
-            fprintf('Target %d id: %d state: %d\n', ind,...
+            active_ind = find(good_targets_idx == ind, 1);
+            fprintf('Target %d id: %d state: %d\n', active_ind,...
                 trackers{ind}.target_id, trackers{ind}.state)
         end        
         if trackers{ind}.state == 2

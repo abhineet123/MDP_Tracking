@@ -124,7 +124,7 @@ if label > 0
 	% so we estimate the location of the object in these
 	% frames by using linear interpolation between the two frames
 	% in which it was visible or at least where we were able to track it
-	tracker.dres = interpolate_dres(tracker.dres, dres_one);
+	tracker.dres = interpolate_dres(tracker.dres, dres_one, tracker.pause_for_debug);
 	% update LK tracker
 	tracker = LK_update(frame_id, tracker, dres_image.Igray{frame_id}, dres_det, 1);           
 else
@@ -156,7 +156,10 @@ else
 	% last bounding box from within the tracker and modifying its frame ID
 	% and target ID and state is appended at the end of the
 	% history of the tracker
-	tracker.dres = concatenate_dres(tracker.dres, dres_one);          
+	tracker.dres = concatenate_dres(tracker.dres, dres_one);  
+    if tracker.pause_for_debug 
+        debugging=1;
+    end 
 end
 if tracker.pause_for_debug 
     debugging=1;
