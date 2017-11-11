@@ -66,17 +66,24 @@ if tracker.prev_state == 1
 else
     points = zeros(numel(tracker.points{1}), tracker.num);
     lk_locations = zeros(tracker.num, 4);
+    valid_lk_locations = 1;
     for i = 1:tracker.num
-        points(:, i) = tracker.points{i}(:);
+        if isempty(tracker.bbs_orig{i})
+            valid_lk_locations = 0;
+            break;
+        end
         lk_locations(i, :) = tracker.bbs_orig{i}(:);
+        points(:, i) = tracker.points{i}(:);        
     end
-    lk_locations(:, 3:4) = lk_locations(:, 3:4) - lk_locations(:, 1:2) + 1;
-    entries = {
-        {points, 'lk_out', fp_dtype, fp_fmt},...
-        {lk_locations, 'locations', fp_dtype, fp_fmt},...
-        %{tracker.shifts, 'shifts', fp_dtype, fp_fmt},...
-        };
-    writeToFiles(sprintf('%s/lkcv', root_dir), write_to_bin, entries);
+    if valid_lk_locations
+        lk_locations(:, 3:4) = lk_locations(:, 3:4) - lk_locations(:, 1:2) + 1;
+        entries = {
+            {points, 'lk_out', fp_dtype, fp_fmt},...
+            {lk_locations, 'locations', fp_dtype, fp_fmt},...
+            %{tracker.shifts, 'shifts', fp_dtype, fp_fmt},...
+            };
+        writeToFiles(sprintf('%s/lkcv', root_dir), write_to_bin, entries);
+    end
     if tracker.prev_state == 2
         tracked_locations = zeros(tracker.num, 4);
         for i = 1:tracker.num
