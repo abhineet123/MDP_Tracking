@@ -1,4 +1,4 @@
-function trackers = resolve(trackers, dres_det, opt)
+function trackers = resolve(trackers, dres_det, opt, pause_for_debug)
 % resolve conflict between trackers
 
 % This basically checks if multiple trackers are tracking the same object
@@ -88,4 +88,12 @@ for i = 1:num_track
         end
         flag(sup) = 1;
     end
+    if pause_for_debug
+        debugging = 1;
+    end
+end
+if pause_for_debug
+    debugging = 1;
+end
+    
 end

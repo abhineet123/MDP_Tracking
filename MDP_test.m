@@ -21,6 +21,7 @@ save_images = 0;
 
 opt = globals();
 is_text = opt.is_text; 
+tracker.verbose_svm = opt.verbose_svm;
 
 fig_ids = [];
 fig_ids_track = [];
@@ -283,6 +284,9 @@ start_t = tic;
 for fr = 1:seq_num
     if opt.write_state_info && fr >= opt.write_thresh(2)
         tracker.pause_for_debug = 1;
+        for i = 1:numel(trackers)
+            trackers{i}.pause_for_debug = 1;
+        end
     end
     if is_text
         fprintf('\n\nframe %d, targets %d\n', fr, numel(trackers));
@@ -474,7 +478,7 @@ for fr = 1:seq_num
     % with the detections to decide which one of the two
     % will be suppressed
     % by suppressed to be mean that it is marked as occluded
-    trackers = resolve(trackers, dres, opt); 
+    trackers = resolve(trackers, dres, opt, tracker.pause_for_debug); 
    
     % if is_show
     %     figure(1);

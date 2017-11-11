@@ -45,6 +45,8 @@ else
     num_track = numel(dres_track.fr);
 end
 if num_track
+    iou = cell(num_det, 1);
+    ioa_1 = cell(num_det, 1);
     % find detections that do not have any significant overlap with any of
     % the existing tracked bounding boxes
     o1 = zeros(num_det, 1);
@@ -55,6 +57,8 @@ if num_track
         o1(i) = max(o);
         o2(i) = sum(oo);
         o3(i) = max(oo);
+        iou{i} = o;
+        ioa_1{i} = oo;
     end
     
     if isfield(dres_det, 'type')
