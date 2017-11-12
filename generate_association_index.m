@@ -32,7 +32,7 @@ num_det = numel(dres_det.fr);
 % and at other times it is ul + size/2 even though size = br - ul + 1
 cdets = [dres_det.x + dres_det.w/2, dres_det.y + dres_det.h/2];
 % centers of predicted locations of the tracked bounding boxes
-[ctrack, ~, vx, vy] = apply_motion_prediction(frame_id, tracker, 1);
+[ctrack, ~, vx, vy] = apply_motion_prediction(frame_id, tracker);
 
 % compute distances and aspect ratios
 distances = zeros(num_det, 1);
@@ -74,3 +74,6 @@ end
 % of the computed ratios and distances so that they can presumably be reused later
 dres_det.ratios = ratios;
 dres_det.distances = distances;
+if tracker.pause_for_debug 
+    debugging=1;
+end 

@@ -46,6 +46,8 @@ end
 if check_next_frame
     % predict the new location
     ctrack = apply_motion_prediction(fr+1, tracker);
+    % annoying and insidious piece of crap
+    % arbitrarily using the center of the predicted box as the ul
     dres_one.x = ctrack(1);
     dres_one.y = ctrack(2);
     dres_one.w = tracker.dres.w(end);
@@ -56,7 +58,10 @@ else
 end
 if ov < opt.exit_threshold || (ov1 < 0.05 && tracker.state == 3)
     if opt.is_text
-        fprintf('target outside image by checking boarders\n');
+        fprintf('target outside image by checking borders\n');
     end
     tracker.state = 0;
 end
+if tracker.pause_for_debug 
+    debugging=1;
+end 
