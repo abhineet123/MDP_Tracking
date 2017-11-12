@@ -14,14 +14,14 @@ function opt = globals()
 % def.seq_idx_test = {[1, 2], [3]};
 opt.is_train = 0;
 opt.seq_idx_train = {[69]};
-opt.seq_idx_test = {[66]};
+opt.seq_idx_test = {[67]};
 train_ratio = 1;
 test_ratio = 0.1;
 opt.train_start_offset = 0;
 
 opt.is_text = 1;  
 opt.write_state_info = 1;
-opt.write_thresh = [1,356];
+opt.write_thresh = [1,366];
 opt.write_to_bin = 1;
 opt.verbose_svm = 1;
 

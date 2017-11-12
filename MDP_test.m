@@ -385,7 +385,7 @@ for fr = 1:seq_num
         end
         if opt.is_text
             active_ind = find(good_targets_idx == ind, 1);
-            fprintf('Target %d id: %d state: %d\n', active_ind,...
+            fprintf('%d :: Target %d state: %d\n', active_ind,...
                 trackers{ind}.target_id, trackers{ind}.state)
         end        
         if trackers{ind}.state == 2
@@ -515,7 +515,9 @@ for fr = 1:seq_num
             if trackers{i}.state==0
                 continue;
             end
-            writeStateInfo(trackers{i}, opt.write_to_bin, fr, 1);    
+            writeStateInfo(trackers{i}, opt.write_to_bin, fr, 1);  
+            fprintf('Done Target %d state: %d\n',...
+                trackers{ind}.target_id, trackers{ind}.state)
         end
         debugging=1;
     end 
