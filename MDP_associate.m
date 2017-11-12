@@ -11,6 +11,10 @@ function [tracker, qscore, f] = MDP_associate(tracker, frame_id, dres_image,...
 if tracker.state ~= 3
 	error('Association can only be performed in the occluded state');
 end
+
+tracker.det_ratios = dres_det.ratios;
+tracker.det_distances = dres_det.distances;
+    
 % association
 if isempty(index_det) == 1
 	% This occurs if the bounding box of this object is not completely

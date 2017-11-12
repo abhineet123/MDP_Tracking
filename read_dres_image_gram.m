@@ -7,7 +7,6 @@
 function dres_image = read_dres_image_gram(db_path, seq_name,...
     start_idx, end_idx, storage_offset, store_rgb, store_gs, verbose,...
     read_from_bin)
-% addpath('./mexopencv-2.4.11/')
 if nargin < 5
     storage_offset = 0;
 end

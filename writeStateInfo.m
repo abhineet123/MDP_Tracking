@@ -97,7 +97,10 @@ else
             };
         writeToFiles(sprintf('%s/tracked', root_dir), write_to_bin, entries);    
     elseif tracker.prev_state == 3
-        entries = {};
+        entries = {
+            {tracker.det_ratios, 'det_ratios', fp_dtype, fp_fmt},...
+            {tracker.det_distances, 'det_distances', fp_dtype, fp_fmt},...
+            };
         trunc_idx = 1:tracker.fnum_occluded;
         trunc_idx(8) = [];
         if ~is_test
