@@ -10,14 +10,6 @@ function GRAM_test(is_train, seq_idx_train, seq_idx_test,...
     continue_from_seq, use_hungarian, start_offset,...
     read_images_in_batch, enable_eval, show_cropped_figs, save_video)
 
-def.continue_from_seq = 0;
-def.use_hungarian = 0;
-def.start_offset = 0;
-def.read_images_in_batch = [1, 1];
-def.enable_eval = 1;
-def.show_cropped_figs = 0;
-def.save_video = 0;
-
 opt = globals();
 
 % set is_train to 0 if testing trained trackers only
@@ -35,31 +27,31 @@ if nargin < arg_id
 end
 arg_id = arg_id + 1;
 if nargin<arg_id
-    continue_from_seq = def.continue_from_seq;
+    continue_from_seq = opt.continue_from_seq;
 end
 arg_id = arg_id + 1;
 if nargin<arg_id
-    use_hungarian = def.use_hungarian;
+    use_hungarian = opt.use_hungarian;
 end
 arg_id = arg_id + 1;
 if nargin<arg_id
-    start_offset = def.start_offset;
+    start_offset = opt.start_offset;
 end
 arg_id = arg_id + 1;
 if nargin<arg_id
-    read_images_in_batch = def.read_images_in_batch;
+    read_images_in_batch = opt.read_images_in_batch;
 end
 arg_id = arg_id + 1;
 if nargin<arg_id
-    enable_eval = def.enable_eval;
+    enable_eval = opt.enable_eval;
 end
 arg_id = arg_id + 1;
 if nargin<arg_id
-    show_cropped_figs = def.show_cropped_figs;
+    show_cropped_figs = opt.show_cropped_figs;
 end
 arg_id = arg_id + 1;
 if nargin<arg_id
-    save_video = def.save_video;
+    save_video = opt.save_video;
 end
 
 db_type = 2;

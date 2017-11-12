@@ -80,7 +80,8 @@ end
 tracker.prev_state = tracker.state;
 if label > 0
     if opt.is_text
-        fprintf('target %d associated\n', tracker.target_id);
+        fprintf('target %d associated to detection %d\n',...
+            tracker.target_id, ind);
     end
 	% association was successful so the object moves from lost to 
 	% tracked state
