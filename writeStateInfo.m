@@ -135,7 +135,8 @@ if sync_id > 0
     sync_w_fname = sprintf('%s/write_%d.sync', root_dir, sync_id);
     fclose(fopen(sync_w_fname, 'w'));
     sync_r_fname = sprintf('%s/read_%d.sync', root_dir, sync_id);
-    fprintf('Waiting for %s...',sync_r_fname);
+    fprintf('Target %d state: %d Waiting for %s...',...
+         tracker.target_id, tracker.state, sync_r_fname);
     pause('on')
     iter_id = 0;
     max_iters = 10;

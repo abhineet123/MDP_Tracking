@@ -516,8 +516,6 @@ for fr = 1:seq_num
                 continue;
             end
             writeStateInfo(trackers{i}, opt.write_to_bin, fr, 1);  
-            fprintf('Done Target %d state: %d\n',...
-                trackers{i}.target_id, trackers{i}.state)
         end
         debugging=1;
     end 

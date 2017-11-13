@@ -27,3 +27,7 @@ index2 = find(len <= sep);
 [~, ind] = sort(state(index2));
 index2 = index2(ind);
 index = [index1; index2];
+
+if num> 0 && trackers{1}.pause_for_debug
+    debugging = 1;
+end

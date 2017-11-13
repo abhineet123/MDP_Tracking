@@ -202,7 +202,8 @@ for fr = 1:seq_num
     
     % nms - non maximum suppression
     if db_type==1
-        boxes = [dres.x dres.y dres.x+dres.w dres.y+dres.h dres.r];
+        % one of the many annoying horrible bugs
+        boxes = [dres.x dres.y dres.x+dres.w-1 dres.y+dres.h-1 dres.r];
         index = nms_new(boxes, 0.6);
         dres = sub(dres, index);
         
