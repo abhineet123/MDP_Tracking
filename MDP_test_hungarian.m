@@ -329,10 +329,10 @@ for fr = 1:seq_num
         % Hungarian algorithm        
         
         % The output from of this function is a column vector where each entry
-        % contains the assignment off the corresponding row in its input
+        % contains the assignment of the corresponding row in its input
         % distance matrix which in turn contains the distances
         % of one tracked target
-        % An assignment value of zero response to an invalid assignment
+        % An assignment value of zero corresponds to an invalid assignment
         assignment = assignmentoptimal(dist);
         
         % process the assignment

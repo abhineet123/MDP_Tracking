@@ -69,7 +69,13 @@ for i = 1:tracker.num
         o = 0;
         score = 0;
         ind = 1;
-        angle = 0;
+        % just one of the many many annoying instances of arbitrary
+        % behavior - this exact thing is set to -1 in LK_tracking but
+        % apparently the authors decided it was a good idea to change it to
+        % 0 here or were probably just too stupid to even notice; turns out
+        % that angle is not even used anywhere else so there is no point to
+        % even computing it in the first place
+        angle = -1;
         flag = 2;
         BB3 = [NaN; NaN; NaN; NaN];
     else

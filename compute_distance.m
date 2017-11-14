@@ -55,7 +55,7 @@ if tracker.state == 3
         % between the values in the first column and those in the
         % second column;
         % so, instead of finding some kind of complement of the
-        % probability from the first column, we can directly use thr
+        % probability from the first column, we can directly use the
         % probability from the second column as an alternative and this
         % also makes more sense since the the distance between an occluded
         % object and the detection corresponds quite directly with the
