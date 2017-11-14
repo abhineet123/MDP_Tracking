@@ -28,6 +28,11 @@ if isempty(index_det) == 1
     tracker.l_test_occluded = [];
     tracker.probs_occluded = [];
     tracker.J_crops = [];
+    ind = -1;
+    
+    if tracker.pause_for_debug 
+        debugging=1;
+    end 
 else
 	% extract features with LK association
 	% Get features for all the detections that are likely to correspond to
@@ -78,6 +83,10 @@ else
 
 	dres_one = sub(dres_det, index_det(ind));
 	tracker = LK_associate(frame_id, dres_image, dres_one, tracker);
+    
+    if tracker.pause_for_debug 
+        debugging=1;
+    end 
 end
 
 % make a decision
@@ -135,6 +144,9 @@ if label > 0
 else
     if opt.is_text
         fprintf('target %d not associated\n', tracker.target_id);
+        if ind>0
+            fprintf('\t best matching detection: %d\n', ind);
+        end
     end
 	% no association
 	tracker.state = 3;
