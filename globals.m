@@ -8,23 +8,25 @@ function opt = globals()
 
 %% Important settings
 
+opt.is_train = 1;
 % opt.seq_idx_train = {[1:9, 16:24], [31:50]};
 % opt.seq_idx_test = {[10:15, 25:30], [51:60]};
 % opt.seq_idx_train = {[1, 2], [3]};
 % opt.seq_idx_test = {[1, 2], [3]};
-opt.is_train = 1;
-opt.seq_idx_train = {[20], [21], [22], [23]};
-opt.seq_idx_test = {[20], [21], [22], [23]};
-train_ratio = 1;
+% opt.seq_idx_train = {[20], [21], [22], [23]};
+% opt.seq_idx_test = {[20], [21], [22], [23]};
+opt.seq_idx_train = {[6]};
+opt.seq_idx_test = {[6]};
+train_ratio = 0.1;
 test_ratio = 1;
 opt.train_start_offset = 0;
 opt.test_start_offset = 0;
 
-opt.is_text = 0;
-opt.write_state_info = 0;
-opt.write_thresh = [1,1];
+opt.is_text = 1;
+opt.write_state_info = 1;
+opt.write_thresh = [1,780];
 opt.write_to_bin = 1;
-opt.verbose_svm = 0;
+opt.verbose_svm = 1;
 
 opt.continue_from_seq = 0;
 opt.use_hungarian = 0;
