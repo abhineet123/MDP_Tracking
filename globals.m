@@ -14,10 +14,11 @@ function opt = globals()
 % opt.seq_idx_test = {[1, 2], [3]};
 opt.is_train = 0;
 opt.seq_idx_train = {[9]};
-opt.seq_idx_test = {[1]};
+opt.seq_idx_test = {[6]};
 train_ratio = 1;
 test_ratio = 0.1;
 opt.train_start_offset = 0;
+opt.test_start_offset = 2622;
 
 opt.is_text = 1;
 opt.write_state_info = 1;
@@ -27,7 +28,6 @@ opt.verbose_svm = 1;
 
 opt.continue_from_seq = 0;
 opt.use_hungarian = 0;
-opt.start_offset = 0;
 opt.read_images_in_batch = [1, 1];
 opt.enable_eval = 1;
 opt.show_cropped_figs = 0;

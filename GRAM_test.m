@@ -7,7 +7,7 @@
 %
 % cross_validation on the KITTI benchmark
 function GRAM_test(is_train, seq_idx_train, seq_idx_test,...
-    continue_from_seq, use_hungarian, start_offset,...
+    continue_from_seq, use_hungarian, test_start_offset,...
     read_images_in_batch, enable_eval, show_cropped_figs, save_video)
 
 opt = globals();
@@ -35,7 +35,7 @@ if nargin<arg_id
 end
 arg_id = arg_id + 1;
 if nargin<arg_id
-    start_offset = opt.start_offset;
+    test_start_offset = opt.test_start_offset;
 end
 arg_id = arg_id + 1;
 if nargin<arg_id
@@ -136,10 +136,10 @@ for i = 1:N
         fprintf('Testing on sequence: %s\n', opt.gram_seqs{idx_test(j)});
         if use_hungarian
             dres_track = MDP_test_hungarian(idx_test(j), seq_set_test,...
-                tracker, db_type, start_offset, 1);
+                tracker, db_type, test_start_offset, 1);
         else
             dres_track = MDP_test(idx_test(j), seq_set_test, tracker, db_type,...
-                start_offset, read_images_in_batch(2), 1, show_cropped_figs, save_video);
+                test_start_offset, read_images_in_batch(2), 1, show_cropped_figs, save_video);
         end
     end
     % filename = sprintf('%s/%s_%d_%d.txt', opt.results_gram, seq_name,...
