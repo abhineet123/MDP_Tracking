@@ -13,12 +13,12 @@ function opt = globals()
 % opt.seq_idx_train = {[1, 2], [3]};
 % opt.seq_idx_test = {[1, 2], [3]};
 opt.is_train = 0;
-opt.seq_idx_train = {[9]};
-opt.seq_idx_test = {[6]};
+opt.seq_idx_train = {[20], [21], [22], [23]};
+opt.seq_idx_test = {[20], [21], [22], [23]};
 train_ratio = 1;
-test_ratio = 0.1;
+test_ratio = 1;
 opt.train_start_offset = 0;
-opt.test_start_offset = 2622;
+opt.test_start_offset = 0;
 
 opt.is_text = 1;
 opt.write_state_info = 1;
