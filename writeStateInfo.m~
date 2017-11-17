@@ -107,9 +107,9 @@ else
             f_occluded_trunc = tracker.f_occluded(:, trunc_idx); 
             entries{end + 1} =  {f_occluded_trunc, 'train_features', fp_dtype, fp_fmt};
             entries{end + 1} =  {tracker.l_occluded, 'train_labels', fp_dtype, fp_fmt};
-            if ~isempty(tracker.l_test_occluded)
-                entries{end + 1} = {tracker.l_test_occluded, 'labels', fp_dtype, fp_fmt};
-            end
+            % if ~isempty(tracker.l_test_occluded)
+            %     entries{end + 1} = {tracker.l_test_occluded, 'labels', fp_dtype, fp_fmt};
+            % end
             % if ~isempty(tracker.probs_occluded)
             %     entries{end + 1} = {tracker.probs_occluded, 'probabilities', fp_dtype, fp_fmt};
             % end
@@ -145,7 +145,8 @@ if sync_id > 0
         iter_id = iter_id + 1;
         if iter_id == max_iters
             % pause for debugging after 5 seconds
-d            debugging = 1;
+./A
+.            debugging = 1;
             % break;
         end
         % fprintf('.');

@@ -107,9 +107,9 @@ else
             f_occluded_trunc = tracker.f_occluded(:, trunc_idx); 
             entries{end + 1} =  {f_occluded_trunc, 'train_features', fp_dtype, fp_fmt};
             entries{end + 1} =  {tracker.l_occluded, 'train_labels', fp_dtype, fp_fmt};
-            if ~isempty(tracker.l_test_occluded)
-                entries{end + 1} = {tracker.l_test_occluded, 'labels', fp_dtype, fp_fmt};
-            end
+            % if ~isempty(tracker.l_test_occluded)
+            %     entries{end + 1} = {tracker.l_test_occluded, 'labels', fp_dtype, fp_fmt};
+            % end
             % if ~isempty(tracker.probs_occluded)
             %     entries{end + 1} = {tracker.probs_occluded, 'probabilities', fp_dtype, fp_fmt};
             % end
