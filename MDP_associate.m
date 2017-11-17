@@ -11,6 +11,14 @@ function [tracker, qscore, f] = MDP_associate(tracker, frame_id, dres_image,...
 if tracker.state ~= 3
 	error('Association can only be performed in the occluded state');
 end
+
+if isempty(dres_det.fr)    
+    tracker.det_ratios = [];
+    tracker.det_distances = [];
+else    
+    tracker.det_ratios = dres_det.ratios;
+    tracker.det_distances = dres_det.distances;
+end
     
 % association
 if isempty(index_det) == 1
@@ -25,10 +33,9 @@ if isempty(index_det) == 1
     tracker.l_test_occluded = [];
     tracker.probs_occluded = [];
     tracker.J_crops = [];
-    ind = -1;
+    ind = -1; 
+
     
-    tracker.det_ratios = [];
-    tracker.det_distances = [];
     
     if tracker.pause_for_debug 
         debugging=1;
@@ -76,9 +83,7 @@ else
 	[qscore, ind] = max(probs(:,1));
 	label = labels(ind);
 	f = features(ind,:);
-    
-    tracker.det_ratios = dres_det.ratios;
-    tracker.det_distances = dres_det.distances;
+
     
     if tracker.pause_for_debug 
         debugging=1;
