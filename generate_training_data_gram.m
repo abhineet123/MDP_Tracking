@@ -173,6 +173,8 @@ for i = 1:numel(ids)
     end
 end
 
+fprintf('%s: %d positive sequences\n', seq_name, numel(dres_train));
+
 if opt.write_state_info && opt.write_thresh(1)<=1 && opt.write_thresh(2)<=1
     fp_dtype = 'float32';
     fp_fmt = '%.10f';
@@ -210,5 +212,3 @@ if opt.write_state_info && opt.write_thresh(1)<=1 && opt.write_thresh(2)<=1
     fprintf('\n');
     delete(sync_r_fname);
 end
-
-fprintf('%s: %d positive sequences\n', seq_name, numel(dres_train));

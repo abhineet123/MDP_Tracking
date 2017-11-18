@@ -15,16 +15,16 @@ opt.is_train = 1;
 % opt.seq_idx_test = {[1, 2], [3]};
 % opt.seq_idx_train = {[20], [21], [22], [23]};
 % opt.seq_idx_test = {[20], [21], [22], [23]};
-opt.seq_idx_train = {[12]};
+opt.seq_idx_train = {[1,2]};
 opt.seq_idx_test = {[9]};
-train_ratio = 0.1;
+train_ratio = 0.01;
 test_ratio = 1;
 opt.train_start_offset = 0;
 opt.test_start_offset = 0;
 
 opt.is_text = 1;
 opt.write_state_info = 1;
-opt.write_thresh = [9,53];
+opt.write_thresh = [1,1];
 opt.write_to_bin = 1;
 opt.verbose_svm = 1;
 
@@ -34,6 +34,48 @@ opt.read_images_in_batch = [1, 1];
 opt.enable_eval = 1;
 opt.show_cropped_figs = 0;
 opt.save_video = 0;
+
+% training parameters
+opt.max_iter = 1;     % max iterations in total
+opt.max_count = 10;       % max iterations per sequence
+opt.max_pass = 1;
+
+% parameters for generating training data
+opt.overlap_occ = 0.7;
+opt.overlap_pos = 0.5;
+opt.overlap_neg = 0.2;
+opt.overlap_sup = 0.7;      % suppress target used in testing only
+
+%% tracking parameters
+
+opt.num = 10;                 % number of templates in tracker (default 10)
+opt.fb_factor = 30;           % normalization factor for forward-backward error in optical flow
+opt.threshold_ratio = 0.6;    % aspect ratio threshold in target association
+opt.threshold_dis = 3;        % distance threshold in target association, multiple of the width of target
+opt.threshold_box = 0.8;      % bounding box overlap threshold in tracked state
+
+opt.std_box = [30 60];        % [width height] of the stanford (?? probably standard) box in computing flow
+opt.enlarge_box = [5, 3];     % enlarge the box before computing flow
+% opt.std_box = [60 60];        % [width height] of the stanford (?? probably standard) box in computing flow
+% opt.enlarge_box = [3, 3];     % enlarge the box before computing flow
+
+opt.margin_box = [5, 2];      % [width height] of the margin in computing flow
+opt.level_track = 1;          % LK level in association
+opt.level =  1;               % LK level in association
+opt.max_ratio = 0.9;          % min allowed ratio in LK
+opt.min_vnorm = 0.2;          % min allowed velocity norm in LK
+opt.overlap_box = 0.5;        % overlap with detection in LK
+opt.patchsize = [24 12];      % patch size for target appearance
+opt.weight_tracking = 1;      % weight for tracking box in tracked state
+opt.weight_detection = 1;      % weight for detection box in tracked state
+opt.weight_association = 1;   % weight for tracking box in lost state
+opt.overlap_suppress1 = 0.5;   % overlap for suppressing detections with tracked objects
+opt.overlap_suppress2 = 0.5;   % overlap for suppressing detections with tracked objects
+
+% parameters to transition to inactive
+opt.max_occlusion = 50;
+opt.exit_threshold = 0.95;
+opt.tracked = 5;
 
 if exist('train_ratio', 'var')
     gram_train_ratio = train_ratio;
@@ -282,48 +324,6 @@ opt.gram_train_ratio = cat(2, opt.gram_train_ratio,...
 opt.gram_test_ratio = cat(2, opt.gram_test_ratio, opt.idot_test_ratio,...
     opt.detrac_test_ratio, opt.lost_test_ratio, opt.isl_test_ratio,...
     opt.gram_split_test_ratio);
-
-%% tracking parameters
-
-opt.num = 10;                 % number of templates in tracker (default 10)
-opt.fb_factor = 30;           % normalization factor for forward-backward error in optical flow
-opt.threshold_ratio = 0.6;    % aspect ratio threshold in target association
-opt.threshold_dis = 3;        % distance threshold in target association, multiple of the width of target
-opt.threshold_box = 0.8;      % bounding box overlap threshold in tracked state
-
-opt.std_box = [30 60];        % [width height] of the stanford (?? probably standard) box in computing flow
-opt.enlarge_box = [5, 3];     % enlarge the box before computing flow
-% opt.std_box = [60 60];        % [width height] of the stanford (?? probably standard) box in computing flow
-% opt.enlarge_box = [3, 3];     % enlarge the box before computing flow
-
-opt.margin_box = [5, 2];      % [width height] of the margin in computing flow
-opt.level_track = 1;          % LK level in association
-opt.level =  1;               % LK level in association
-opt.max_ratio = 0.9;          % min allowed ratio in LK
-opt.min_vnorm = 0.2;          % min allowed velocity norm in LK
-opt.overlap_box = 0.5;        % overlap with detection in LK
-opt.patchsize = [24 12];      % patch size for target appearance
-opt.weight_tracking = 1;      % weight for tracking box in tracked state
-opt.weight_detection = 1;      % weight for detection box in tracked state
-opt.weight_association = 1;   % weight for tracking box in lost state
-opt.overlap_suppress1 = 0.5;   % overlap for suppressing detections with tracked objects
-opt.overlap_suppress2 = 0.5;   % overlap for suppressing detections with tracked objects
-
-% parameters for generating training data
-opt.overlap_occ = 0.7;
-opt.overlap_pos = 0.5;
-opt.overlap_neg = 0.2;
-opt.overlap_sup = 0.7;      % suppress target used in testing only
-
-% training parameters
-opt.max_iter = 10000;     % max iterations in total
-opt.max_count = 10;       % max iterations per sequence
-opt.max_pass = 2;
-
-% parameters to transite to inactive
-opt.max_occlusion = 50;
-opt.exit_threshold = 0.95;
-opt.tracked = 5;
 
 
 %% Obsolete settings

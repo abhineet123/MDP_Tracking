@@ -167,11 +167,12 @@ else
     % retrain the SVM;
     tracker.factive = [tracker.factive; factive(index,:)];
     tracker.lactive = [tracker.lactive; labels(index)];
-    svm_options = '-c 1';
+    svm_options = '-c 1 -g 1 -b 1';
     if ~tracker.verbose_svm
         svm_options = strcat(svm_options, ' -q');
-    end    
-    tracker.w_active = svmtrain(tracker.lactive, tracker.factive, svm_options);
+    end
+    
+    tracker.w_active = svmtrain(tracker.lactive, tracker.factive, '-c 1 -q');
 end
 
 %% for each training sequence
