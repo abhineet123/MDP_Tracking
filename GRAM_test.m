@@ -10,7 +10,9 @@ function GRAM_test(is_train, seq_idx_train, seq_idx_test,...
     continue_from_seq, use_hungarian, test_start_offset,...
     read_images_in_batch, enable_eval, show_cropped_figs, save_video)
 
-opt = globals();
+if ~exist('opt', 'var')
+    opt = globals();
+end
 
 % set is_train to 0 if testing trained trackers only
 arg_id = 1;
