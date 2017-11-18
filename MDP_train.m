@@ -259,7 +259,8 @@ while 1 % for multiple passes
             tracker.pause_for_debug = 1;
         end
         if is_text
-            fprintf('\n iter %d, frame %d, state %d\n', iter, fr, tracker.state);
+            fprintf('\n iter %d, frame %d, id: %d state %d\n',...
+                iter, fr, tracker.target_id, tracker.state);
         end
         if ~read_images_in_batch
             % read this image - this unfortunately leads to the same image
