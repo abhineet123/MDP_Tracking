@@ -15,9 +15,9 @@ opt.is_train = 1;
 % opt.seq_idx_test = {[1, 2], [3]};
 % opt.seq_idx_train = {[20], [21], [22], [23]};
 % opt.seq_idx_test = {[20], [21], [22], [23]};
-opt.seq_idx_train = {[1,2]};
+opt.seq_idx_train = {[20, 21]};
 opt.seq_idx_test = {[9]};
-train_ratio = 0.01;
+train_ratio = 1;
 test_ratio = 1;
 opt.train_start_offset = 0;
 opt.test_start_offset = 0;
@@ -36,7 +36,7 @@ opt.show_cropped_figs = 0;
 opt.save_video = 0;
 
 % training parameters
-opt.max_iter = 1;     % max iterations in total
+opt.max_iter = 10;     % max iterations in total
 opt.max_count = 10;       % max iterations per sequence
 opt.max_pass = 1;
 

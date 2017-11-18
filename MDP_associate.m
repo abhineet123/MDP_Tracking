@@ -12,7 +12,7 @@ if tracker.state ~= 3
 	error('Association can only be performed in the occluded state');
 end
 
-if isempty(dres_det.fr)    
+if isempty(dres_det.fr) || isempty(index_det)    
     tracker.det_ratios = [];
     tracker.det_distances = [];
 else    
