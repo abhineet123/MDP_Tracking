@@ -1,5 +1,12 @@
 function printMetrics(metrics, MT_list, out_fname, seq_label,...
     metricsInfo, dispHeader, dispMetrics, padChar)
+
+write_header = 0;
+if ~exist(out_fname, 'file')
+    write_header = 1;
+end
+out_fid = fopen(out_fname, 'a');
+
 % print metrics
 % 
 % ...
@@ -18,16 +25,8 @@ end
 
 % default names
 
-if nargin<2
+if nargin==1
     MT_list=[];
-end
-
-if nargin < 3
-    out_fname = 'mot_metrics.txt';
-end
-
-if nargin < 4
-    seq_label = 'generic';
 end
 
 if nargin < 5
@@ -62,12 +61,6 @@ if nargin<8
     padChar={' ',' ','|',' ',' ',' ','|',' ',' ',' ','| ',' ',' ',' '};
 end
 
-write_header = 0;
-if ~exist(out_fname, 'file')
-    write_header = 1;
-end
-out_fid = fopen(out_fname, 'a');
-
 
 namesToDisplay=metricsInfo.names.long;
 widthsToDisplay=metricsInfo.widths.long;
@@ -83,31 +76,31 @@ if dispHeader
         fprintf(out_fid, 'File');
     end
     for m=dispMetrics
-        printString=sprintf('fprintf(''%%%is%s'',char(namesToDisplay(m)));',...
+        printString=sprintf('fprintf(''%%%is%s'',char(namesToDisplay(m)))',...
             widthsToDisplay(m),char(padChar(m)));        
-        eval(printString);
+        eval(printString)
         if write_header
             fprintf(out_fid, '\t');
-            printString=sprintf('fprintf(out_fid, ''%%%is'',char(namesToDisplay(m)));',...
-                widthsToDisplay(m));        
-            eval(printString);
+            printString=sprintf('fprintf(out_fid, ''%%%is%s'',char(namesToDisplay(m)))',...
+                widthsToDisplay(m),char(padChar(m)));        
+            eval(printString)
         end
     end
-    fprintf('\t MT(%%)\t PT(%%)\t ML(%%)\n');
+    fprintf('\n');
     if write_header
-        fprintf(out_fid, '\t MT(%%)\t PT(%%)\t ML(%%)\n');
+        fprintf(out_fid, '\tMT(%%)\t PT(%%)\t ML(%%)\n');
     end
 end
 fprintf(out_fid, '%s', seq_label);
 for m=dispMetrics
-    printString=sprintf('fprintf(''%%%i%s%s'',metrics(m));',...
+    printString=sprintf('fprintf(''%%%i%s%s'',metrics(m))',...
         widthsToDisplay(m),char(formatToDisplay(m)),char(padChar(m)));
-    eval(printString);
+    eval(printString)
     
     fprintf(out_fid, '\t');
-    printString=sprintf('fprintf(out_fid, ''%%%i%s'',metrics(m));',...
-        widthsToDisplay(m),char(formatToDisplay(m)));
-    eval(printString);
+    printString=sprintf('fprintf(out_fid, ''%%%i%s%s'',metrics(m))',...
+        widthsToDisplay(m),char(formatToDisplay(m)),char(padChar(m)));
+    eval(printString)
 end
 
 gt_count = metrics(4);
@@ -119,13 +112,14 @@ mt_percent = double(mt_count)/double(gt_count) * 100;
 pt_percent = double(pt_count)/double(gt_count) * 100;
 ml_percent = double(ml_count)/double(gt_count) * 100;
 
+
+fprintf('MT(%%)\t PT(%%)\t ML(%%)\n');
 fprintf('%.2f\t %.2f\t %.2f\n', mt_percent, pt_percent, ml_percent);
+
 
 fprintf(out_fid, '\t %.2f\t %.2f\t %.2f\n',...
     mt_percent, pt_percent, ml_percent);
 
-
-fclose(out_fid);
 
 % if ~isempty(MT_list)
 %     MT_percent_list = MT_list ./ double(gt_count) * 100

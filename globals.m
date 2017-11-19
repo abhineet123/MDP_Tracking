@@ -17,8 +17,8 @@ opt.is_train = 1;
 % opt.seq_idx_test = {[20], [21], [22], [23]};
 opt.seq_idx_train = {[6]};
 opt.seq_idx_test = {[9]};
-train_ratio = 0.1;
-test_ratio = 0.1;
+train_ratio = 1;
+test_ratio = 1;
 opt.train_start_offset = 0;
 opt.test_start_offset = 0;
 
@@ -42,8 +42,9 @@ opt.save_video = 0;
 % opt.seq_idx_eval = [51:60];
 % opt.seq_idx_eval = [10:15, 25:30];
 % opt.seq_idx_eval = [10:15, 25:30, 51:60];
-opt.seq_idx_eval = [1:3, 5:17, 19:78];
+opt.seq_idx_eval = [1:3, 6:18, 20:79];
 opt.eval_start_offset = 0;
+opt.eval_one_at_a_time = 1;
 opt.record_diary = 1;
 
 opt.results_gram = 'results_gram/py';

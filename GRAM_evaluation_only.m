@@ -1,4 +1,5 @@
-function GRAM_evaluation_only(seq_idx_list, start_offset, record_diary)
+function GRAM_evaluation_only(seq_idx_list, start_offset,...
+    one_at_a_time, record_diary)
 
 tic;
 
@@ -11,6 +12,10 @@ end
 arg_id = arg_id + 1;
 if nargin < arg_id
     start_offset = opt.eval_start_offset;
+end
+arg_id = arg_id + 1;
+if nargin < arg_id
+    one_at_a_time = opt.eval_one_at_a_time;
 end
 arg_id = arg_id + 1;
 if nargin < arg_id
@@ -48,10 +53,23 @@ for seq_idx = seq_idx_list
     end_idx_list(id) = end_idx;
     id = id + 1;    
 end
+
 benchmark_dir = fullfile(opt.gram, filesep);
-seqs = opt.gram_seqs(seq_idx_list);
-evaluateTrackingGRAM(seqs, opt.results_gram, benchmark_dir,...
-    start_idx_list, end_idx_list);
+
+
+if one_at_a_time
+    id = 1;
+    for seq_idx = seq_idx_list
+        seq = opt.gram_seqs(seq_idx);
+        evaluateTrackingGRAM(seq, opt.results_gram,...
+            benchmark_dir, [start_idx_list(id)], [end_idx_list(id)]);
+        id = id + 1;
+    end
+else
+    seqs = opt.gram_seqs(seq_idx_list);
+    evaluateTrackingGRAM(seqs, opt.results_gram, benchmark_dir,...
+        start_idx_list, end_idx_list);
+end
 
 t = toc;
 fprintf('Time taken: %f secs\n', t);

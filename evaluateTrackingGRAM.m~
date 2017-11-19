@@ -101,8 +101,6 @@ id = 1;
 figure('Visible','off'), hold on;
 MT_thresh = 0.1:0.01:1;
 
-out_fname = fullfile(resDir,'mot_metrics.txt');
-
 for s=allSeq
     
     seqCnt=seqCnt+1;
@@ -114,10 +112,11 @@ for s=allSeq
     end_idx = end_idx_list(id);
     id = id + 1;
     
-    res_fname = sprintf('%s_%d_%d.txt', seqName, start_idx, end_idx);
+    
     
     % if a result is missing, we cannot evaluate this tracker
-    resFile = fullfile(resDir,res_fname);
+    resFile = fullfile(resDir,...
+        sprintf('%s_%d_%d.txt', seqName, start_idx, end_idx));
     if ~exist(resFile,'file')
         fprintf('WARNING: result file for %s not available: %s\n',seqName, resFile);
         eval2D=0;
@@ -176,9 +175,7 @@ for s=allSeq
     allMets(mcnt).mets3d(seqCnt).m=zeros(1,length(mets));
     
     if imCoord        
-        fprintf('*** 2D (Bounding Box overlap) ***\n');
-        printMetrics(mets, MT_list, out_fname, res_fname);
-        fprintf('\n');
+        fprintf('*** 2D (Bounding Box overlap) ***\n'); printMetrics(mets, MT_list); fprintf('\n');
     else
         fprintf('*** Bounding boxes not available ***\n\n');
         eval2D=0;
@@ -187,13 +184,10 @@ for s=allSeq
     % if world coordinates available, evaluate in 3D
     if  gtInfoSingle(seqCnt).wc &&  worldCoordST
         evopt.eval3d=1;evopt.td=1;
-        [mets, MT_list, tracked_frac, tracked_total, gt_total]=...
-            CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI,evopt);
+        [mets, MT_list, tracked_frac, tracked_total, gt_total]=CLEAR_MOT_HUN(gtInfoSingle(seqCnt).gtInfo,stI,evopt);
             allMets(mcnt).mets3d(seqCnt).m=mets;
                 
-        fprintf('*** 3D (in world coordinates) ***\n');
-        printMetrics(mets, MT_list, out_fname, res_fname);
-        fprintf('\n');            
+        fprintf('*** 3D (in world coordinates) ***\n'); printMetrics(mets, MT_list); fprintf('\n');            
     else
         eval3D=0;
     end
@@ -253,57 +247,56 @@ end
 
 stInfo.frameNums=1:size(stInfo.Xi,1);
 
-if numel(allSeq)>1
-    if eval2D
-        fprintf('\n');
-        fprintf(' ********************* Combined Results ***********************\n');
 
-        [m2d, MT_list, tracked_frac, tracked_total, gt_total]=CLEAR_MOT_HUN(gtInfo,stInfo);
-        if exist('histogram')
-            plotFile = fullfile(resDir, sprintf('tracked_frac_hist_all.png'));    
-            histogram(tracked_frac, hist_edges);
-            xlabel('Correctly Tracked Fraction (CTF)'), ylabel('No. of Trajectories');
-            title('Correctly Tracked Fraction Distribution');
-            saveas(gcf, plotFile);  
+if eval2D
+    fprintf('\n');
+    fprintf(' ********************* Combined Results ***********************\n');
 
-            plotFile = fullfile(resDir, sprintf('tracked_total_hist_all.png'));    
-            histogram(tracked_total);
-            xlabel('No. of Frames'), ylabel('No. of Trajectories');
-            title('Tracked Trajectory Size Distribution');
-            saveas(gcf, plotFile);
+    [m2d, MT_list, tracked_frac, tracked_total, gt_total]=CLEAR_MOT_HUN(gtInfo,stInfo);
+    if exist('histogram')
+        plotFile = fullfile(resDir, sprintf('tracked_frac_hist_all.png'));    
+        histogram(tracked_frac, hist_edges);
+        xlabel('Correctly Tracked Fraction (CTF)'), ylabel('No. of Trajectories');
+        title('Correctly Tracked Fraction Distribution');
+        saveas(gcf, plotFile);  
 
-            plotFile = fullfile(resDir, sprintf('gt_total_hist_all.png'));    
-            histogram(gt_total);
-            xlabel('No. of Frames'), ylabel('No. of Trajectories');
-            title('Ground Truth Trajectory Size Distribution');
-            saveas(gcf, plotFile);
-        end
+        plotFile = fullfile(resDir, sprintf('tracked_total_hist_all.png'));    
+        histogram(tracked_total);
+        xlabel('No. of Frames'), ylabel('No. of Trajectories');
+        title('Tracked Trajectory Size Distribution');
+        saveas(gcf, plotFile);
 
-        allMets.bmark2d=m2d;
-
-        filename = sprintf('eval2D_all.txt');
-        evalFile = fullfile(resDir, filename);  
-
-        printMetrics(m2d, MT_list, out_fname, 'combined');
-        dlmwrite(evalFile,m2d);
-
-
-    end    
-
-    if eval3D
-        fprintf('\n');
-        fprintf(' ********************* Your Benchmark Results (3D) ***********************\n');
-
-        evopt.eval3d=1;evopt.td=1;
-
-        [m3d, MT_list, tracked_frac, tracked_total, gt_total]=CLEAR_MOT_HUN(gtInfo,stInfo,evopt);
-        allMets.bmark3d=m3d;
-
-        evalFile = fullfile(resDir, 'eval3D.txt');
-
-        printMetrics(m3d, MT_list, out_fname, 'combined');
-        dlmwrite(evalFile,m3d);    
+        plotFile = fullfile(resDir, sprintf('gt_total_hist_all.png'));    
+        histogram(gt_total);
+        xlabel('No. of Frames'), ylabel('No. of Trajectories');
+        title('Ground Truth Trajectory Size Distribution');
+        saveas(gcf, plotFile);
     end
+    
+    allMets.bmark2d=m2d;
+    
+    filename = sprintf('eval2D_all.txt');
+    evalFile = fullfile(resDir, filename);  
+    
+    printMetrics(m2d, MT_list);
+    dlmwrite(evalFile,m2d);
+    
+    
+end    
+
+if eval3D
+    fprintf('\n');
+    fprintf(' ********************* Your Benchmark Results (3D) ***********************\n');
+
+    evopt.eval3d=1;evopt.td=1;
+       
+    [m3d, MT_list, tracked_frac, tracked_total, gt_total]=CLEAR_MOT_HUN(gtInfo,stInfo,evopt);
+    allMets.bmark3d=m3d;
+    
+    evalFile = fullfile(resDir, 'eval3D.txt');
+    
+    printMetrics(m3d, MT_list);
+    dlmwrite(evalFile,m3d);    
 end
 if ~eval2D && ~eval3D
     fprintf('ERROR: results cannot be evaluated\n');
