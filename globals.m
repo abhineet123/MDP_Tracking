@@ -35,6 +35,20 @@ opt.enable_eval = 1;
 opt.show_cropped_figs = 0;
 opt.save_video = 0;
 
+% evaluation parameters
+% opt.seq_idx_eval = [74, 78];
+% opt.seq_idx_eval = [6:35];
+% opt.seq_idx_eval = [25:30];
+% opt.seq_idx_eval = [51:60];
+% opt.seq_idx_eval = [10:15, 25:30];
+% opt.seq_idx_eval = [10:15, 25:30, 51:60];
+opt.seq_idx_eval = [1:3, 5:17, 19:78];
+opt.eval_start_offset = 0;
+opt.record_diary = 1;
+
+opt.results_gram = 'results_gram/py';
+opt.results_idot = 'results_idot';
+
 % training parameters
 opt.max_iter = 10;     % max iterations in total
 opt.max_count = 10;       % max iterations per sequence
@@ -348,8 +362,6 @@ end
 opt.mot2d = '2DMOT2015';
 opt.results = 'results';
 opt.results_kitti = 'results_kitti';
-opt.results_gram = 'results_gram';
-opt.results_idot = 'results_idot';
 
 opt.mot2d_train_seqs = {'TUD-Stadtmitte', 'TUD-Campus', 'PETS09-S2L1', ...
     'ETH-Bahnhof', 'ETH-Sunnyday', 'ETH-Pedcross2', 'ADL-Rundle-6', ...
