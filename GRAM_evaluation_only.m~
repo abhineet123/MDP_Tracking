@@ -52,6 +52,6 @@ benchmark_dir = fullfile(opt.gram, filesep);
 seqs = opt.gram_seqs(seq_idx_list);
 evaluateTrackingGRAM(seqs, opt.results_gram, benchmark_dir,...
     start_idx_list, end_idx_list);
-
 t = toc;
-fprintf('Time taken: %f secs\n', t);
+fprintf('Done training on sequence: %s. Time taken: %f secs\n',...
+                opt.gram_seqs{idx_train(j)}, t);
