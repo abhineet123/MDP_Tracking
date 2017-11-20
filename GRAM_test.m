@@ -17,7 +17,7 @@ end
 is_train = opt.is_train;
 seq_idx_train = opt.seq_idx_train;
 seq_idx_test = opt.seq_idx_test;
-continue_from_seq = opt.continue_from_seq;
+continue_training = opt.continue_training;
 use_hungarian = opt.use_hungarian;
 test_start_offset = opt.test_start_offset;
 read_images_in_batch = opt.read_images_in_batch;
@@ -57,10 +57,11 @@ for i = 1:N
     end
     
     tracker = [];
-    if ~is_train || continue_from_seq
+    if ~is_train || continue_training
         % load tracker from file
-        if continue_from_seq
-            seq_idx = continue_from_seq;
+        if continue_training
+            seq_idx = idx_train(continue_training);
+            idx_train = idx_train(continue_training+1:end);
         else
             seq_idx = idx_train(end);
         end

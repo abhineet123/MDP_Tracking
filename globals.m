@@ -15,8 +15,8 @@ opt.is_train = 1;
 % opt.seq_idx_test = {[1, 2], [3]};
 % opt.seq_idx_train = {[20], [21], [22], [23]};
 % opt.seq_idx_test = {[20], [21], [22], [23]};
-opt.seq_idx_train = {[6]};
-opt.seq_idx_test = {[9]};
+opt.seq_idx_train = {[20, 21]};
+opt.seq_idx_test = {[6]};
 train_ratio = 1;
 test_ratio = 1;
 opt.train_start_offset = 0;
@@ -28,12 +28,17 @@ opt.write_thresh = [1,1];
 opt.write_to_bin = 1;
 opt.verbose_svm = 1;
 
-opt.continue_from_seq = 0;
+opt.continue_training = 1;
 opt.use_hungarian = 0;
 opt.read_images_in_batch = [1, 1];
 opt.enable_eval = 1;
 opt.show_cropped_figs = 0;
 opt.save_video = 0;
+
+% training parameters
+opt.max_iter = 70;     % max iterations in total
+opt.max_count = 10;       % max iterations per sequence
+opt.max_pass = 1;
 
 % evaluation parameters
 % opt.seq_idx_eval = [74, 78];
@@ -49,11 +54,6 @@ opt.record_diary = 1;
 
 opt.results_gram = 'results_gram/py';
 opt.results_idot = 'results_idot';
-
-% training parameters
-opt.max_iter = 10;     % max iterations in total
-opt.max_count = 10;       % max iterations per sequence
-opt.max_pass = 1;
 
 % parameters for generating training data
 opt.overlap_occ = 0.7;
