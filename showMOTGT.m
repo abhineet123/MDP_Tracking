@@ -6,14 +6,14 @@
 % --------------------------------------------------------
 function showMOTGT()
 
-addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
+addpath('H:\UofA\Thesis\Code\TrackingFramework\Matlab');
 read_images_in_batch = 0;
 verbose = 0;
 read_from_bin = 0;
 save_video = 1;
-show_detections = 1;
+show_detections = 0;
 db_type = 2;
-start_idx = 95;
+start_idx = 82;
 end_idx = 73;
 % seq_idx_list = [1:3, 66:78];
 det_color = [0, 1, 0];

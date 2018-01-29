@@ -4,7 +4,7 @@ function status = showMOTResult(seq_idx_list, test_start_offset,...
 % addpath('E:\UofA\Thesis\Code\TrackingFramework\Matlab');
 opt = globals();
 if nargin < 2
-    seq_idx_list = [95];
+    seq_idx_list = [82];
 end
 if nargin < 2
     test_start_offset = 0;

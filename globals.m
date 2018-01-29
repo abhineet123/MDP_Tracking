@@ -15,7 +15,7 @@ opt.is_train = 1;
 % opt.seq_idx_test = {[1, 2], [3]};
 % opt.seq_idx_train = {[20], [21], [22], [23]};
 % opt.seq_idx_test = {[20], [21], [22], [23]};
-opt.seq_idx_train = {[20, 21]};
+opt.seq_idx_train = {[21]};
 opt.seq_idx_test = {[6]};
 train_ratio = 1;
 test_ratio = 1;
@@ -28,7 +28,7 @@ opt.write_thresh = [1,1];
 opt.write_to_bin = 1;
 opt.verbose_svm = 1;
 
-opt.continue_training = 1;
+opt.continue_training = 0;
 opt.use_hungarian = 0;
 opt.read_images_in_batch = [1, 1];
 opt.enable_eval = 1;
@@ -47,12 +47,13 @@ opt.max_pass = 1;
 % opt.seq_idx_eval = [51:60];
 % opt.seq_idx_eval = [10:15, 25:30];
 % opt.seq_idx_eval = [10:15, 25:30, 51:60];
-opt.seq_idx_eval = [1:3, 6:18, 20:79];
+% opt.seq_idx_eval = [1:3, 6:18, 20:57];
+opt.seq_idx_eval = [82];
 opt.eval_start_offset = 0;
 opt.eval_one_at_a_time = 1;
 opt.record_diary = 1;
 
-opt.results_gram = 'results_gram/py';
+opt.results_gram = 'results_gram/isl_demo';
 opt.results_idot = 'results_idot';
 
 % parameters for generating training data
@@ -127,8 +128,8 @@ if isunix
     gram_paths = {'/data/GRAM'};
     idot_paths = {'/data/IDOT'};
 else
-    gram_paths = {'C:\Datasets\GRAM'};
-    idot_paths = {'C:\Datasets\IDOT'};
+    gram_paths = {'D:\Datasets\GRAM'};
+    idot_paths = {'D:\Datasets\IDOT'};
 end
 path_found = 0;
 for i = 1:numel(gram_paths)
@@ -166,6 +167,7 @@ opt.lost_train_ratio = ones(1, numel(opt.lost_nums)) * lost_train_ratio;
 opt.lost_test_ratio = ones(1, numel(opt.lost_nums)) * lost_test_ratio;
 
 opt.isl_seqs = {
+    'DJI_0002',...
     'isl_1_20170620-055940', 'isl_2_20170620-060941',...
     'isl_3_20170620-061942', 'isl_4_20170620-062943',...
     'isl_5_20170620-063943', 'isl_6_20170620-064944',...
@@ -174,7 +176,7 @@ opt.isl_seqs = {
     'isl_11_20170620-073947', 'isl_12_20170620-074947',...
     'isl_13_20170620-075949', 'ISL16F8J_TMC_SCU2DJ_2016-10-05_0700'
     };
-opt.isl_nums = [10162, 10191, 10081, 10089, 10177, 10195, 10167, 10183,...
+opt.isl_nums = [2000, 10162, 10191, 10081, 10089, 10177, 10195, 10167, 10183,...
     10174, 10127, 9738, 10087, 8614, 10000];
 opt.isl_train_ratio = ones(1, numel(opt.isl_nums)) * isl_train_ratio;
 opt.isl_test_ratio = ones(1, numel(opt.isl_nums)) * isl_test_ratio;

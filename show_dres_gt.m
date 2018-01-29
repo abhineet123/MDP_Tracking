@@ -10,7 +10,7 @@ end
 if nargin<7
     obj_id_font_size = 6;
 end
-if nargin<7
+if nargin<8
     det_color = [0, 0, 0];
 end
 imshow(I);
